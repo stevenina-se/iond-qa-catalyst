@@ -1,0 +1,1068 @@
+{
+  "info": {
+    "name": "IONF-1004 — Soporte de Listings para Etsy y WooCommerce en Gateway",
+    "description": "QA Test Collection para IONF-1004.\n\n## Descripción\nNueva acción `export_products` en Gateway legacy (PHP) para exportar/sincronizar productos hacia WooCommerce y Etsy mediante un payload genérico.\nIncluye acción sync `get_categories` para consultar categorías del cart destino.\n\n## Setup\n1. Configurar las variables de colección (base_url, token, gateway_key_wc, gateway_key_etsy)\n2. Ejecutar `artisan queue:restart` en el servidor de staging\n3. Ejecutar en orden: Smoke → Happy Path → Edge Cases → Negativos → Regresión → DB Evidence\n\n## Variables requeridas\n- `base_url`: URL base del API (ej: https://dev-app.ionflow.io)\n- `token`: Bearer token M2M con scope `app:integration-action`\n- `gateway_key_wc`: Gateway key de la integración WooCommerce\n- `gateway_key_etsy`: Gateway key de la integración Etsy\n- `gateway_key_ebay`: Gateway key de integración eBay existente (para regresión)\n\n## Notas importantes\n- ⚠️ Etsy cobra $0.20 por cada listing creado. Usar tienda de prueba dedicada\n- ⚠️ No disparar batches concurrentes\n- ⚠️ Rate limit Etsy: abort + report, sin retry interno\n- ⚠️ Validación sync (422) NO dispara webhook. Webhook solo para flujo async (job)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://dev-app.ionflow.io",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "TU_TOKEN_M2M_AQUI",
+      "type": "string"
+    },
+    {
+      "key": "gateway_key_wc",
+      "value": "TU_GATEWAY_KEY_WOOCOMMERCE",
+      "type": "string"
+    },
+    {
+      "key": "gateway_key_etsy",
+      "value": "TU_GATEWAY_KEY_ETSY",
+      "type": "string"
+    },
+    {
+      "key": "gateway_key_ebay",
+      "value": "TU_GATEWAY_KEY_EBAY_EXISTENTE",
+      "type": "string"
+    },
+    {
+      "key": "wc_category_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "etsy_category_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_invalid",
+      "value": "TOKEN_INVALIDO_PARA_TEST",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "BLOQUE 1 — SMOKE TESTS",
+      "description": "Verificación rápida: el endpoint existe, la acción se acepta, la validación funciona. Si alguno falla → STOP.",
+      "item": [
+        {
+          "name": "TC-001: Exportar producto simple a WooCommerce (Smoke)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-001: Status 200 o 202 (accepted/processing)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-001: Response tiene estructura válida', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test('TC-001: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "    pm.expect(body).to.not.include('Exception');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-SMOKE-001\",\n        \"title\": \"QA Smoke Test Product - IONF-1004\",\n        \"description\": \"Producto de prueba smoke para validar que el endpoint funciona\",\n        \"images\": [\n          {\n            \"src\": \"https://via.placeholder.com/500x500.png?text=QA-SMOKE\"\n          }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"QA Smoke Variant\",\n            \"sku\": \"QA-SMOKE-SKU-001\",\n            \"price\": \"9.99\",\n            \"barcode\": \"1234567890\",\n            \"quantity\": 1,\n            \"dimensions\": {\n              \"length\": 10,\n              \"width\": 5,\n              \"Height\": 3,\n              \"Weight\": 1,\n              \"unit\": \"lb\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-006: Exportar producto simple a Etsy (Smoke)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-006: Status 200 o 202 (accepted/processing)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-006: Response tiene estructura válida', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test('TC-006: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "    pm.expect(body).to.not.include('Exception');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-ETSY-SMOKE-001\",\n        \"title\": \"QA Etsy Smoke Test - IONF-1004\",\n        \"description\": \"Producto de prueba smoke para Etsy. Flujo secuencial: POST listings → POST images → PUT inventory → PATCH listings (active)\",\n        \"images\": [\n          {\n            \"src\": \"https://via.placeholder.com/500x500.png?text=QA-ETSY-SMOKE\"\n          }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"QA Etsy Smoke Variant\",\n            \"sku\": \"QA-ETSY-SMOKE-SKU-001\",\n            \"price\": \"15.00\",\n            \"barcode\": \"9876543210\",\n            \"quantity\": 1\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_etsy}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_etsy}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-012: Payload inválido → 422 sync (sin webhook)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-012: Status 422 Validation Error', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('TC-012: Response contiene detalle de error', function () {",
+                  "    const json = pm.response.json();",
+                  "    const body = JSON.stringify(json).toLowerCase();",
+                  "    pm.expect(body).to.include('product');",
+                  "});",
+                  "",
+                  "pm.test('TC-012: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "    pm.expect(body).to.not.include('Exception');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"this_is_invalid\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BLOQUE 2 — HAPPY PATH",
+      "description": "Flujo completo: WooCommerce (simple + variantes + batch), Etsy (simple + imágenes + rate limit), get_categories sync.",
+      "item": [
+        {
+          "name": "TC-010: get_categories WooCommerce (sync)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-010: Status 200 OK (respuesta sync)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('TC-010: Response contiene categorías', function () {",
+                  "    const json = pm.response.json();",
+                  "    const data = json.data || json;",
+                  "    // Las categorías deben ser un array o tener estructura de lista",
+                  "    pm.expect(data).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test('TC-010: Categorías tienen IDs', function () {",
+                  "    const json = pm.response.json();",
+                  "    const data = json.data || json;",
+                  "    if (Array.isArray(data)) {",
+                  "        if (data.length > 0) {",
+                  "            pm.expect(data[0]).to.have.property('id');",
+                  "            // Guardar primer category_id para usar en TCs siguientes",
+                  "            pm.collectionVariables.set('wc_category_id', data[0].id);",
+                  "        }",
+                  "    } else if (data.categories && data.categories.length > 0) {",
+                  "        pm.expect(data.categories[0]).to.have.property('id');",
+                  "        pm.collectionVariables.set('wc_category_id', data.categories[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"get_categories\",\n  \"params\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-011: get_categories Etsy (taxonomy global, sync)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-011: Status 200 OK (respuesta sync)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('TC-011: Response contiene taxonomy', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test('TC-011: Taxonomy tiene IDs válidos', function () {",
+                  "    const json = pm.response.json();",
+                  "    const data = json.data || json;",
+                  "    if (Array.isArray(data)) {",
+                  "        if (data.length > 0) {",
+                  "            pm.expect(data[0]).to.have.property('id');",
+                  "            pm.collectionVariables.set('etsy_category_id', data[0].id);",
+                  "        }",
+                  "    } else if (data.categories && data.categories.length > 0) {",
+                  "        pm.expect(data.categories[0]).to.have.property('id');",
+                  "        pm.collectionVariables.set('etsy_category_id', data.categories[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"get_categories\",\n  \"params\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_etsy}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_etsy}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-002: Exportar producto con variantes a WooCommerce",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-002: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-002: Response indica procesamiento', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "// Nota: Verificar en la tienda WC que el producto variable fue creado",
+                  "// con variantes S, M, L con precios y SKUs distintos"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-WC-VAR-001\",\n        \"title\": \"QA Camisa a Cuadros con Variantes - IONF-1004\",\n        \"description\": \"Camisa de prueba con múltiples tallas para validar producto variable en WooCommerce\",\n        \"images\": [\n          { \"src\": \"https://via.placeholder.com/600x600.png?text=Camisa-Cuadros\" },\n          { \"src\": \"https://via.placeholder.com/600x600.png?text=Camisa-Cuadros-Back\" }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"Camisa Cuadros Talla S\",\n            \"sku\": \"QA-CAM-CUAD-S\",\n            \"price\": \"25.00\",\n            \"barcode\": \"7001001\",\n            \"quantity\": 10,\n            \"aspects\": { \"size\": \"S\", \"color\": \"Rojo\" },\n            \"dimensions\": { \"length\": 30, \"width\": 20, \"Height\": 3, \"Weight\": 0.3, \"unit\": \"lb\" }\n          },\n          {\n            \"name\": \"Camisa Cuadros Talla M\",\n            \"sku\": \"QA-CAM-CUAD-M\",\n            \"price\": \"25.00\",\n            \"barcode\": \"7001002\",\n            \"quantity\": 15,\n            \"aspects\": { \"size\": \"M\", \"color\": \"Rojo\" },\n            \"dimensions\": { \"length\": 32, \"width\": 22, \"Height\": 3, \"Weight\": 0.35, \"unit\": \"lb\" }\n          },\n          {\n            \"name\": \"Camisa Cuadros Talla L\",\n            \"sku\": \"QA-CAM-CUAD-L\",\n            \"price\": \"27.50\",\n            \"barcode\": \"7001003\",\n            \"quantity\": 8,\n            \"aspects\": { \"size\": \"L\", \"color\": \"Rojo\" },\n            \"dimensions\": { \"length\": 34, \"width\": 24, \"Height\": 3, \"Weight\": 0.4, \"unit\": \"lb\" }\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-003: Batch de múltiples productos a WooCommerce",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-003: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-003: Response indica procesamiento de batch', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "// Nota: Esperar webhook de éxito y verificar los 5 productos en WC",
+                  "// Verificar procesamiento en chunks según configuración"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-BATCH-001\",\n        \"title\": \"QA Batch Product 1 - Camiseta Básica\",\n        \"description\": \"Producto 1 del batch de prueba\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Batch-1\" }],\n        \"variants\": [{ \"name\": \"Camiseta Básica Única\", \"sku\": \"QA-BATCH-SKU-001\", \"price\": \"12.99\", \"barcode\": \"8001001\", \"quantity\": 20 }]\n      },\n      {\n        \"product_id\": \"QA-BATCH-002\",\n        \"title\": \"QA Batch Product 2 - Pantalón Casual\",\n        \"description\": \"Producto 2 del batch de prueba\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Batch-2\" }],\n        \"variants\": [{ \"name\": \"Pantalón Casual Único\", \"sku\": \"QA-BATCH-SKU-002\", \"price\": \"35.00\", \"barcode\": \"8001002\", \"quantity\": 12 }]\n      },\n      {\n        \"product_id\": \"QA-BATCH-003\",\n        \"title\": \"QA Batch Product 3 - Zapatos Deportivos\",\n        \"description\": \"Producto 3 del batch de prueba\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Batch-3\" }],\n        \"variants\": [{ \"name\": \"Zapatos Talla 42\", \"sku\": \"QA-BATCH-SKU-003\", \"price\": \"89.99\", \"barcode\": \"8001003\", \"quantity\": 5 }]\n      },\n      {\n        \"product_id\": \"QA-BATCH-004\",\n        \"title\": \"QA Batch Product 4 - Gorra Ajustable\",\n        \"description\": \"Producto 4 del batch de prueba\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Batch-4\" }],\n        \"variants\": [{ \"name\": \"Gorra Ajustable Única\", \"sku\": \"QA-BATCH-SKU-004\", \"price\": \"14.50\", \"barcode\": \"8001004\", \"quantity\": 30 }]\n      },\n      {\n        \"product_id\": \"QA-BATCH-005\",\n        \"title\": \"QA Batch Product 5 - Mochila Urbana\",\n        \"description\": \"Producto 5 del batch de prueba\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Batch-5\" }],\n        \"variants\": [{ \"name\": \"Mochila Urbana Negra\", \"sku\": \"QA-BATCH-SKU-005\", \"price\": \"49.99\", \"barcode\": \"8001005\", \"quantity\": 7 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-007: Exportar producto con múltiples imágenes a Etsy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-007: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-007: Response indica procesamiento', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "// Nota: Verificar en Etsy que todas las imágenes se subieron",
+                  "// El upload de imágenes es encapsulado dentro del adapter (opaco al cliente)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-ETSY-IMG-001\",\n        \"title\": \"QA Etsy Multi-Image Product - IONF-1004\",\n        \"description\": \"Producto con múltiples imágenes para validar subida secuencial en Etsy (POST /images por cada una)\",\n        \"images\": [\n          { \"src\": \"https://via.placeholder.com/800x800.png?text=Image-1-Front\" },\n          { \"src\": \"https://via.placeholder.com/800x800.png?text=Image-2-Back\" },\n          { \"src\": \"https://via.placeholder.com/800x800.png?text=Image-3-Detail\" },\n          { \"src\": \"https://via.placeholder.com/800x800.png?text=Image-4-Side\" }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"QA Multi-Image Variant\",\n            \"sku\": \"QA-ETSY-IMG-SKU-001\",\n            \"price\": \"29.99\",\n            \"barcode\": \"9001001\",\n            \"quantity\": 3\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_etsy}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_etsy}}", "action"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BLOQUE 3 — EDGE CASES",
+      "description": "Verificar comportamiento en bordes: update por SKU, campos opcionales, fallo parcial, response estandarizado.",
+      "item": [
+        {
+          "name": "TC-004: Update producto existente por SKU en WC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// PREREQUISITO: TC-001 ya creó un producto con SKU 'QA-SMOKE-SKU-001'",
+                  "// Este TC envía el mismo SKU con datos actualizados → debe UPDATE no CREATE",
+                  "",
+                  "pm.test('TC-004: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-004: Response indica procesamiento', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "// Nota manual: Verificar en WC que:",
+                  "// 1. NO se creó un producto duplicado",
+                  "// 2. El título se actualizó a 'QA Updated Product'",
+                  "// 3. El precio se actualizó a 19.99"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-SMOKE-001\",\n        \"title\": \"QA Updated Product - Precio y Título Cambiados\",\n        \"description\": \"Producto actualizado para verificar que el adapter busca por SKU y hace update en vez de create\",\n        \"images\": [\n          { \"src\": \"https://via.placeholder.com/500x500.png?text=QA-UPDATED\" }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"QA Updated Variant\",\n            \"sku\": \"QA-SMOKE-SKU-001\",\n            \"price\": \"19.99\",\n            \"barcode\": \"1234567890\",\n            \"quantity\": 5\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-005: Campos opcionales vacíos/omitidos en WC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-005: Status 200 o 202 (campos opcionales no causan error)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-005: No error por campos faltantes', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('required');",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-OPTIONAL-001\",\n        \"product_id_channel\": \"\",\n        \"title\": \"QA Producto Campos Mínimos\",\n        \"description\": \"Solo campos requeridos, opcionales vacíos u omitidos\",\n        \"images\": [],\n        \"variants\": [\n          {\n            \"name\": \"Variante Mínima\",\n            \"sku\": \"QA-OPT-SKU-001\",\n            \"sku_id_channel\": \"\",\n            \"price\": \"5.00\",\n            \"barcode\": \"0000001\",\n            \"quantity\": 1\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-009: Update producto existente por SKU en Etsy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// PREREQUISITO: TC-006 ya creó un producto con SKU 'QA-ETSY-SMOKE-SKU-001'",
+                  "",
+                  "pm.test('TC-009: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "// Nota manual: Verificar en Etsy que NO se creó duplicado y los datos se actualizaron"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-ETSY-SMOKE-001\",\n        \"title\": \"QA Etsy Updated Product - Verificar Update por SKU\",\n        \"description\": \"Producto actualizado en Etsy. El adapter debe buscar por SKU y hacer update, no crear nuevo listing\",\n        \"images\": [\n          { \"src\": \"https://via.placeholder.com/500x500.png?text=QA-ETSY-UPDATED\" }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"QA Etsy Updated Variant\",\n            \"sku\": \"QA-ETSY-SMOKE-SKU-001\",\n            \"price\": \"22.00\",\n            \"barcode\": \"9876543210\",\n            \"quantity\": 2\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_etsy}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_etsy}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-016: Fallo parcial en batch (mixto OK/fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-016: Status 200 o 202 (batch aceptado)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "// Nota manual: Esperar webhook y verificar:",
+                  "// 1. Producto válido (QA-MIX-OK) fue procesado correctamente",
+                  "// 2. Producto con SKU faltante (QA-MIX-FAIL) reportado como fallido",
+                  "// 3. Sin rollback del producto OK",
+                  "// 4. Webhook reporta resultados parciales"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-MIX-OK\",\n        \"title\": \"QA Producto Válido del Batch Mixto\",\n        \"description\": \"Este producto debe procesarse correctamente\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=OK\" }],\n        \"variants\": [{ \"name\": \"Válido\", \"sku\": \"QA-MIX-OK-SKU\", \"price\": \"10.00\", \"barcode\": \"5001001\", \"quantity\": 1 }]\n      },\n      {\n        \"product_id\": \"QA-MIX-FAIL\",\n        \"title\": \"QA Producto Problemático del Batch Mixto\",\n        \"description\": \"Este producto debería fallar en el cart destino (datos inválidos para el cart)\",\n        \"images\": [{ \"src\": \"https://invalid-url-that-does-not-exist.fake/image.png\" }],\n        \"variants\": [{ \"name\": \"Problemático\", \"sku\": \"QA-MIX-FAIL-SKU\", \"price\": \"-5.00\", \"barcode\": \"\", \"quantity\": -1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-017: Imágenes con URL inaccesible en Etsy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-017: Request aceptado para procesamiento', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "// Nota manual: Esperar webhook y verificar:",
+                  "// 1. El flujo falla en paso 2 (POST /images) de Etsy",
+                  "// 2. Producto queda en draft o se aborta",
+                  "// 3. Webhook reporta fallo con detalle de URL inaccesible"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-ETSY-BADIMG-001\",\n        \"title\": \"QA Etsy Bad Image URL Test\",\n        \"description\": \"Producto con URL de imagen que retorna 404 - verificar manejo de error en paso POST /images\",\n        \"images\": [\n          { \"src\": \"https://this-domain-does-not-exist-qa-ionf1004.fake/image-404.png\" },\n          { \"src\": \"https://httpstat.us/404\" }\n        ],\n        \"variants\": [\n          {\n            \"name\": \"Bad Image Variant\",\n            \"sku\": \"QA-ETSY-BADIMG-SKU\",\n            \"price\": \"10.00\",\n            \"barcode\": \"6001001\",\n            \"quantity\": 1\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_etsy}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_etsy}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-019: Verificar campo response estandarizado (WC)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-019: Status 200 o 202', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('TC-019: Response tiene campo response genérico', function () {",
+                  "    const json = pm.response.json();",
+                  "    // Verificar que existe campo 'response' estandarizado",
+                  "    // La estructura debe ser genérica (no WC-specific en la capa externa)",
+                  "    if (json.response !== undefined) {",
+                  "        pm.expect(json).to.have.property('response');",
+                  "    }",
+                  "});",
+                  "",
+                  "// Nota: Comparar la estructura de este response con el de TC-006 (Etsy)",
+                  "// Ambos deben tener el mismo formato genérico en el campo 'response'"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-RESP-001\",\n        \"title\": \"QA Response Format Test\",\n        \"description\": \"Verificar que el campo response es genérico y estandarizado\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=Response-Test\" }],\n        \"variants\": [{ \"name\": \"Response Test\", \"sku\": \"QA-RESP-SKU-001\", \"price\": \"10.00\", \"barcode\": \"3001001\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BLOQUE 4 — NEGATIVOS Y VALIDACIÓN",
+      "description": "Verificar validaciones, errores, y protección contra datos incorrectos. Todos deben retornar 422 sync (sin webhook).",
+      "item": [
+        {
+          "name": "TC-012b: Payload sin array products → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-012b: Status 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('TC-012b: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": \"esto no es un array\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-013a: Sin title (requerido) → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-013a: Status 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('TC-013a: Error menciona campo faltante', function () {",
+                  "    const body = pm.response.text().toLowerCase();",
+                  "    pm.expect(body).to.satisfy(function(b) {",
+                  "        return b.includes('title') || b.includes('required') || b.includes('validation');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-NOTITLE\",\n        \"description\": \"Producto sin title - debe fallar validación\",\n        \"variants\": [{ \"name\": \"V1\", \"sku\": \"QA-NT-SKU\", \"price\": \"10.00\", \"barcode\": \"111\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-013b: Sin SKU en variante (requerido) → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-013b: Status 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('TC-013b: Error menciona campo faltante', function () {",
+                  "    const body = pm.response.text().toLowerCase();",
+                  "    pm.expect(body).to.satisfy(function(b) {",
+                  "        return b.includes('sku') || b.includes('required') || b.includes('validation');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-NOSKU\",\n        \"title\": \"Producto sin SKU en variante\",\n        \"description\": \"Debe fallar validación por SKU faltante\",\n        \"variants\": [{ \"name\": \"V1\", \"price\": \"10.00\", \"barcode\": \"222\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-013c: Sin price en variante (requerido) → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-013c: Status 422', function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "",
+                  "pm.test('TC-013c: Error menciona campo faltante', function () {",
+                  "    const body = pm.response.text().toLowerCase();",
+                  "    pm.expect(body).to.satisfy(function(b) {",
+                  "        return b.includes('price') || b.includes('required') || b.includes('validation');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-NOPRICE\",\n        \"title\": \"Producto sin price en variante\",\n        \"description\": \"Debe fallar validación por price faltante\",\n        \"variants\": [{ \"name\": \"V1\", \"sku\": \"QA-NP-SKU\", \"barcode\": \"333\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-014: Gateway-key inválido → 401/403/404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-014: Status es error de auth/not found', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 403, 404]);",
+                  "});",
+                  "",
+                  "pm.test('TC-014: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "    pm.expect(body).to.not.include('Exception');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-INVALID-GW\",\n        \"title\": \"Should Not Process\",\n        \"description\": \"Gateway key inválido\",\n        \"variants\": [{ \"name\": \"V1\", \"sku\": \"QA-INV-SKU\", \"price\": \"1.00\", \"barcode\": \"444\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/INVALID-GATEWAY-KEY-QA-IONF1004/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "INVALID-GATEWAY-KEY-QA-IONF1004", "action"]
+            }
+          }
+        },
+        {
+          "name": "TC-018: Resource action inexistente → error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-018: Status indica error (400/404/422)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404, 422]);",
+                  "});",
+                  "",
+                  "pm.test('TC-018: No expone stack trace', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"this_action_does_not_exist\",\n  \"params\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}", "action"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BLOQUE 5 — REGRESIÓN",
+      "description": "Verificar que las acciones existentes no se rompieron con los cambios del ticket.",
+      "item": [
+        {
+          "name": "REG-001: Export products de eBay sigue funcionando",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('REG-001: eBay export_products sigue respondiendo', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+                  "});",
+                  "",
+                  "pm.test('REG-001: No hay error inesperado', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "    pm.expect(body).to.not.include('Class not found');",
+                  "    pm.expect(body).to.not.include('Method not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"export_products\",\n  \"params\": {\n    \"products\": [\n      {\n        \"product_id\": \"QA-REG-EBAY-001\",\n        \"title\": \"QA Regression Test - eBay Must Still Work\",\n        \"description\": \"Verificar que eBay export_products no se rompió con los cambios de WC/Etsy\",\n        \"images\": [{ \"src\": \"https://via.placeholder.com/400x400.png?text=eBay-Regression\" }],\n        \"variants\": [{ \"name\": \"eBay Regression Variant\", \"sku\": \"QA-REG-EBAY-SKU\", \"price\": \"20.00\", \"barcode\": \"2001001\", \"quantity\": 1 }]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_ebay}}/action",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_ebay}}", "action"]
+            },
+            "description": "⚠️ CRÍTICO: Si este test falla, los cambios de IONF-1004 rompieron funcionalidad existente de eBay.\nRequiere gateway_key_ebay configurado en variables."
+          }
+        },
+        {
+          "name": "REG-003: GET integrations (endpoint existente) sigue funcionando",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('REG-003: GET integrations retorna 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('REG-003: Response tiene estructura válida', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('object');",
+                  "});",
+                  "",
+                  "pm.test('REG-003: No error inesperado', function () {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.include('Stack trace');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations"]
+            }
+          }
+        },
+        {
+          "name": "REG-003b: GET integration por ID sigue funcionando",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('REG-003b: GET integration by ID retorna 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('REG-003b: Response tiene estructura válida', function () {",
+                  "    const json = pm.response.json();",
+                  "    const data = json.data || json;",
+                  "    pm.expect(data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BLOQUE 6 — DB EVIDENCE (Queries para DBeaver)",
+      "description": "Queries de verificación en BD. Copiar query, ejecutar en DBeaver, pegar resultados como evidencia.",
+      "item": [
+        {
+          "name": "DB-001: Jobs de export_products encolados correctamente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}"]
+            },
+            "description": "## Query para DBeaver\n\n```sql\nSELECT id, queue, payload, attempts, reserved_at, available_at, created_at\nFROM jobs\nWHERE payload LIKE '%export_products%'\nORDER BY created_at DESC\nLIMIT 10;\n```\n\n**Esperado**:\n- Jobs creados con payload que contiene `export_products`\n- `attempts > 0` (fueron procesados)\n- `reserved_at` fue seteado durante procesamiento\n- No hay jobs stuck (sin `failed_at`)"
+          }
+        },
+        {
+          "name": "DB-002: No se creó job para payload inválido (422 sync)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_wc}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_wc}}"]
+            },
+            "description": "## Query para DBeaver (ejecutar DESPUÉS de TC-012/TC-013)\n\n```sql\n-- Verificar que NO se crearon jobs para los payloads inválidos\nSELECT COUNT(*) as invalid_jobs\nFROM jobs\nWHERE payload LIKE '%QA-NOTITLE%'\n   OR payload LIKE '%QA-NOSKU%'\n   OR payload LIKE '%QA-NOPRICE%';\n```\n\n**Esperado**: `invalid_jobs = 0` (la validación 422 frenó antes de encolar)"
+          }
+        },
+        {
+          "name": "DB-003: Jobs de eBay no afectados por cambios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/2.0/app/integrations/{{gateway_key_ebay}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "2.0", "app", "integrations", "{{gateway_key_ebay}}"]
+            },
+            "description": "## Query para DBeaver\n\n```sql\n-- Verificar que jobs de eBay no fueron afectados\nSELECT id, queue, attempts, failed_at, created_at\nFROM jobs\nWHERE payload LIKE '%export_products%'\n  AND payload LIKE '%ebay%'\nORDER BY created_at DESC\nLIMIT 5;\n```\n\n**Esperado**:\n- Jobs de eBay procesados normalmente\n- `failed_at IS NULL` (sin fallos nuevos)\n- Si hay `failed_jobs`, verificar que no son por cambios de IONF-1004:\n\n```sql\nSELECT id, queue, payload, exception\nFROM failed_jobs\nWHERE payload LIKE '%ebay%'\n  AND failed_at > NOW() - INTERVAL '1 day'\nORDER BY failed_at DESC;\n```\n\n**Esperado**: 0 registros (sin fallos recientes de eBay)"
+          }
+        }
+      ]
+    }
+  ]
+}

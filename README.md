@@ -1,93 +1,119 @@
 # ionflow-qa-catalyst
 
+> Sistema de orquestación de QA potenciado por IA para el proyecto Ionflow.
 
+## ¿Qué es esto?
 
-## Getting started
+**ionflow-qa-catalyst** es una capa de inteligencia que automatiza el proceso de QA del proyecto Ionflow. No es una app de software tradicional — es un repositorio de **conocimiento estructurado + instrucciones para agentes de IA** que funciona como un manual de operaciones de QA vivo.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Lo que hace:
+1. Mantiene una **base de conocimiento en 3 niveles** sobre el proyecto
+2. Expone un **motor de skills** que los agentes de IA ejecutan para automatizar tareas de QA
+3. Se integra con **ClickUp** (vía MCP) para obtener contexto de tickets
+4. Orquesta la skill **`ionflow-playwright-creator`** del repo `../bot-test` para E2E
+5. Aplica en ambos tracks del **Dual-Track Agile**: Discovery y Deployment
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+## Quick Start
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### 1. Activar el Catalyst
+El punto de entrada principal es **`SKILL.md`**. Todo agente de IA debe leer este archivo primero.
+
+### 2. Entender los niveles de conocimiento
+```
+L1-project  → ¿Cómo funciona el proyecto?     (leer siempre)
+L2-modules  → ¿Cómo funciona este módulo?      (leer según el módulo afectado)
+L3-tickets  → ¿Qué estoy testeando ahora?      (leer/crear por ticket activo)
+```
+
+### 3. Usar un skill
+Los skills están en `skills/`. Cada uno es una instrucción que el agente de IA sigue para ejecutar una tarea de QA.
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/steve.nina/ionflow-qa-catalyst.git
-git branch -M main
-git push -uf origin main
+skills/
+├── sprint-testing/   → plan, test, report
+├── test-docs/        → prioritize, document
+├── automation/       → plan, code, review
+└── regression/       → run, analyze, decide
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab.com/steve.nina/ionflow-qa-catalyst/-/settings/integrations)
+## Regla Central
 
-## Collaborate with your team
+```
+"LA IA LEE EL NIVEL CORRECTO ANTES DE REALIZAR CADA TAREA"
+```
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+- Skill de proyecto → Lee L1
+- Skill de módulo → Lee L1 + L2 del módulo
+- Skill de ticket → Lee L1 + L2 del módulo + L3 del ticket
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
+## Modelo de Orquestación
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+```
+IA principal delega → Sub-agentes ejecutan → QA Engineer decide
+```
 
-***
+Cada skill pasa por 3 stages:
+1. **Planning** — El agente reporta su plan antes de actuar (no hay trabajo silencioso)
+2. **Execution** — El QA Engineer puede detener, redirigir o modificar en cualquier momento
+3. **Reporting** — Transcript completo guardado en L3-tickets, auditable paso a paso
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Estructura del Repositorio
 
-## Suggestions for a good README
+```
+ionflow-qa-catalyst/
+├── SKILL.md                  # Punto de entrada para agentes de IA
+├── README.md                 # Este archivo
+├── idea.md                   # Concepto original
+├── plan.md                   # Plan de implementación detallado
+│
+├── knowledge/                # Base de conocimiento (3 niveles)
+│   ├── L1-project/           # Nivel 1: Proyecto
+│   ├── L2-modules/           # Nivel 2: Módulos
+│   └── L3-tickets/           # Nivel 3: Tickets activos
+│
+├── skills/                   # Motor de skills de IA
+│   ├── sprint-testing/
+│   ├── test-docs/
+│   ├── automation/
+│   └── regression/
+│
+└── templates/                # Templates reutilizables
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## Repositorios del Ecosistema
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+```
+Automation/
+├── ionflow-qa-catalyst/   ← este repo
+├── flow_binaries/          ← Go: core de nodos y motor
+├── gateway-ion/            ← Vue 3: frontend
+├── webcomponents-flow/     ← Vue 3: canvas de nodos
+├── gateway/                ← PHP 8.2: auth y legacy
+└── bot-test/               ← Playwright: E2E automation
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+---
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Setup
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+1. Clonar este repo en `Automation/` junto con los demás repos de Ionflow
+2. Copiar `.env.sample` a `.env` y rellenar las credenciales de BD (solo si usas verificación DB)
+3. Leer `SKILL.md` para activar el Catalyst
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+---
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## Documentación
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- [Plan de implementación](plan.md) — Diseño completo del sistema
+- [Idea original](idea.md) — Concepto y visión del proyecto
+- [Knowledge README](knowledge/README.md) — Reglas de los niveles de conocimiento
