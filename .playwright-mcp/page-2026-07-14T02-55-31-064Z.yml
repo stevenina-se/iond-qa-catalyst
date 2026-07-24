@@ -1,0 +1,149 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - link "IonFlow logo" [ref=e6] [cursor=pointer]:
+        - /url: /dashboard
+        - img "IonFlow logo" [ref=e7]
+      - button "" [ref=e8]:
+        - generic [ref=e9]: 
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - heading "Dashboard" [level=3] [ref=e13]
+        - link "Dashboard" [ref=e15] [cursor=pointer]:
+          - /url: /dashboard
+          - menuitem "Dashboard" [ref=e16]:
+            - generic [ref=e18]: 
+            - generic [ref=e19]: Dashboard
+      - generic [ref=e21]:
+        - heading "Boards" [level=3] [ref=e22]
+        - generic [ref=e23]:
+          - link "Boards" [ref=e24] [cursor=pointer]:
+            - /url: /workflows
+            - menuitem "Boards" [ref=e25]:
+              - generic [ref=e27]: 
+              - generic [ref=e28]: Boards
+          - link "Execution History" [ref=e29] [cursor=pointer]:
+            - /url: /executions
+            - menuitem "Execution History" [ref=e30]:
+              - generic [ref=e32]: 
+              - generic [ref=e33]: Execution History
+          - link "Webhooks" [ref=e34] [cursor=pointer]:
+            - /url: /webhooks
+            - menuitem "Webhooks" [ref=e35]:
+              - generic [ref=e37]: 
+              - generic [ref=e38]: Webhooks
+          - link "Connections" [ref=e39] [cursor=pointer]:
+            - /url: /integrations
+            - menuitem "Connections" [ref=e40]:
+              - generic [ref=e42]: 
+              - generic [ref=e43]: Connections
+          - link "Persistent Data" [ref=e44] [cursor=pointer]:
+            - /url: /data-store
+            - menuitem "Persistent Data" [ref=e45]:
+              - generic [ref=e47]: 
+              - generic [ref=e48]: Persistent Data
+          - link "PDF Templates" [ref=e49] [cursor=pointer]:
+            - /url: /pdf-templates
+            - menuitem "PDF Templates" [ref=e50]:
+              - img "PDF Templates" [ref=e52]
+              - generic [ref=e53]: PDF Templates
+          - link "Credentials" [ref=e54] [cursor=pointer]:
+            - /url: /keys
+            - menuitem "Credentials" [ref=e55]:
+              - generic [ref=e57]: 
+              - generic [ref=e58]: Credentials
+      - generic [ref=e60]:
+        - heading "Apps" [level=3] [ref=e61]
+        - link "App Connectors" [ref=e63] [cursor=pointer]:
+          - /url: /connections
+          - menuitem "App Connectors" [ref=e64]:
+            - generic [ref=e66]: 
+            - generic [ref=e67]: App Connectors
+      - generic [ref=e69]:
+        - heading "Marketplace" [level=3] [ref=e70]
+        - generic [ref=e71]:
+          - link "Accounts" [ref=e72] [cursor=pointer]:
+            - /url: /accounts
+            - menuitem "Accounts" [ref=e73]:
+              - generic [ref=e75]: 
+              - generic [ref=e76]: Accounts
+          - link "Developer Apps" [ref=e77] [cursor=pointer]:
+            - /url: /developer-apps
+            - menuitem "Developer Apps" [ref=e78]:
+              - generic [ref=e80]: 
+              - generic [ref=e81]: Developer Apps
+          - link "Catalog" [ref=e82] [cursor=pointer]:
+            - /url: /services
+            - menuitem "Catalog" [ref=e83]:
+              - generic [ref=e85]: 
+              - generic [ref=e86]: Catalog
+    - generic "978e53d1803c511892d7fe052bcd382dd104c47f" [ref=e90]: DEVELOPMENT
+  - generic [ref=e91]:
+    - banner [ref=e92]:
+      - generic [ref=e93]:
+        - text: 
+        - button " Global Search Ctrl+ K" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: 
+          - text: Global Search
+          - generic [ref=e97]: Ctrl+ K
+        - generic [ref=e98]:
+          - button "" [ref=e99] [cursor=pointer]:
+            - generic [ref=e100]: 
+          - button "" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]: 
+          - button "" [ref=e104] [cursor=pointer]:
+            - generic [ref=e105]: 
+          - button "products-logo" [ref=e106] [cursor=pointer]:
+            - img "products-logo" [ref=e107]
+          - generic [ref=e109] [cursor=pointer]:
+            - img [ref=e112]
+            - generic [ref=e113]:
+              - generic [ref=e114]: Steve Nina
+              - generic [ref=e115]: skuanquis@gmail.com
+            - generic [ref=e116]: 
+    - main [ref=e117]:
+      - generic [ref=e119]:
+        - text:             
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - button "Drag or click to create a Section" [ref=e125]:
+              - img [ref=e126]
+            - generic [ref=e128]:
+              - generic [ref=e130]:
+                - generic:
+                  - img
+              - generic [ref=e131]:
+                - button "Zoom In" [ref=e132] [cursor=pointer]:
+                  - img [ref=e133]
+                - button "Zoom Out" [ref=e134] [cursor=pointer]:
+                  - img [ref=e135]
+                - button "Fit View" [ref=e136] [cursor=pointer]:
+                  - img [ref=e137]
+              - img "Vue Flow mini map" [ref=e144]
+              - img [ref=e146]
+          - complementary [ref=e149]:
+            - generic [ref=e150]:
+              - button "⋮" [ref=e152]
+              - generic [ref=e153]: Node not found
+        - generic:
+          - generic:
+            - generic:
+              - generic [ref=e154]:
+                - generic [ref=e156] [cursor=pointer]:
+                  - generic [ref=e157]: 
+                  - generic [ref=e158]: Save
+                - button "Preview" [ref=e159] [cursor=pointer]:
+                  - generic [ref=e160]: 
+                  - generic [ref=e161]: Preview
+                - button "" [ref=e162] [cursor=pointer]:
+                  - generic [ref=e163]: 
+                - textbox "Board Name" [disabled] [ref=e164]: Board_1783997730546
+                - button "" [ref=e168] [cursor=pointer]:
+                  - generic [ref=e169]: 
+              - button "" [ref=e170] [cursor=pointer]:
+                - generic [ref=e171]: 
+        - link "Back to List" [ref=e173] [cursor=pointer]:
+          - /url: /workflows
+          - button "Back to List" [ref=e174]:
+            - generic [ref=e175]: 
+            - generic [ref=e176]: Back to List

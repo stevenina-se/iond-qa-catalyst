@@ -9,7 +9,7 @@
 | Nombre interno | workflows / boards |
 | Criticidad | 🔴 Crítico |
 | Repos involucrados | `gateway-ion` (UI), `gateway` (API), `webcomponents-flow` (canvas) |
-| Última actualización | Initial setup — Fase 5 |
+| Última actualización | 2026-07-09 — v0.1.0 batch update |
 
 ---
 
@@ -23,6 +23,7 @@
 
 ### Componentes clave
 - `views/tenant/workflows/components/` — Componentes del módulo
+  - `FlowDescription` — Componente inline de descripción con modo edición + botón IA ✨ (IONF-999)
 - `views/tenant/workflows/services/` — Servicios API del módulo
   - `flow.service.ts` — CRUD de flows
   - `flow.key.service.ts` — Gestión de claves de flows
@@ -57,6 +58,14 @@
 | POST | `/1.0/tenants/{tenant}/flows/push` | `update-board` | Avanzar al siguiente nodo (PushNode) |
 | POST | `/1.0/tenants/{tenant}/flows/continue` | `update-board` | Continuar la ejecución (ContinueNode) |
 | POST | `/1.0/tenants/{tenant}/flows/run-mapper` | `update-board` | Ejecutar sub-flow mapper |
+
+### IA / Descripciones automáticas (IONF-999)
+
+| Método | Endpoint | Permiso | Descripción |
+|--------|----------|---------|-------------|
+| GET | `/1.0/tenants/{tenant}/flows/{flow}/ai-description` | `update-board` | Genera descripción automática vía LLM analizando nodos y conexiones del board |
+
+> **Persistencia**: El campo `description` se almacena en `company_flows` (PostgreSQL) y se actualiza mediante `FlowService.update()`. Solo usuarios con permiso `UpdateBoard` pueden editar o generar descripciones.
 
 ### Migración a Global (gateway — `routes/api.php`)
 
@@ -115,6 +124,8 @@
 4. Para ser migrado a global (GRAPP), el flow NO debe contener nodos de connectors de tipo company
 5. Cada flow pertenece a una **company** (multi-tenant)
 6. El historial de ejecuciones registra el consumo en unidades de procesamiento
+7. Las descripciones de boards pueden generarse automáticamente vía IA (botón ✨) o editarse manualmente
+8. El nodo Code soporta integración con FlowPilot — el agente genera/corrige código respetando las convenciones del Code Runner (sin `main()`, usando `input` para variables, `return` para resultados)
 
 ---
 
@@ -128,6 +139,7 @@
 | **Data Store** | Los flows pueden acceder a datos persistentes |
 | **PDF Templates** | Los flows pueden generar PDFs |
 | **Canvas** (webcomponents-flow) | La edición visual del flow |
+| **AI Services** (FlowPilot) | FlowPilot genera/corrige código en nodo Code (IONF-950) |
 
 ---
 
@@ -215,9 +227,19 @@
 
 ---
 
+## Edge Cases Conocidos (v0.1.0)
+
+1. **IONF-1087** — Al crear un template PDF desde el nodo IonPDF **sin nodo conectado** (sin edge de entrada), el botón Save queda en spinner permanente. El template se crea correctamente pero `FlowEditor.vue` no llama a `resetSaving()` en el bloque `finally`.
+2. **IONF-1108** — Migración de flow a global retorna error 500 `"failed to create global flow: invalid field"`.
+
+---
+
 ## Historial de Actualizaciones
 
 | Fecha | Tickets | Cambios | Actualizado por |
 |-------|---------|---------|----------------|
 | Initial | — | Creación inicial desde exploración de repos | QA Catalyst |
 | 2026-06-06 | — | Enriquecido con docs de flow_binaries: servicios, core API, impacto cruzado | QA Catalyst |
+| 2026-07-09 | IONF-999 | Endpoint AI description, componente FlowDescription, regla de descripción automática | QA Catalyst (batch v0.1.0) |
+| 2026-07-09 | IONF-950 | Integración FlowPilot ↔ Code node, botón Ask FlowPilot, regla de código en Code Runner | QA Catalyst (batch v0.1.0) |
+| 2026-07-09 | IONF-1087 | Edge case documentado: nodo IonPDF sin edge → Save spinner permanente | QA Catalyst (batch v0.1.0) |

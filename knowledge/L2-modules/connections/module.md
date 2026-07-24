@@ -9,7 +9,7 @@
 | Nombre interno | connections / app connectors |
 | Criticidad | 🟠 Alto |
 | Repos involucrados | `gateway-ion` (UI), `gateway` (API) |
-| Última actualización | Initial setup — Fase 5 |
+| Última actualización | 2026-07-09 — v0.1.0 batch update |
 
 ---
 
@@ -78,6 +78,28 @@ views/tenant/connections/
 | POST | `/1.0/tenants/{tenant}/app-connections` | `create-app-connection` | Crear conexión |
 | PUT | `/1.0/tenants/{tenant}/app-connections/{conn}` | `update-app-connection` | Actualizar |
 | DELETE | `/1.0/tenants/{tenant}/app-connections/{conn}` | `delete-app-connection` | Eliminar |
+
+### App-Scope API — M2M (IONF-996)
+
+> Endpoints para acceso programático desde apps externas vía Client Credentials (OAuth2 M2M).
+> Rutas bajo `/api/2.0/app/accounts/{account:remote_id}/connections` con middleware `auth.app`.
+
+| Método | Endpoint | Scope OAuth | Descripción |
+|--------|----------|-------------|-------------|
+| GET | `/2.0/app/accounts/{account:remote_id}/connections` | `app:connection-read` | Listar connections de la cuenta (filtradas por app) |
+| GET | `/2.0/app/accounts/{account:remote_id}/connections/{id}` | `app:connection-read` | Detalle de una connection |
+| POST | `/2.0/app/accounts/{account:remote_id}/connections` | `app:connection-create` | Crear connection con credenciales encriptadas |
+| PUT | `/2.0/app/accounts/{account:remote_id}/connections/{id}` | `app:connection-update` | Actualizar connection |
+| DELETE | `/2.0/app/accounts/{account:remote_id}/connections/{id}` | `app:connection-delete` | Eliminar connection |
+
+**Detalles técnicos (IONF-996):**
+- `app_id` se deriva del token M2M (no del body) — seguridad
+- `app_name` es campo requerido para crear connections
+- El listado filtra por `app_id` del token
+- Columna `connection` encriptada vía trait `Encryptable`, con espejo en columna `data`
+- `ConnectionM2MResource` serializa sin exponer el campo `connection` (secreto)
+- Campos protegidos: `id`, `account_id`, `created_at` no son mass-assignable
+- Account viene del binding de ruta (`remote_id`), no del payload
 
 ### Webhooks del Connector (gateway — `routes/tenants.php`)
 
@@ -205,3 +227,4 @@ views/tenant/connections/
 |-------|---------|---------|----------------|
 | Initial | — | Creación inicial desde exploración de repos | QA Catalyst |
 | 2026-06-06 | — | Backend Logic (channel package) + Impacto Cruzado | QA Catalyst |
+| 2026-07-09 | IONF-996 | App-Scope M2M API: 5 endpoints CRUD connections, 4 scopes OAuth, ConnectionM2MResource, seguridad de app_id desde token | QA Catalyst (batch v0.1.0) |

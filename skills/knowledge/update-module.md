@@ -118,3 +118,83 @@ Después de un Approved/GO:
 3. **Siempre registrar el historial** — Quién actualizó, cuándo, por qué tickets
 4. **Si el L2 no existe para un módulo** — Crearlo desde `_template.md`
 5. **El QA Engineer aprueba antes de modificar** — El L2 es la fuente de verdad del equipo
+
+---
+
+## Modo Batch-Update Post-Release
+
+**Frase disparadora:**
+```
+Actualizar módulos post-release: v[X.Y.Z]
+```
+
+> Este modo se ejecuta **después del deploy** de una versión. Procesa todos los
+> tickets aprobados del release y actualiza los L2 de los módulos afectados en batch.
+
+### Pre-requisitos (batch)
+
+- ✅ `knowledge/releases/<version>/ticket-synthesis.md` (del ingest)
+- ✅ `knowledge/releases/<version>/module-impact-map.md` (del ingest)
+- ✅ Acceso de lectura a los repos del módulo afectado
+- ✅ La versión ya fue deployada a producción
+
+### Proceso batch
+
+1. **Leer artefactos del release**: `ticket-synthesis.md` + `module-impact-map.md`
+
+2. **Filtrar tickets aprobados**: Solo procesar tickets con patrón "APROBADO ✅" en comentarios
+
+3. **Mapear tickets a módulos L2** usando `custom_iond_subcategory`:
+   - Si tiene `custom_iond_subcategory` → mapeo directo al módulo L2
+   - Si no → usar `module-impact-map.md` para el mapeo inferido
+
+4. **Para cada módulo con cambios**, extraer del comentario de aprobación:
+
+   | Dato validado | Sección del L2 a actualizar |
+   |-------------|---------------------------|
+   | Nuevos endpoints verificados | "Endpoints" |
+   | Validaciones confirmadas | "Edge Cases Conocidos" |
+   | Nuevos comportamientos | "Reglas de Negocio" |
+   | Nuevos componentes UI | "Rutas Frontend" |
+   | Nuevos selectores | "Selectores E2E" |
+   | Cambios de BD | "Schema BD" |
+
+5. **Anunciar cambios por módulo** y esperar confirmación:
+
+```
+🔄 BATCH UPDATE — MÓDULO: [nombre]
+
+Tickets que afectan este módulo:
+  - IONF-XXX (bug-fix): [título]
+  - IONF-YYY (new-feature): [título]
+
+Cambios propuestos:
+  📌 Endpoints: +2 nuevos
+  📌 Reglas de Negocio: 1 actualizada
+  📌 Edge Cases: +1 nuevo
+
+¿Procedo con este módulo?
+```
+
+6. **Actualizar el L2 del módulo** y registrar en historial:
+
+```markdown
+| [fecha] | IONF-XXX, IONF-YYY | [Resumen de cambios] | QA Catalyst (batch v[X.Y.Z]) |
+```
+
+7. **Repetir** para cada módulo afectado
+
+### Reporte final (batch)
+
+```
+🔄 BATCH UPDATE v[X.Y.Z] — COMPLETADO
+
+Módulos actualizados: [N]
+  ✅ boards (3 tickets)
+  ✅ connections (2 tickets)
+  ✅ auth (1 ticket)
+
+Tickets sin módulo L2 identificado: [N] (listar si hay)
+Tickets sin aprobación: [N] (no procesados)
+```
+

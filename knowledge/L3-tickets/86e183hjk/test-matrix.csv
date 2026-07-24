@@ -1,0 +1,42 @@
+﻿TC-ID,Tipo,Grupo,Descripción,AC,Prioridad,Estado
+TC-001,Happy Path,Retrocompatibilidad,App sin configuración de transporte entrega por webhook como antes,AC-02,CRITICO,Pendiente
+TC-002,Happy Path,Retrocompatibilidad,App con Default=Webhook explícito entrega igual,AC-02,CRITICO,Pendiente
+TC-003,Regresión,Retrocompatibilidad,Webhooks legacy siguen funcionando y logs correctos,AC-08,MEDIO,Pendiente
+TC-004,Happy Path,Motor RabbitMQ,Override get_orders → RabbitMQ entrega a cola correcta,AC-03,CRITICO,Pendiente
+TC-005,Happy Path,Motor RabbitMQ,Con override get_orders → Rabbit otras acciones siguen por webhook,AC-03,ALTO,Pendiente
+TC-006,Happy Path,Motor RabbitMQ,Default transport = RabbitMQ todas las acciones van a rabbit,AC-04,ALTO,Pendiente
+TC-007,Edge Case,Motor RabbitMQ,resolveRoute aplica override correctamente (verificar case sensitivity),AC-03,MEDIO,Pendiente
+TC-008,Happy Path,Seguridad,connection_uri enmascarado en respuesta de API GET,AC-05,CRITICO,Pendiente
+TC-009,Happy Path,Seguridad,Editar app con URI configurado sin modificarlo y guardar no corrompe credencial,AC-06,ALTO,Pendiente
+TC-010,Negativo,Seguridad,Password nunca aparece en errores de conexión (tooltip),AC-05,CRITICO,Pendiente
+TC-011,Happy Path,Test Broker,Check connection con URI válido y broker activo muestra verde,AC-09,ALTO,Pendiente
+TC-012,Negativo,Test Broker,Check connection con URI inválido muestra rojo con detalle,AC-09,ALTO,Pendiente
+TC-013,Negativo,Test Broker,Check connection con broker caído muestra rojo,AC-09,ALTO,Pendiente
+TC-014,Edge Case,Test Broker,Botón Check deshabilitado con campo URI vacío,AC-10,MEDIO,Pendiente
+TC-015,Edge Case,Test Broker,Botón Check vuelve a neutro al modificar URI,AC-10,MEDIO,Pendiente
+TC-016,Edge Case,Test Broker,Check con URI enmascarado usa credencial real del servidor,AC-11,ALTO,Pendiente
+TC-017,Negativo,Test Broker,Throttle 429 al superar 10 checks/minuto,AC-12,ALTO,Pendiente
+TC-018,Happy Path,Test Broker,Throttle se restablece después de 1 minuto,AC-12,MEDIO,Pendiente
+TC-019,Happy Path,Static Params,Static params aparecen top-level en payload por webhook con tipado correcto,AC-13,ALTO,Pendiente
+TC-020,Happy Path,Static Params,Static params aparecen top-level en payload por RabbitMQ,AC-13,ALTO,Pendiente
+TC-021,Negativo,Static Params,Key duplicada bloquea el form al instante,AC-15,ALTO,Pendiente
+TC-022,Negativo,Static Params,Key reservada (data/type/account) bloquea el form al instante,AC-15,ALTO,Pendiente
+TC-023,Negativo,Static Params,Key inválida (ej. 123) bloquea el form al instante,AC-15,ALTO,Pendiente
+TC-024,Negativo,Static Params,Value vacío genera error 422 tras submit visible en form,AC-15,ALTO,Pendiente
+TC-025,Negativo,Static Params,Key reservada enviada por API directa rechazada con 422,AC-15,ALTO,Pendiente
+TC-026,Negativo,Static Params,Más de 20 static params por API directa rechazados con 422,AC-15,MEDIO,Pendiente
+TC-027,Happy Path,Compresión,Compresión ON + RabbitMQ: mensaje con content_encoding deflate descomprimible,AC-16,MEDIO,Pendiente
+TC-028,Happy Path,Compresión,Compresión ON + Webhook: header Content-Encoding deflate en POST,AC-16,MEDIO,Pendiente
+TC-029,Happy Path,Compresión,Compresión OFF: payload idéntico al comportamiento actual,AC-17,MEDIO,Pendiente
+TC-030,Regresión,Compresión,Apps existentes sin config compress_payload no comprimen (default OFF),AC-17,MEDIO,Pendiente
+TC-031,Negativo,Validaciones,Elegir RabbitMQ sin Connection URI bloquea el form,AC-07,ALTO,Pendiente
+TC-032,Negativo,Validaciones,Connection URI malformado rechazado con 422 claro (no TypeError),AC-07,ALTO,Pendiente
+TC-033,Negativo,Validaciones,Error 422 del backend visible en el slot correcto del form,AC-15,MEDIO,Pendiente
+TC-034,Happy Path,Logs,Log de RabbitDriver incluye metadatos sin credenciales ni payload,AC-08,MEDIO,Pendiente
+TC-035,Negativo,Logs,Log NO incluye payload completo de órdenes,AC-08,MEDIO,Pendiente
+TC-CR-001,Code Review,AC-18,Code Review,deliver() y webhook legacy no causan doble entrega,App con deliver() + configuration['webhooks'] legacy activos,"Company Login > Sidebar: Gateway > Developer Apps > [App legacy+deliver] > Disparar get_orders > Inspeccionar requests en Core",Core recibe el payload una sola vez,CRITICO,No,Pendiente
+TC-CR-002,Code Review,AC-20,Code Review,Canal AMQP se cierra tras fallo en queue_declare,App con URI válido pero sin permiso para declarar la cola,"Configurar app > Disparar get_orders > Inspeccionar UI RabbitMQ channels",Sin canales colgados. Job falla correctamente,Alto,No,Pendiente
+TC-CR-003,Code Review,R-002,Code Review,tries=1 + fallo de RabbitMQ aparece en failed_jobs,RabbitMQ detenido,"Detener RabbitMQ > Disparar get_orders > Inspeccionar failed_jobs en BD",Job en failed_jobs con error del broker. Sin pérdida silenciosa,Alto,No,Pendiente
+TC-CR-004,Code Review,AC-15,Code Review,Validación backend de static_params con key reservada por API directa,Acceso API directo,"PUT /api/2.0/user/apps/{appId} con key reservada 'data' en static_params",Backend responde 422 con mensaje claro,Alto,No,Pendiente
+TC-CR-005,Code Review,AC-19,Code Review,Todos los features de Iteración 2 presentes en el form UI,Ambiente con PR deployado,"Company Login > Sidebar: Gateway > Developer Apps > [App] > Button: Configure > Inspeccionar form",Form muestra botón Check + sección static params + checkbox compresión,Alto,No,Pendiente
+TC-CR-006,Code Review,AC-07,Code Review,connection_uri requerido por API directa (bypass frontend),Acceso API directo,"PUT /api/2.0/user/apps/{appId} con transport=rabbit sin connection_uri",Backend responde 422 — rabbit requiere URI también en backend,Alto,No,Pendiente

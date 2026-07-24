@@ -1,0 +1,317 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "IonFlow logo" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img "IonFlow logo" [ref=e7]
+        - button "" [ref=e8]:
+          - generic [ref=e9]: 
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Dashboard" [level=3] [ref=e13]
+          - link "Dashboard" [ref=e15] [cursor=pointer]:
+            - /url: /dashboard
+            - menuitem "Dashboard" [ref=e16]:
+              - generic [ref=e18]: 
+              - generic [ref=e19]: Dashboard
+        - generic [ref=e21]:
+          - heading "Boards" [level=3] [ref=e22]
+          - generic [ref=e23]:
+            - link "Boards" [ref=e24] [cursor=pointer]:
+              - /url: /workflows
+              - menuitem "Boards" [ref=e25]:
+                - generic [ref=e27]: 
+                - generic [ref=e28]: Boards
+            - link "Execution History" [ref=e29] [cursor=pointer]:
+              - /url: /executions
+              - menuitem "Execution History" [ref=e30]:
+                - generic [ref=e32]: 
+                - generic [ref=e33]: Execution History
+            - link "Webhooks" [ref=e34] [cursor=pointer]:
+              - /url: /webhooks
+              - menuitem "Webhooks" [ref=e35]:
+                - generic [ref=e37]: 
+                - generic [ref=e38]: Webhooks
+            - link "Connections" [ref=e39] [cursor=pointer]:
+              - /url: /integrations
+              - menuitem "Connections" [ref=e40]:
+                - generic [ref=e42]: 
+                - generic [ref=e43]: Connections
+            - link "Persistent Data" [ref=e44] [cursor=pointer]:
+              - /url: /data-store
+              - menuitem "Persistent Data" [ref=e45]:
+                - generic [ref=e47]: 
+                - generic [ref=e48]: Persistent Data
+            - link "PDF Templates" [ref=e49] [cursor=pointer]:
+              - /url: /pdf-templates
+              - menuitem "PDF Templates" [ref=e50]:
+                - img "PDF Templates" [ref=e52]
+                - generic [ref=e53]: PDF Templates
+            - link "Credentials" [ref=e54] [cursor=pointer]:
+              - /url: /keys
+              - menuitem "Credentials" [ref=e55]:
+                - generic [ref=e57]: 
+                - generic [ref=e58]: Credentials
+        - generic [ref=e60]:
+          - heading "Apps" [level=3] [ref=e61]
+          - link "App Connectors" [ref=e63] [cursor=pointer]:
+            - /url: /connections
+            - menuitem "App Connectors" [ref=e64]:
+              - generic [ref=e66]: 
+              - generic [ref=e67]: App Connectors
+        - generic [ref=e69]:
+          - heading "Marketplace" [level=3] [ref=e70]
+          - generic [ref=e71]:
+            - link "Accounts" [ref=e72] [cursor=pointer]:
+              - /url: /accounts
+              - menuitem "Accounts" [ref=e73]:
+                - generic [ref=e75]: 
+                - generic [ref=e76]: Accounts
+            - link "Developer Apps" [ref=e77] [cursor=pointer]:
+              - /url: /developer-apps
+              - menuitem "Developer Apps" [ref=e78]:
+                - generic [ref=e80]: 
+                - generic [ref=e81]: Developer Apps
+            - link "Catalog" [ref=e82] [cursor=pointer]:
+              - /url: /services
+              - menuitem "Catalog" [ref=e83]:
+                - generic [ref=e85]: 
+                - generic [ref=e86]: Catalog
+      - generic "978e53d1803c511892d7fe052bcd382dd104c47f" [ref=e90]: DEVELOPMENT
+    - generic [ref=e91]:
+      - banner [ref=e92]:
+        - generic [ref=e93]:
+          - text: 
+          - button " Global Search Ctrl+ K" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: 
+            - text: Global Search
+            - generic [ref=e97]: Ctrl+ K
+          - generic [ref=e98]:
+            - button "" [ref=e99] [cursor=pointer]:
+              - generic [ref=e100]: 
+            - button "88 " [ref=e102] [cursor=pointer]:
+              - generic [ref=e103]: "88"
+              - generic [ref=e104]: 
+            - button "" [ref=e105] [cursor=pointer]:
+              - generic [ref=e106]: 
+            - button "products-logo" [ref=e107] [cursor=pointer]:
+              - img "products-logo" [ref=e108]
+            - generic [ref=e110] [cursor=pointer]:
+              - img [ref=e113]
+              - generic [ref=e114]:
+                - generic [ref=e115]: Steve Nina
+                - generic [ref=e116]: skuanquis@gmail.com
+              - generic [ref=e117]: 
+      - main [ref=e118]:
+        - generic [ref=e617]:
+          - heading "Execution History" [level=1] [ref=e620]
+          - generic [ref=e621]:
+            - table [ref=e624]:
+              - rowgroup [ref=e625]:
+                - row "Name Status Kind Actions" [ref=e626]:
+                  - columnheader "Name" [ref=e627]:
+                    - generic [ref=e629]: Name
+                  - columnheader "Status" [ref=e630]:
+                    - generic [ref=e632]: Status
+                  - columnheader "Kind" [ref=e633]:
+                    - generic [ref=e635]: Kind
+                  - columnheader "Actions" [ref=e636]:
+                    - generic [ref=e638]: Actions
+              - rowgroup [ref=e639]:
+                - row "ad16de6a-2023-4507-b11b-71fae6ed9236 completed board(387)   " [ref=e640]:
+                  - cell "ad16de6a-2023-4507-b11b-71fae6ed9236" [ref=e641]
+                  - cell "completed" [ref=e642]
+                  - cell "board(387)" [ref=e643]:
+                    - link "board(387)" [ref=e644] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e645]:
+                        - generic [ref=e646]: board(387)
+                  - cell "  " [ref=e647]:
+                    - generic [ref=e648]:
+                      - button "" [active] [ref=e649] [cursor=pointer]:
+                        - generic [ref=e650]: 
+                      - button "" [ref=e651] [cursor=pointer]:
+                        - generic [ref=e652]: 
+                      - button "" [ref=e653] [cursor=pointer]:
+                        - generic [ref=e654]: 
+                - row "65993775-7ea4-4967-b1a7-3392b67c16f4 warning board(386)   " [ref=e655]:
+                  - cell "65993775-7ea4-4967-b1a7-3392b67c16f4" [ref=e656]
+                  - cell "warning" [ref=e657]
+                  - cell "board(386)" [ref=e658]:
+                    - link "board(386)" [ref=e659] [cursor=pointer]:
+                      - /url: /workflows/edit/386
+                      - button "board(386)" [ref=e660]:
+                        - generic [ref=e661]: board(386)
+                  - cell "  " [ref=e662]:
+                    - generic [ref=e663]:
+                      - button "" [ref=e664] [cursor=pointer]:
+                        - generic [ref=e665]: 
+                      - button "" [ref=e666] [cursor=pointer]:
+                        - generic [ref=e667]: 
+                      - button "" [ref=e668] [cursor=pointer]:
+                        - generic [ref=e669]: 
+                - row "601787bb-884f-48bb-9d27-9d6c8c0302ef warning board(387)   " [ref=e670]:
+                  - cell "601787bb-884f-48bb-9d27-9d6c8c0302ef" [ref=e671]
+                  - cell "warning" [ref=e672]
+                  - cell "board(387)" [ref=e673]:
+                    - link "board(387)" [ref=e674] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e675]:
+                        - generic [ref=e676]: board(387)
+                  - cell "  " [ref=e677]:
+                    - generic [ref=e678]:
+                      - button "" [ref=e679] [cursor=pointer]:
+                        - generic [ref=e680]: 
+                      - button "" [ref=e681] [cursor=pointer]:
+                        - generic [ref=e682]: 
+                      - button "" [ref=e683] [cursor=pointer]:
+                        - generic [ref=e684]: 
+                - row "08714cac-2df2-4e70-8417-cd7f81446c3a warning board(387)   " [ref=e685]:
+                  - cell "08714cac-2df2-4e70-8417-cd7f81446c3a" [ref=e686]
+                  - cell "warning" [ref=e687]
+                  - cell "board(387)" [ref=e688]:
+                    - link "board(387)" [ref=e689] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e690]:
+                        - generic [ref=e691]: board(387)
+                  - cell "  " [ref=e692]:
+                    - generic [ref=e693]:
+                      - button "" [ref=e694] [cursor=pointer]:
+                        - generic [ref=e695]: 
+                      - button "" [ref=e696] [cursor=pointer]:
+                        - generic [ref=e697]: 
+                      - button "" [ref=e698] [cursor=pointer]:
+                        - generic [ref=e699]: 
+                - row "653b6a1e-5c06-4b79-8b3a-999752781d29 warning board(387)   " [ref=e700]:
+                  - cell "653b6a1e-5c06-4b79-8b3a-999752781d29" [ref=e701]
+                  - cell "warning" [ref=e702]
+                  - cell "board(387)" [ref=e703]:
+                    - link "board(387)" [ref=e704] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e705]:
+                        - generic [ref=e706]: board(387)
+                  - cell "  " [ref=e707]:
+                    - generic [ref=e708]:
+                      - button "" [ref=e709] [cursor=pointer]:
+                        - generic [ref=e710]: 
+                      - button "" [ref=e711] [cursor=pointer]:
+                        - generic [ref=e712]: 
+                      - button "" [ref=e713] [cursor=pointer]:
+                        - generic [ref=e714]: 
+                - row "2714690e-21bd-4a1a-a780-c82265f53727 completed board(387)   " [ref=e715]:
+                  - cell "2714690e-21bd-4a1a-a780-c82265f53727" [ref=e716]
+                  - cell "completed" [ref=e717]
+                  - cell "board(387)" [ref=e718]:
+                    - link "board(387)" [ref=e719] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e720]:
+                        - generic [ref=e721]: board(387)
+                  - cell "  " [ref=e722]:
+                    - generic [ref=e723]:
+                      - button "" [ref=e724] [cursor=pointer]:
+                        - generic [ref=e725]: 
+                      - button "" [ref=e726] [cursor=pointer]:
+                        - generic [ref=e727]: 
+                      - button "" [ref=e728] [cursor=pointer]:
+                        - generic [ref=e729]: 
+                - row "5b980ee4-3576-4770-86db-1c925147efd4 completed board(387)   " [ref=e730]:
+                  - cell "5b980ee4-3576-4770-86db-1c925147efd4" [ref=e731]
+                  - cell "completed" [ref=e732]
+                  - cell "board(387)" [ref=e733]:
+                    - link "board(387)" [ref=e734] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e735]:
+                        - generic [ref=e736]: board(387)
+                  - cell "  " [ref=e737]:
+                    - generic [ref=e738]:
+                      - button "" [ref=e739] [cursor=pointer]:
+                        - generic [ref=e740]: 
+                      - button "" [ref=e741] [cursor=pointer]:
+                        - generic [ref=e742]: 
+                      - button "" [ref=e743] [cursor=pointer]:
+                        - generic [ref=e744]: 
+                - row "494dc7bc-c971-4b9f-92ad-49cc6e062c4f warning board(387)   " [ref=e745]:
+                  - cell "494dc7bc-c971-4b9f-92ad-49cc6e062c4f" [ref=e746]
+                  - cell "warning" [ref=e747]
+                  - cell "board(387)" [ref=e748]:
+                    - link "board(387)" [ref=e749] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e750]:
+                        - generic [ref=e751]: board(387)
+                  - cell "  " [ref=e752]:
+                    - generic [ref=e753]:
+                      - button "" [ref=e754] [cursor=pointer]:
+                        - generic [ref=e755]: 
+                      - button "" [ref=e756] [cursor=pointer]:
+                        - generic [ref=e757]: 
+                      - button "" [ref=e758] [cursor=pointer]:
+                        - generic [ref=e759]: 
+                - row "fa2ff57d-3cb2-4817-8649-c56ced30f9f9 warning board(387)   " [ref=e760]:
+                  - cell "fa2ff57d-3cb2-4817-8649-c56ced30f9f9" [ref=e761]
+                  - cell "warning" [ref=e762]
+                  - cell "board(387)" [ref=e763]:
+                    - link "board(387)" [ref=e764] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e765]:
+                        - generic [ref=e766]: board(387)
+                  - cell "  " [ref=e767]:
+                    - generic [ref=e768]:
+                      - button "" [ref=e769] [cursor=pointer]:
+                        - generic [ref=e770]: 
+                      - button "" [ref=e771] [cursor=pointer]:
+                        - generic [ref=e772]: 
+                      - button "" [ref=e773] [cursor=pointer]:
+                        - generic [ref=e774]: 
+                - row "9ed06412-2878-4591-88ed-daba9bb3a1f9 completed board(387)   " [ref=e775]:
+                  - cell "9ed06412-2878-4591-88ed-daba9bb3a1f9" [ref=e776]
+                  - cell "completed" [ref=e777]
+                  - cell "board(387)" [ref=e778]:
+                    - link "board(387)" [ref=e779] [cursor=pointer]:
+                      - /url: /workflows/edit/387
+                      - button "board(387)" [ref=e780]:
+                        - generic [ref=e781]: board(387)
+                  - cell "  " [ref=e782]:
+                    - generic [ref=e783]:
+                      - button "" [ref=e784] [cursor=pointer]:
+                        - generic [ref=e785]: 
+                      - button "" [ref=e786] [cursor=pointer]:
+                        - generic [ref=e787]: 
+                      - button "" [ref=e788] [cursor=pointer]:
+                        - generic [ref=e789]: 
+            - navigation [ref=e790]:
+              - generic [ref=e791]:
+                - button "" [ref=e793] [cursor=pointer]:
+                  - generic [ref=e794]: 
+                - generic [ref=e795]:
+                  - button "First Page" [disabled]:
+                    - img
+                  - button "Previous Page" [disabled]:
+                    - img
+                  - generic [ref=e796]: 1 to 10 of 337590
+                  - button "Next Page" [ref=e797] [cursor=pointer]:
+                    - img [ref=e798]
+                  - button "Last Page" [ref=e800] [cursor=pointer]:
+                    - img [ref=e801]
+                  - generic [ref=e803] [cursor=pointer]:
+                    - combobox "Rows per page" [ref=e804]: "10"
+                    - img [ref=e806]
+  - dialog "ad16de6a-2023-4507-b11b-71fae6ed9236 execution detail" [ref=e808]:
+    - generic [ref=e809]:
+      - generic [ref=e810]: ad16de6a-2023-4507-b11b-71fae6ed9236 execution detail
+      - button "Close" [ref=e812] [cursor=pointer]:
+        - img [ref=e813]
+    - generic [ref=e816]:
+      - generic [ref=e818]: data
+      - generic [ref=e820]:
+        - generic [ref=e822]: "{"
+        - generic [ref=e824]: "status: \"completed\","
+        - generic [ref=e826]: "board_id: \"flow_c_2_387_1784045287851902652\","
+        - generic [ref=e828]: "end_time: \"0001-01-01T00:00:00Z\","
+        - generic [ref=e830]: "session_id: \"ad16de6a-2023-4507-b11b-71fae6ed9236\","
+        - generic [ref=e832]: "start_time: \"2026-07-14T16:08:07.851877803Z\","
+        - generic [ref=e834]: "last_update: \"2026-07-14T16:08:07.898644295Z\","
+        - generic [ref=e836]: "HadFatalError: false,"
+        - generic [ref=e838]: "executor_type: \"flow\","
+        - generic [ref=e840]: "units_consumed: 3"
+        - generic [ref=e842]: "}"

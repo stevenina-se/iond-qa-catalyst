@@ -163,6 +163,15 @@ Ejecutar el skill siguiendo sus instrucciones internas (3 stages: Planning → E
 
 ## Skills Disponibles
 
+### Bug Reporter Track (Crear tickets de bug)
+
+> **Frase disparadora**: `"Crea un nuevo ticket:"`
+> Track independiente — no requiere artefactos de Discovery ni Deployment previos.
+
+| Skill | Ruta | Cuándo usarlo |
+|---|---|---|
+| **Create** | `skills/bug-reporter/create.md` | Generar ticket de bug completo y categorizado desde descripción informal |
+
 ### Discovery Track (Validar qué construir)
 
 | Skill | Ruta | Cuándo usarlo |
@@ -198,12 +207,49 @@ Ejecutar el skill siguiendo sus instrucciones internas (3 stages: Planning → E
 |---|---|---|
 | **Update Module** | `skills/knowledge/update-module.md` | Retroalimentar L2 después de una release |
 
----
+### Release Track (Preparación de releases)
+
+> Pipeline automatizado de release. Ejecutar en orden secuencial.
+> Usa CSV como fuente de verdad + ClickUp MCP para detalles bajo demanda.
+
+| # | Skill | Ruta | Frase disparadora | Output |
+|---|---|---|---|---|
+| 1 | **Ingest** | `skills/release/ingest.md` | `Preparar datos de release: v[X.Y.Z]` | ticket-synthesis.md, tracking-list, module-impact-map |
+| 2 | **Plan** | `skills/release/plan.md` | `Planificar release: v[X.Y.Z]` | release-plan.md (cronograma 2+1) |
+| 3 | **Regression Matrix** | `skills/release/regression-matrix.md` | `Generar regression matrix: v[X.Y.Z]` | regression-matrix.md + .csv |
+| 4 | **Smoke Matrix** | `skills/release/smoke-matrix.md` | `Generar smoke matrix: v[X.Y.Z]` | smoke-matrix.md + .csv |
+| 5 | **Notes** | `skills/release/notes.md` | `Generar release notes: v[X.Y.Z]` | release-notes-internal.md + client.md |
+| 6 | **Brief** | `skills/release/brief.md` | `Generar brief de regresión: v[X.Y.Z]` | regression-brief.md |
+| 7 | **Deployment Protocol** | `skills/release/deployment-protocol.md` | `Generar protocolo de deployment: v[X.Y.Z]` | deployment-protocol.md |
+| — | — | — | 🚀 **DEPLOY** | — |
+| 8 | **Update Modules** | `skills/knowledge/update-module.md` (modo batch) | `Actualizar módulos post-release: v[X.Y.Z]` | L2-modules actualizados |
+
 
 ## Flujos de Orquestación
 
 > Los flujos detallados ahora viven en **runbooks dedicados** con gates obligatorios.
 > Esto asegura que la IA siga la secuencia exacta sin saltarse pasos.
+
+### Bug Reporter Track
+
+Cuando el QA Engineer escribe `"Crea un nuevo ticket:"` seguido de un path de módulo y descripción del bug:
+
+**→ LEER Y SEGUIR: `skills/bug-reporter/create.md`**
+
+La skill sigue este flujo:
+1. Parsear path de navegación → identificar módulo(s) L2
+2. Anunciar plan y esperar confirmación del QA Engineer
+3. Actualizar los 4 repos a DEVELOPMENT (para contexto real)
+4. Cargar L1 + L2 del módulo identificado
+5. Analizar el bug con el código actualizado
+6. Generar draft completo del ticket (template `bug-ticket.md`)
+7. Categorizar por prioridad y tipo con razonamiento
+8. Presentar draft al QA Engineer para aprobación
+9. (Cuando el QA da el ID de ClickUp) Guardar en `L3-tickets/<id>/bug-report.md`
+
+❌ NO es parte del Discovery ni del Deployment Track.
+❌ NO requiere artefactos previos (no hay test-matrix, no hay ticket existente).
+✅ El ID de L3 lo proporciona el QA Engineer DESPUÉS de crear el ticket en ClickUp.
 
 ### Discovery Track
 
@@ -243,6 +289,42 @@ El runbook define la secuencia exacta de pasos con gates obligatorios:
 
 ❌ NO improvisar la secuencia. NO saltarse pasos. Cada gate DEBE verificarse.
 ❌ NUNCA terminar sin el reporte final (qa-report.md).
+
+### Release Track
+
+Cuando el QA Engineer dice "preparar release v[X.Y.Z]" o se está en fase de release:
+
+**Pipeline de release automatizado (ejecutar en orden):**
+
+```
+📦 Release v[X.Y.Z]:
+
+ 1️⃣  CSV → release-tickets.csv                                 (manual)
+ 2️⃣  release/ingest → síntesis + tracking + mapa impacto       (auto, MCP + custom fields)
+ 3️⃣  release/plan → cronograma 2+1 semanas                     (auto)
+ 4️⃣  release/regression-matrix → matriz regresión              (auto)
+ 5️⃣  release/smoke-matrix → matriz smoke                       (auto)
+ 6️⃣  release/notes → release notes interno + cliente           (auto)
+ 7️⃣  release/brief → brief de regresión                        (auto)
+ 8️⃣  release/deployment-protocol → protocolo de deploy         (auto)
+   
+ ━━━ 🚀 DEPLOY ━━━
+
+ 9️⃣  release/update-modules → batch update L2 modules          (auto, post-deploy)
+```
+
+**Modelo de sprint: 2+1 semanas**
+- Semana 1-2: Desarrollo + QA individual por ticket
+- Viernes S2: ⭕ DEADLINE — todos los tickets APROBADOS
+- Semana 3: Artefactos de release + regresión + smoke + deploy
+
+**Clasificación automática** (custom fields de ClickUp):
+- `custom_type`: Bug, New Feature, Improvement, Refactor
+- `custom_iond_subcategory`: Boards, PDF Templates, Connections...
+- `tags`: core (motor/backend), ux-ui (frontend/visual)
+
+❌ Cada paso requiere aprobación del QA Engineer antes de continuar.
+❌ NO saltarse pasos. El pipeline es secuencial.
 
 ---
 
@@ -509,6 +591,7 @@ Para el contexto completo del proyecto, lee `knowledge/L1-project/`. Resumen rá
 
 | Template | Ruta | Para qué |
 |---|---|---|
+| **Bug Ticket** | `templates/bug-ticket.md` | Draft de ticket de bug (Bug Reporter Track) |
 | Test Matrix | `templates/test-matrix.md` | Matriz de casos de testing |
 | Architecture Brief QA | `templates/architecture-brief-qa.md` | Checklist QA del Architecture Brief |
 | QA Report | `templates/qa-report.md` | Reporte de sprint/ticket |

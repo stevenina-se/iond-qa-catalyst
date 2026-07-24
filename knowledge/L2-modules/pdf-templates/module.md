@@ -9,7 +9,7 @@
 | Nombre interno | pdf-template |
 | Criticidad | 🟠 Alto |
 | Repos involucrados | `gateway-ion` (UI), `gateway` (API) |
-| Última actualización | Initial setup — Fase 5 |
+| Última actualización | 2026-07-09 — v0.1.0 batch update |
 
 ---
 
@@ -34,6 +34,8 @@
 2. Se debe asegurar su correcto funcionamiento ya que generan documentos para terceros
 3. La generación se efectúa dentro del nodo en el canvas
 4. Cada template pertenece a una company
+5. Los templates se crean desde dos flujos: la vista de lista (`/pdf-templates`) y desde el **nodo IonPDF** dentro del canvas
+6. Al crear desde el nodo IonPDF, el sistema llama a `onPdfTemplateSaved()` en `FlowEditor.vue`
 
 ---
 
@@ -69,9 +71,22 @@
 
 ---
 
+## Edge Cases Conocidos (v0.1.0)
+
+1. **IONF-1087** — Al crear un template desde el nodo IonPDF **sin nodo conectado** (sin edge de entrada):
+   - El template se crea correctamente en el servidor
+   - Pero aparecen **dos toasts simultáneos**: uno de éxito (`"Template Created"`) y uno de error (`"Failed to save template"`)
+   - El botón Save queda en **spinner permanente** porque `FlowEditor.vue` no llama a `pdfTemplateDialogRef.value?.resetSaving()` en el bloque `finally`
+   - La excepción ocurre al intentar ejecutar `options?.setValue(savedId)` cuando `options` refleja un nodo sin conexión de entrada
+   - **Pre-condición crítica**: el nodo IonPDF **no debe tener ningún nodo conectado** (sin edge)
+   - **Nota**: El flujo desde la vista `list.vue` **sí** implementa el `resetSaving()` correctamente
+
+---
+
 ## Historial de Actualizaciones
 
 | Fecha | Tickets | Cambios | Actualizado por |
 |-------|---------|---------|----------------|
 | Initial | — | Creación inicial | QA Catalyst |
 | 2026-06-07 | — | Backend Logic + Impacto Cruzado | QA Catalyst |
+| 2026-07-09 | IONF-1087 | Edge case documentado: nodo IonPDF sin edge → Save spinner permanente, doble toast, resetSaving() faltante en FlowEditor.vue | QA Catalyst (batch v0.1.0) |

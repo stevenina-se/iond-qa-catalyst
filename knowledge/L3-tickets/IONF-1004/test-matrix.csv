@@ -1,25 +1,39 @@
-ID,Módulo,AC,Tipo,Caso de Test,Precondición,Pasos,Resultado Esperado,Prioridad,Automatizable,Estado
-TC-001,Integrations,AC-1,Happy Path,Exportar producto simple a WooCommerce,"Integración WC activa con tienda de prueba, queue workers corriendo (artisan queue:restart)","1. Enviar POST a /api/2.0/app/integrations/{gateway-key}/action con resource export_products y 1 producto simple | 2. Esperar procesamiento del job | 3. Verificar webhook de respuesta | 4. Verificar producto en tienda WC","Producto creado en WC con datos correctos. Webhook de éxito disparado con campo response genérico",Crítico,Sí,Pendiente
-TC-002,Integrations,AC-1,Happy Path,Exportar producto con variantes a WooCommerce,"Integración WC activa, tienda de prueba","1. Enviar POST con 1 producto con múltiples variantes (Talla S, M, L) | 2. Esperar procesamiento | 3. Verificar en WC producto variable con variantes","Producto variable creado. Cada variante con SKU, precio y quantity correctos. POST producto general + POST variantes en lote",Crítico,Sí,Pendiente
-TC-003,Integrations,AC-1,Happy Path,Procesamiento por lotes (batch) de múltiples productos a WooCommerce,"Integración WC activa, chunk size configurado","1. Enviar POST con 5+ productos | 2. Esperar procesamiento en lotes | 3. Verificar webhook por lote | 4. Verificar todos los productos en tienda","Todos los productos creados. Procesamiento en chunks. Webhook de éxito con resultados",Crítico,Sí,Pendiente
-TC-004,Integrations,AC-1,Edge Case,Actualizar producto existente por SKU en WooCommerce,Producto ya existente en WC con SKU CAM-028,"1. Enviar POST con producto cuyo SKU ya existe en WC | 2. Verificar que fue ACTUALIZADO (no duplicado)","Adapter busca por SKU → update. No crea duplicado",Alto,Sí,Pendiente
-TC-005,Integrations,AC-1,Edge Case,"Producto con campos opcionales vacíos/omitidos en WC",Integración WC activa,"1. Enviar POST con product_id_channel vacío, sku_id_channel vacío, sin aspects, sin dimensions | 2. Verificar procesamiento","Producto creado correctamente. Campos opcionales no causan error",Alto,No,Pendiente
-TC-006,Integrations,AC-1,Happy Path,Exportar producto simple a Etsy (flujo secuencial 4 pasos),"Integración Etsy activa con tienda de prueba, category_id válido","1. Enviar POST con 1 producto con imagen y 1 variante | 2. Verificar flujo: POST /listings (draft) → POST /images → PUT /inventory → PATCH /listings (active) | 3. Verificar producto en Etsy","Producto creado en Etsy vía 4 pasos secuenciales. Estado final: active. Imágenes subidas. Webhook éxito",Crítico,No,Pendiente
-TC-007,Integrations,AC-1,Happy Path,Exportar producto con múltiples imágenes a Etsy,"Integración Etsy activa, producto con 3+ imágenes","1. Enviar POST con producto con múltiples URLs de imágenes | 2. Verificar subida de todas las imágenes | 3. Verificar producto en tienda","Todas las imágenes subidas al listing. Proceso encapsulado en adapter",Alto,No,Pendiente
-TC-008,Integrations,AC-3,Happy Path,Manejo de Rate Limit 429 en Etsy — abort + report,"Integración Etsy activa, escenario que provoque 429","1. Enviar POST con lote grande a Etsy | 2. Esperar respuesta 429 | 3. Verificar comportamiento","Abort inmediato sin retry. Webhook fallo con error Rate Limit y productos fallidos",Crítico,No,Pendiente
-TC-009,Integrations,AC-1,Edge Case,Actualizar producto existente por SKU en Etsy,Producto existente en Etsy con mismo SKU,"1. Enviar POST con producto cuyo SKU existe en Etsy | 2. Verificar update sin duplicado","Producto actualizado correctamente sin crear duplicado",Alto,No,Pendiente
-TC-010,Integrations,AC-4,Happy Path,Obtener categorías de WooCommerce via get_categories,"Integración WC activa, tienda con categorías","1. Enviar POST con resource get_categories | 2. Verificar respuesta sync","Respuesta sync (no job, no webhook). Lista de categorías con IDs válidos",Alto,Sí,Pendiente
-TC-011,Integrations,AC-5,Happy Path,Obtener categorías de Etsy via get_categories (taxonomy),Integración Etsy activa,"1. Enviar POST con resource get_categories para Etsy | 2. Verificar respuesta sync","Respuesta sync. Taxonomy global de Etsy con IDs válidos",Alto,Sí,Pendiente
-TC-012,Integrations,AC-2,Negativo,Payload inválido — estructura incorrecta,Integración activa (WC o Etsy),"1. Enviar POST con payload sin campo products | 2. Enviar con array vacío | 3. Enviar JSON inválido","HTTP 422 sync. Sin webhook. Mensaje detalla fallo de validación",Crítico,Sí,Pendiente
-TC-013,Integrations,AC-2,Negativo,Campos requeridos faltantes en producto,Integración activa,"1. POST sin title | 2. POST sin description | 3. POST sin sku en variante | 4. POST sin price en variante","HTTP 422 para cada caso. Indica campo faltante. Sin procesamiento de lotes",Crítico,Sí,Pendiente
-TC-014,Integrations,AC-2,Negativo,Gateway-key inválido o integración inexistente,Ninguna integración con key proporcionada,"1. Enviar POST a /api/2.0/app/integrations/{invalid-key}/action","Error 401/403/404. No se procesa nada",Alto,Sí,Pendiente
-TC-015,Integrations,AC-1,Negativo,"Category_id inválido en producto enviado a WC","Integración WC activa, category_id inexistente","1. Enviar POST con category_id que no existe | 2. Verificar comportamiento","Lote falla para ese producto. Webhook reporta error. Otros productos no afectados (chunks atómicos)",Alto,No,Pendiente
-TC-016,Integrations,AC-3,Edge Case,"Fallo parcial en un lote (algunos OK, otros fallan)","Integración activa, lote mixto","1. Enviar lote con productos válidos e inválidos | 2. Verificar procesamiento","Productos válidos procesados. Fallidos reportados. Sin rollback. Webhook resultados parciales",Alto,No,Pendiente
-TC-017,Integrations,AC-1,Edge Case,Producto con imágenes de URL inaccesible en Etsy,Integración Etsy activa,"1. Enviar POST con imagen URL que retorna 404 | 2. Verificar fallo en paso 2 (POST /images)","Flujo falla en images. Producto queda draft o se aborta. Webhook reporta fallo",Alto,No,Pendiente
-TC-018,Integrations,AC-2,Negativo,Resource action no existente,Integración activa,"1. Enviar POST con resource invalid_action","Error de validación. Acción no reconocida",Medio,Sí,Pendiente
-TC-019,Integrations,AC-1,Edge Case,Verificar campo response estandarizado en adapters,Integración WC y Etsy activas,"1. Exportar a WC → capturar webhook response | 2. Exportar a Etsy → capturar webhook response | 3. Comparar estructura","Ambos retornan campo response con estructura genérica estandarizada",Alto,No,Pendiente
-TC-020,Integrations,AC-1,Edge Case,Currency tomada de configuración de conexión,Integración con currency configurada (ej: USD),"1. Enviar producto sin indicar currency | 2. Verificar producto en cart destino","Precio usa currency de config del cart",Medio,No,Pendiente
-REG-001,Integrations,N/A,Regresión,Export products de eBay sigue funcionando,Integración eBay activa existente,"1. Ejecutar export_products existente para eBay | 2. Verificar que funciona igual que antes","eBay no afectado por cambios en infra de batching/response",Crítico,Sí,Pendiente
-REG-002,Integrations,N/A,Regresión,Motor de webhooks funciona para otras acciones,Integración activa con otra acción (ej: sync_inventory),"1. Ejecutar acción existente (no export_products) | 2. Verificar que webhook se dispara correctamente","Webhook engine no afectado por nuevos adapters",Alto,No,Pendiente
-REG-003,Integrations,N/A,Regresión,Endpoints App API existentes no afectados,Integración activa,"1. Llamar GET /2.0/app/integrations | 2. Llamar GET /2.0/app/integrations/{id} | 3. Verificar respuestas","Endpoints existentes responden correctamente",Alto,No,Pendiente
-REG-004,Integrations,N/A,Regresión,Feature hidden — no en seeders default,Tenant sin feature habilitada,"1. Verificar que la acción export_products no es visible/disponible para tenants sin habilitación","Feature no aparece para tenants que no la tienen habilitada",Medio,No,Pendiente
+ID,Módulo,AC,Tipo,Caso de Test,Cart,Prioridad,Automatizable,Estado,Origen
+RT-001,Integrations,AC-2,Re-test,category_id validado como required en Etsy,Etsy,🔴,❌,⬜ Pendiente,Iter.1 OBS-01
+RT-002,Integrations,AC-1,Re-test,uploadImages() con URL inaccesible interrumpe flujo,Etsy,🔴,❌,⬜ Pendiente,Iter.1+2 OBS-02 PERSISTENTE
+RT-003,Integrations,AC-1,Re-test,Dimensiones y peso se mapean correctamente a Etsy y WC,Ambos,🔴,❌,⬜ Pendiente,Iter.1 OBS-03
+RT-004,Integrations,AC-1,Re-test,Múltiples variantes registradas en inventory Etsy,Etsy,🔴,❌,⬜ Pendiente,Iter.1 OBS-04
+RT-005,Integrations,AC-1,Re-test,Actualización WC NO duplica variantes,WC,🔴,❌,⬜ Pendiente,Iter.2 OBS-01
+RT-006,Integrations,AC-1,Re-test,uploadImages() parcial - imagen válida + inaccesible,Etsy,🔴,❌,⬜ Pendiente,Iter.2 OBS-02
+TC-001,Integrations,AC-1,Happy Path,Exportar producto simple a WooCommerce,WC,🔴,✅,⬜ Pendiente,Original
+TC-002,Integrations,AC-1,Happy Path,Exportar producto con variantes a WC,WC,🔴,✅,⬜ Pendiente,Original
+TC-003,Integrations,AC-1,Happy Path,Batch de múltiples productos a WC,WC,🔴,✅,⬜ Pendiente,Original
+TC-004,Integrations,AC-1,Edge Case,Actualizar producto existente por SKU en WC,WC,🟠,✅,⬜ Pendiente,Original
+TC-005,Integrations,AC-1,Edge Case,Campos opcionales vacíos/omitidos en WC,WC,🟠,❌,⬜ Pendiente,Original
+TC-006,Integrations,AC-1,Happy Path,Exportar producto simple a Etsy (4 pasos),Etsy,🔴,❌,⬜ Pendiente,Original
+TC-007,Integrations,AC-1,Happy Path,Exportar producto con múltiples imágenes a Etsy,Etsy,🟠,❌,⬜ Pendiente,Original
+TC-008,Integrations,AC-3,Happy Path,Rate Limit 429 en Etsy,Etsy,🔴,❌,⬜ Pendiente,Original
+TC-009,Integrations,AC-1,Edge Case,Update producto existente por product_id_channel en Etsy,Etsy,🟠,❌,⬜ Pendiente,Original
+TC-010,Integrations,AC-4,Happy Path,get_categories WooCommerce (sync),WC,🟠,✅,⬜ Pendiente,Original
+TC-011,Integrations,AC-5,Happy Path,get_categories Etsy taxonomy (sync),Etsy,🟠,✅,⬜ Pendiente,Original
+TC-012,Integrations,AC-2,Negativo,Payload inválido — estructura incorrecta,Ambos,🔴,✅,⬜ Pendiente,Original
+TC-013,Integrations,AC-2,Negativo,Campos requeridos faltantes,Ambos,🔴,✅,⬜ Pendiente,Original
+TC-014,Integrations,AC-2,Negativo,Gateway-key inválido,Ambos,🟠,✅,⬜ Pendiente,Original
+TC-015,Integrations,AC-1,Negativo,category_id inválido en WC,WC,🟠,❌,⬜ Pendiente,Original
+TC-016,Integrations,AC-3,Edge Case,Fallo parcial en lote mixto,Ambos,🟠,❌,⬜ Pendiente,Original
+TC-017,Integrations,AC-1,Edge Case,Imágenes URL inaccesible en Etsy (parcial),Etsy,🟠,❌,⬜ Pendiente,Original
+TC-018,Integrations,AC-2,Negativo,Resource action no existente,Ambos,🟡,✅,⬜ Pendiente,Original
+TC-019,Integrations,AC-1,Edge Case,Campo response estandarizado ambos adapters,Ambos,🟠,❌,⬜ Pendiente,Original
+TC-020,Integrations,AC-1,Edge Case,Currency desde config de conexión,Ambos,🟡,❌,⬜ Pendiente,Original
+TC-CR-001,Integrations,AC-1,Code Review,Activación Etsy falla → webhook reporta error o éxito?,Etsy,🔴,❌,⬜ Pendiente,BUG-CR-001
+TC-CR-002,Integrations,AC-2,Code Review,Precio sin 2 decimales exactos → 422?,Ambos,🔴,✅,⬜ Pendiente,BUG-CR-002
+TC-CR-003,Integrations,AC-1,Code Review,Update WC con variantes → webhook incluye variations?,WC,🟠,✅,⬜ Pendiente,BUG-CR-003
+TC-CR-004,Integrations,AC-1,Code Review,Update listing Etsy 2x → imágenes duplicadas?,Etsy,🟠,❌,⬜ Pendiente,BUG-CR-004
+TC-CR-005,Integrations,AC-1,Code Review,Producto WC con 1 variante → tipo simple correcto,WC,🟠,✅,⬜ Pendiente,BUG-CR-005
+TC-CR-006,Integrations,AC-1,Code Review,Variantes Etsy sin property_id en payload,Etsy,🟠,❌,⬜ Pendiente,BUG-CR-006
+TC-CR-007,Integrations,AC-1,Code Review,WC sin product_id en payload → acepta?,WC,🟡,✅,⬜ Pendiente,BUG-CR-007
+TC-CR-008,Integrations,AC-2,Code Review,WC sin category_id → 422 innecesario?,WC,🟡,✅,⬜ Pendiente,BUG-CR-008
+REG-001,Integrations,N/A,Regresión,Export products eBay sigue funcionando,eBay,🔴,❌,⬜ Pendiente,Regresión
+REG-002,Integrations,N/A,Regresión,Motor de webhooks funciona para otras acciones,Todos,🟠,❌,⬜ Pendiente,Regresión
+REG-003,Integrations,N/A,Regresión,Endpoints App API existentes no afectados,Todos,🟠,❌,⬜ Pendiente,Regresión
+REG-004,Integrations,N/A,Regresión,Feature hidden — no aparece sin habilitación,Todos,🟡,❌,⬜ Pendiente,Regresión

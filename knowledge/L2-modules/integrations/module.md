@@ -9,7 +9,7 @@
 | Nombre interno | integrations / connections activas |
 | Criticidad | 🟠 Alto |
 | Repos involucrados | `gateway-ion` (UI), `gateway` (API) |
-| Última actualización | Initial setup — Fase 5 |
+| Última actualización | 2026-07-09 — v0.1.0 batch update |
 
 ---
 
@@ -145,6 +145,16 @@
 | POST | `/2.0/app/integrations/{id}/claim` | `app:integration-claim` | Reclamar |
 | PATCH | `/2.0/app/integrations/{id}/status` | `app:integration-update` | Cambiar status |
 
+### Instalación de Grapps via M2M (IONF-996)
+
+> Endpoint para que apps externas instalen grapps en cuentas de clientes de forma programática.
+
+| Método | Endpoint | Scope | Descripción |
+|--------|----------|-------|-------------|
+| POST | `/2.0/app/accounts/{account:remote_id}/integrations` | `app:integration-create` | Instalar grapp en cuenta → retorna `integration_id` + `gateway_key` |
+
+> **IONF-996**: Este endpoint habilita la automatización completa del flujo de onboarding: una app externa puede crear una cuenta, instalar un grapp, y configurar connections con credenciales encriptadas, todo vía API M2M.
+
 ---
 
 ## Historial de Actualizaciones
@@ -152,3 +162,4 @@
 | Fecha | Tickets | Cambios | Actualizado por |
 |-------|---------|---------|----------------|
 | Initial | — | Creación inicial | QA Catalyst |
+| 2026-07-09 | IONF-996 | Endpoint M2M de instalación de grapps: POST integrations, retorna integration_id + gateway_key | QA Catalyst (batch v0.1.0) |

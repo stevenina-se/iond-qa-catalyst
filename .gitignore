@@ -12,3 +12,11 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Release plan skills (privadas del Scrum Master)
+skills/release/plan.md
+skills/release/plan-v1.md
+
+# CSVs de referencia (no son artefactos del repo)
+Test Plan - IONFLOW - Smoke Test.csv
+Ionflow Version Release - Sheet1.csv

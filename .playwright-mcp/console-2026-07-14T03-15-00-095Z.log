@@ -1,0 +1,1 @@
+[    4880ms] [WARNING] WebSocket connection to 'wss://dev-gateway.ionflow.io/app/ionflow?protocol=7&client=js&version=8.4.0&flash=false' failed: WebSocket is closed before the connection is established. @ https://dev-app.ionflow.io/assets/index-CZjss1ov.js:2935

@@ -1,0 +1,212 @@
+SIDE,MODULE/FEATURE,,,,,ASSIGNED,RESOLUTION,COMMENTS,OBSERVATION,TICKET,PRIORITY,TIPO
+KC,Forgot Password,,,,,,,,,,🟡,BASELINE
+,Login Now,,,,,,,,,,🟡,BASELINE
+,Login with SSO,,,,,,Verificar SSO flow con Keycloak,,IONF-1075 (indirect),🟠,BASELINE
+,Sign Up with SSO,,,,,,Verificar registro refactorizado de compañía,,IONF-1075,🟠,DIRECTA
+,Registro de Compañía,Formulario refactorizado,,,,,,Verificar que el nuevo formulario de registro funciona correctamente,,IONF-1075,🟠,DIRECTA
+,Post-Registro,Redirección correcta,,,,,,Verificar redirección post-registro a company selection/dashboard,,IONF-1075,🟠,DIRECTA
+,,,,,,,,,,,,,
+ADMIN,Dashboard,,,,,,,,,,🟢,BASELINE
+,Templates,,,,,,,,,,🟢,BASELINE
+,Companies,List,Company,Information,,,,,,,🟢,BASELINE
+,,,,Connectors,Migrate,,,,,,🟢,BASELINE
+,,,,,Download Configuration,,,,,,🟢,BASELINE
+,,,,Flows,Migrate,,,,,,🟢,BASELINE
+,Connectors,List,,,,,,,,,🟢,BASELINE
+,Boards,List,,,,,,,,,🟢,BASELINE
+,Apps,List,Legacy,Edit,,,,,,,🟢,BASELINE
+,,,Applications,Edit,,,,,,,🟢,BASELINE
+,,,Grapps,Create,,,,,,,🟢,BASELINE
+,,,,Edit,Edit and verify in Gateway,,,,,,🟢,BASELINE
+,,,,Configure Flow,,,,,,,🟢,BASELINE
+,,,,Grapp Wizzard,With IA and without IA,,,,,,🟢,BASELINE
+,,,Custom,Edit,,,,,,,🟢,BASELINE
+,,Add App,Legacy,,,,,,,,🟢,BASELINE
+,,,Applications,,,,,,,,🟢,BASELINE
+,,,Grapps,Simple Grapp,,,,,,,🟢,BASELINE
+,,,Custom,,,,,,,,🟢,BASELINE
+,Developers,List,Legacy,Enable,,,,,,,🟢,BASELINE
+,,,,Disable,,,,,,,🟢,BASELINE
+,,,,SetUp,,,,,,,🟢,BASELINE
+,,,Applications,Enable,,,,,,,🟢,BASELINE
+,,,,Disable,,,,,,,🟢,BASELINE
+,,,,SetUp,,,,,,,🟢,BASELINE
+,,,Custom,Enable,,,,,,,🟢,BASELINE
+,,,,Disable,,,,,,,🟢,BASELINE
+,,,,SetUp,,,,,,,🟢,BASELINE
+,,,Grapp,Enable,,,,,,,🟢,BASELINE
+,,,,Disable,,,,,,,🟢,BASELINE
+,,,,SetUp,,,,,,,🟢,BASELINE
+,Settings,Categories,Add,,,,,,,,🟢,BASELINE
+,,,Edit,,,,,,,,🟢,BASELINE
+,,,Delete,,,,,,,,🟢,BASELINE
+,,,,,,,,,,,,,
+TENANT,Dashboard,Dualtrack Interface,,,,,,,Verificar mejoras visuales aplicadas,IONF-1030,🟡,DIRECTA
+,Boards,List,Create Board,All Tools,Scheduler,,,Verificar en modo Test y modo Produccion,Scheduler ejecuta → status completed (no error). Hora correcta UTC/Local.,IONF-1127 IONF-1007 IONF-1168,🔴,DIRECTA
+,,,,,HTTP Request,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Webhook,,,Verificar en modo Test y modo Produccion,Verificar que webhooks funcionan post-fix CORS,IONF-1169 (indirect),🟠,INDIRECTA
+,,,,,Webhook Response,,,Verificar en modo Test y modo Produccion,Verificar que webhooks funcionan post-fix CORS,IONF-1169 (indirect),🟠,INDIRECTA
+,,,,,Simple Desicion,,,Verificar en modo Test y modo Produccion,Verificar comparación numérica (no como strings). Probar: 42 vs 100 y "0" vs 0,IONF-1128,🔴,DIRECTA
+,,,,,Form,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Mapper,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Aggregate,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Iterator,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Timer,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Multiple Desicion,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Code,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Call Component-Flow,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,On Call Component-Flow,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Agent,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,Storage,Save,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Update,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Get,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Delete,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Check,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Count,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Delete All,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Search,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,ION PDF,Edit Template on Canvas,,,Verificar en modo Test y modo Produccion,Verificar confirmación al cerrar con cambios (cross IONF-1126),IONF-1126 (indirect),🟠,INDIRECTA
+,,,,,Add Template on Canvas,,,Verificar en modo Test y modo Produccion,Verificar confirmación al cerrar con cambios (cross IONF-1126),IONF-1126 (indirect),🟠,INDIRECTA
+,,,,,Map Function,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,,Build a PDF,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,Tenant App,Use a Tenant Node,,,Verificar en modo Test y modo Produccion,Verificar que nodos de app connector ejecutan post-fix connections (IONF-1114),IONF-1114 (indirect),🟠,INDIRECTA
+,,,,,Add a node with Ionmind,,,Verificar en modo Test y modo Produccion,,,🟡,BASELINE
+,,,,Preview,,,,,,,🟡,BASELINE
+,,,,Commit,Create Separate Draft,,,,,IONF-1121 (indirect),🟡,BASELINE
+,,,,,Create From Existing,,,,,IONF-1121 (indirect),🟡,BASELINE
+,,,,,Create From saved State,,,,,IONF-1121 (indirect),🟡,BASELINE
+,,,,,Change Separate Draft,,,,,IONF-1121 (indirect),🟡,BASELINE
+,,,,,Save,,,,Post-commit: re-ingresar → sin false unsaved alert,IONF-1121,🟠,DIRECTA
+,,,,,Discard Changes,,,,,,,🟡,BASELINE
+,,,,,History,,,,,,,🟡,BASELINE
+,,,,Export,,,,,,,🟡,BASELINE
+,,,,Import,,,,,,,🟡,BASELINE
+,,,,Flow Pilot,Chat Sessions,,,,Verificar monitoreo de tokens por usuario,IONF-1020,🟠,DIRECTA
+,,,,,IA Tools,,,,Verificar tracking de tokens con Flow Pilot,IONF-1020,🟠,DIRECTA
+,,,Edit,,,,,,,,,🟡,BASELINE
+,,,Delete,,,,,,,,,🟡,BASELINE
+,,,Enable/Disable,,,,,,,,🟡,BASELINE
+,,,Description,Add Description,,,,,,,🟡,BASELINE
+,,,Preview,,,,,,,,🟡,BASELINE
+,Execution History,Data,,,,,,,,Verificar logs sin desfase +4h. Verificar sincronización con R2,IONF-1168 IONF-1049,🔴,DIRECTA
+,,Delete,,,,,,,,,🟡,BASELINE
+,Webhooks,Active/Inactive,,,,,,,,Rutas públicas sin CORS. Verificar webhook trigger ejecuta flow,IONF-1169,🔴,DIRECTA
+,,Delete,,,,,,,,,🟡,BASELINE
+,Connections (Integrations),Check Connection,,,,,,,,,🟠,BASELINE
+,,Reauthorize (API Key),,,,,,,,Reauthorize API Key → sobrescribe conexión (NO duplica). Verificar una sola conexión activa,IONF-1114,🔴,DIRECTA
+,,Reauthorize (OAuth),,,,,,,,,🟠,BASELINE
+,,Delete,,,,,,,,,🟡,BASELINE
+,Data Store,Data Store,Create,,,,,,,,🟡,BASELINE
+,,,Edit,,,,,,,,🟡,BASELINE
+,,,View,,,,,,,,🟡,BASELINE
+,,Data Structure,Create,,,,,,,,🟡,BASELINE
+,,,Edit,,,,,,,,🟡,BASELINE
+,PDF Templates,New Template,,,,,,,,Verificar confirmación al cerrar modal sin guardar,IONF-1126,🔴,DIRECTA
+,,Import JSON,,,,,,,,,🟡,BASELINE
+,,Export JSON,,,,,,,,,🟡,BASELINE
+,,Load Base PDF,,,,,,,,Verificar límite de tamaño. Archivo grande → error controlado sin crash,IONF-1116,🔴,DIRECTA
+,,Page Size,,,,,,,,,🟡,BASELINE
+,,Margins,,,,,,,,,🟡,BASELINE
+,,Text,,,,,,,,,🟡,BASELINE
+,,Multi Variable Text,,,,,,,,,🟡,BASELINE
+,,Image,,,,,,,,,🟡,BASELINE
+,,SVG,,,,,,,,,🟡,BASELINE
+,,Signature,,,,,,,,,🟡,BASELINE
+,,Table,,,,,,,,,🟡,BASELINE
+,,Code 128,,,,,,,,,🟡,BASELINE
+,,Shapes,,,,,,,,,🟡,BASELINE
+,,Dates,,,,,,,,,🟡,BASELINE
+,,Form Controls,,,,,,,,,🟡,BASELINE
+,,Escape/Cerrar con cambios,,,,,,,,Presionar Escape o cerrar modal con cambios → confirmación (no se pierden cambios silenciosamente),IONF-1126,🔴,DIRECTA
+,Credentials,Edit Key,,,,,,,,,🟡,BASELINE
+,,Select a Provider,,,,,,,,Verificar credenciales LLM → Flow Pilot funciona con token tracking,IONF-1020 (indirect),🟡,INDIRECTA
+,,Select a Model,,,,,,,,,🟡,BASELINE
+,,Delete Key,,,,,,,,,🟡,BASELINE
+,Connections (App Connectors),List,Base,Edit,,,,,,,🟡,BASELINE
+,,,Webhooks,Add,,,,,,,🟡,BASELINE
+,,,,Edit,,,,,,,🟡,BASELINE
+,,,,Delete,,,,,,,🟡,BASELINE
+,,,Nodes,Add,,,,,,,🟡,BASELINE
+,,,,Add Node with Ionmind,,,,,,,🟡,BASELINE
+,,,,Versioning a Node,,,,,,,🟡,BASELINE
+,,,,Edit,,,,,,,🟡,BASELINE
+,,,,Delete,,,,,,,🟡,BASELINE
+,,,Auth List,Add,,,,,,,🟡,BASELINE
+,,,,Edit,,,,,,,🟡,BASELINE
+,,,,Delete,,,,,,,🟡,BASELINE
+,,Create,Manual Connector,,,,,,,,🟡,BASELINE
+,,,Connector via Ionmind,Verify Notifications,,,,,,,🟡,BASELINE
+,,,Endpoints via Ionmind,Verify Notifications,,,,,,,🟡,BASELINE
+,,Draft Connector,,,,,,,,,🟡,BASELINE
+,Accounts,Add Account,,,,,,,,,🟡,BASELINE
+,,Edit Account,,,,,,,,,🟡,BASELINE
+,,Delete Account,,,,,,,,,🟡,BASELINE
+,Developer Apps,Add Developer Apps,,,,,,,,,🟡,BASELINE
+,,Configure App,,,,,,,,,🟡,BASELINE
+,,Edit App,,,,,,,,,🟡,BASELINE
+,,Delete App,,,,,,,,,🟡,BASELINE
+,Catalog,Add Catalog Item,Create Grapp,,,,,,,,🟡,BASELINE
+,,Edit Catalog,,,,,,,,,🟡,BASELINE
+,,Delete Catalog,,,,,,,,,🟡,BASELINE
+,Notifications,Open,,,,,,,,,🟢,BASELINE
+,,Mark As Read,,,,,,,,,🟢,BASELINE
+,,Delete,,,,,,,,,🟢,BASELINE
+,Settings,Edit Company Info,,,,,,,,,🟡,BASELINE
+,,Appearance,,,,,,,,,🟡,BASELINE
+,Teams,Invite Member,,,,,,,,,🟡,BASELINE
+,,Edit Invitation,,,,,,,,,🟡,BASELINE
+,,Delete Invitation,,,,,,,,,🟡,BASELINE
+,,Edit Permissions,Check Every Permissions,,,,,,,,🟡,BASELINE
+,Account,Update Personal Information,,,,,,,,,🟡,BASELINE
+,,Change Email,Verify if it affects Keycloak,,,,,,,,,🟡,BASELINE
+,Language,Change Language,Verify Missing Views with i18n,,,,,,,,,🟡,BASELINE
+,Billing/Scraping,Primer scraping,Confirmación de cobro,,,,,,,Verificar que aparece confirmación de cobro antes de proceder,IONF-1098,🔴,DIRECTA
+,,,Cobro confirmado → scraping ejecutado,,,,,,,Verificar que el scraping se ejecuta tras confirmación de cobro,IONF-1098,🔴,DIRECTA
+,,,,,,,,,,,,,
+ADMIN GATEWAY,Apps,Edit,,,,,,,,,🟡,BASELINE
+,,Delete,,,,,,,,,🟡,BASELINE
+,,New App,,,,,,,,,🟡,BASELINE
+,,App,Settings,Copy OAuth Key,,,,,,,🟡,BASELINE
+,,,,Copy App Url,,,,,,,🟡,BASELINE
+,,,,Set Image,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,Services,Filter by Slug,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Filter by Title,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Filter by Description,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Filter by Categories,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Filter by Type,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Enable/in bulk,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Disable/in bulk,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Enable,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Disable,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Edit,Set Image,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Title,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Details,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Description,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Features,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Groups,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Set Category,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Enable Badge,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Custom Credentials,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Copy Cart,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Copy Install,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,,Copy Callback,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Custom Integrations,Create,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,Integrations,List,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,,Claim,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,,Go Back,,,,Skipped,Verificar cuando se fusione la 1.4.x a DEVELOPMENT,,,BASELINE
+,,Listings,Etsy,,,,,,Verificar que Listings Etsy está disponible y funcional,IONF-1004,🟠,DIRECTA
+,,,WooCommerce,,,,,,Verificar que Listings WooCommerce está disponible y funcional,IONF-1004,🟠,DIRECTA
+,Customer,Login,Configured Channels,Grapp Instalation,,,,,,,🟡,BASELINE
+,,,,Grapp Execution History,,,,Verificar logs sin desfase de hora (cross IONF-1168),IONF-1168 (indirect),🟠,INDIRECTA
+,,,,Grapp Check Updates,,,,,,,🟡,BASELINE
+,,,,Grapp Edit a Flow Configuration,,,,,,,🟡,BASELINE
+,,,,Grapp Connections,,,,Verificar que reauth API Key no duplica conexiones en contexto Grapp,IONF-1114 (indirect),🟠,INDIRECTA
+,,,,Grapp Schedule,,,,Verificar hora correcta UTC/Local (cross IONF-1007),IONF-1007 (indirect),🟠,INDIRECTA
+,,,,Grapp Cron,,,,,,,🟡,BASELINE
+,,,Available Market Place,Grapp Without Global Apps,,,,Verificar que Etsy/WooCommerce listings aparecen (cross IONF-1004),IONF-1004 (indirect),🟡,INDIRECTA
+,,,,Grapp With Global Apps,,,,Verificar que Etsy/WooCommerce listings aparecen (cross IONF-1004),IONF-1004 (indirect),🟡,INDIRECTA
+,,,,Add a Connection,,,,,,,🟡,BASELINE
+,,,,Check a Connection,,,,,,,🟡,BASELINE
+,,,,Reauthorize,,,,,,,🟡,BASELINE
+,,,,Flow/Actions Configuration,,,,,,,🟡,BASELINE
+,,,Boards,Check all nodes functionality,,,,Verificar en modo Test y modo Produccion,Verificar Simple Decision numérica y Scheduler status en contexto Grapp,IONF-1128 IONF-1127 (indirect),🟠,INDIRECTA

@@ -88,6 +88,39 @@ Si durante la ejecución se detecta un comportamiento inesperado:
 5. Si es bug → documentar inmediatamente con formato BUG-[NNN]
 6. **Los screenshots de fallos son EVIDENCIA PERMANENTE del reporte**
 
+#### REGLA OBLIGATORIA — Sincronización de Test Matrix en tiempo real
+
+> ⚠️ **CRÍTICO**: Cuando el Catalyst ejecuta TCs con Playwright MCP (Opción B),
+> la columna `Estado` de `test-matrix.md` DEBE actualizarse **inmediatamente
+> después de cada TC ejecutado** — no al final de la sesión.
+
+1. **Después de cada TC**: Actualizar la fila correspondiente en `test-matrix.md`
+   - `⬜ Pendiente` → `✅ PASS` o `❌ FAIL — BUG-XXX`
+2. **Nunca** acumular resultados para actualizar al final de la sesión
+3. **Nunca** dejar TCs marcados como PASS sin haber verificado el flujo completo
+4. Si un TC cubre un flujo E2E (ej: registro → dashboard → settings), el TC
+   **NO es PASS** hasta que se verifique la última vista de la cadena
+
+#### REGLA OBLIGATORIA — Verificación Post-Acción
+
+> ⚠️ **CRÍTICO**: Un toast de éxito o un redirect al dashboard NO es suficiente
+> para marcar un TC como PASS. Se DEBE verificar el estado completo post-acción.
+
+Para cualquier TC que involucre creación, actualización o eliminación de datos:
+1. **Verificar persistencia**: Navegar a la vista que muestra los datos (ej: /profile, /settings)
+2. **Verificar permisos**: Navegar a TODAS las vistas principales (Settings, Users, Teams, Accounts) con el usuario que realizó la acción
+3. **Verificar consistencia**: Los datos mostrados en la vista de verificación coinciden con los ingresados
+4. **Si el TC crea un usuario/company nuevos**: Los TCs de regresión DEBEN re-ejecutarse con ese usuario nuevo, no solo con usuarios existentes
+
+**Ejemplo de lo que NUNCA debe pasar:**
+```
+❌ INCORRECTO: TC-001 (registro company) → Toast "Success" → Dashboard carga → "PASS"
+✅ CORRECTO:   TC-001 (registro company) → Toast "Success" → Dashboard carga 
+               → Navigate /settings → Verificar acceso → Navigate /profile 
+               → Verificar datos → RECIÉN ENTONCES → "PASS"
+```
+
+
 #### Selectores para Navegación
 > Consultar L2 del módulo para selectores específicos.
 

@@ -1,7 +1,8 @@
-# Módulo: Billing
+# Módulo: Billing / Subscriptions
 
-> Gestión de suscripciones, planes y pagos vía Stripe. Cubre la relación entre entidades de IONFLOW (Company/Account) y los productos/planes de Stripe.
-> Última actualización: 2026-06-02
+> Módulo que gestiona las suscripciones, entitlements, consumo de recursos y facturación vía Stripe.
+> Introducido en: IONF-1056 (Monetización unificada)
+> Última actualización: 2026-06-14
 
 ## Información General
 
@@ -9,383 +10,250 @@
 |-------|-------|
 | Nombre interno | billing |
 | Criticidad | 🟠 Alto |
-| Repos involucrados | `flow_binaries` (API + webhook handler), `gateway-ion` (UI billing/checkout) |
-| Estado | 🚧 En construcción — Fase 1 (ticket 86dzbhzdm) |
-| Dependencias externas | Stripe API (`github.com/stripe/stripe-go/v81`) |
-| Tickets origen | `86dzbhzdm` (Fase 1), `IONF-880` (Fase 2), `IONF-879` (Consumo) |
-
----
-
-## Overview
-
-El módulo de Billing gestiona las suscripciones de usuarios/compañías en IONFLOW conectándose con Stripe como procesador de pagos. Se implementa en dos fases:
-
-- **Fase 1** (este módulo): Conexión administrativa con Stripe — persistencia de estado de suscripción, webhooks, consulta de planes. **Sin enforcement**.
-- **Fase 2** (futuro): Conexión con consumo real medido (IONF-879) para aplicar límites, créditos y bloqueos.
-
-### Concepto Clave: Dos Mundos de Identidad
-
-La suscripción se vincula polimórficamente a dos tipos de entidad distintos:
-
-| Entidad | Auth | DB | Quién la crea | Stripe Customer |
-|---------|------|-----|---------------|-----------------|
-| **Company** (IONFLOW) | Laravel JWT RS256 | Per-tenant Postgres (`TENANT_DB`) | Usuario se auto-registra | Company → 1 Stripe Customer |
-| **Account** (Old Engine / Grapps) | WebComponent HMAC HS256 | Shared `MAIN_DB` con `account_id` FK | `DeveloperApp` la crea programáticamente | Account → 1 Stripe Customer |
+| Repos involucrados | `gateway` (schema BD + provisioning), `flow_binaries` (motor consumo + webhooks Stripe + API), `gateway-ion` (UI billing) |
+| Última actualización | 2026-06-14 — Discovery IONF-1056 |
 
 ---
 
 ## Frontend (gateway-ion)
 
-> ⚠️ **Pendiente de implementación** — Las rutas se documentarán cuando el frontend de billing esté construido.
+### Rutas
+| Ruta | Vista | Descripción |
+|------|-------|-------------|
+| `/billing` (tentativo) | Billing UI Tenant | Vista de planes, uso, suscripción activa |
+| `/admin/billing` (tentativo) | Admin plan editor | Editor de planes, features y ventanas |
 
-### Rutas esperadas (basadas en análisis técnico)
+### Componentes clave
+| Componente | Ubicación | Descripción |
+|-----------|-----------|-------------|
+| Tenant billing UI | `src/views/billing/` (tentativo) | Muestra plan, barras de consumo por feature, reset date |
+| Admin plan editor | `src/views/admin/billing/` (tentativo) | CRUD de products, plans, plan_features (ventanas) |
 
-| Ruta | Vista | Descripción | Permiso esperado |
-|------|-------|-------------|------------------|
-| `/billing` | Billing Dashboard | Estado de suscripción actual, tier, fechas | Owner de company |
-| `/billing/checkout` | Checkout redirect | Redirige a Stripe Checkout Session | Owner de company |
-| `/billing/portal` | Portal redirect | Redirige a Stripe Billing Portal | Owner de company |
-
-### Stores (Pinia) esperados
-
-| Store | Estado que gestiona |
-|-------|---------------------|
-| `useBillingStore` | Tier actual, status, period dates, stripe_customer_id |
+> ⚠️ Las rutas y componentes exactos están pendientes de confirmar en el repositorio (módulo en construcción).
 
 ---
 
 ## API (flow_binaries)
 
-### Endpoints — Fase 1A: Stripe Infrastructure
+### Endpoints Tenant (`/api/1.0/tenants/{id}/`, JWT + TenantAuth, permiso `ManageBilling` o `ReadBilling`)
 
-| Método | Path | Descripción | Auth requerida |
-|--------|------|-------------|----------------|
-| POST | `/stripe/webhook` | Endpoint público para recibir webhooks de Stripe | ❌ No (verificación por firma `STRIPE_WEBHOOK_SECRET`) |
+| Método | Path | Permiso | Descripción |
+|--------|------|---------|-------------|
+| GET | `/plans` | ReadBilling | Planes públicos disponibles |
+| GET | `/subscription` | ReadBilling | Suscripción completa (plan, pending_plan, data, timestamps) |
+| GET | `/subscription/usage` | ReadBilling | Consumo real por feature (persiste lazy resets) |
+| POST | `/subscription/cancel` | ManageBilling | Cancela la suscripción (`canceled_at` + `expires_at`) |
+| POST | `/subscription/resume` | ManageBilling | Reanuda suscripción cancelada |
+| POST | `/checkout-session` | ManageBilling | Crea sesión de pago Stripe (solo primera suscripción → 409 si ya existe) |
+| POST | `/subscription/change-plan` | ManageBilling | Cambia de plan (`{plan_slug, interval?, when?}`) |
+| POST | `/subscription/overage` | ManageBilling | Activa/modifica overage para un feature (`{feature_slug, units}`) |
+| POST | `/billing-portal` | ManageBilling | Crea sesión del portal de Stripe |
 
-### Endpoints — Fase 1B: Subscription Query
+### Endpoints Admin (`/billing/...`)
 
-| Método | Path | Descripción | Auth requerida |
-|--------|------|-------------|----------------|
-| GET | `/api/1.0/tenants/{tenantId}/subscription` | Consulta suscripción de una Company | ✅ JWT (solo owner) |
-| GET | `/api/2.0/webcomponent/subscription` | Consulta suscripción de un Account | ✅ WebComponent HMAC |
+| Método | Path | Descripción |
+|--------|------|-------------|
+| GET/POST/DELETE | `/billing/products` | CRUD de productos |
+| GET/POST/PUT/DELETE | `/billing/plans` | CRUD de planes |
+| GET/PUT | `/billing/features` | Listar y actualizar features |
+| POST | `/billing/plans/{planId}/features` | Agregar UNA ventana de feature al plan |
+| PUT/DELETE | `/billing/plan-features/{planFeatureId}` | Modificar/eliminar ventana específica |
 
-### Endpoints — Fase 1C: Checkout & Portal
-
-| Método | Path | Descripción | Auth requerida |
-|--------|------|-------------|----------------|
-| POST | `/api/1.0/tenants/{tenantId}/subscription/checkout` | Crear Stripe Checkout Session para Company | ✅ JWT (solo owner) |
-| POST | `/api/1.0/tenants/{tenantId}/subscription/portal` | Generar URL de Stripe Billing Portal | ✅ JWT (solo owner) |
-| POST | `/api/2.0/webcomponent/subscription/checkout` | Checkout para Account | ✅ WebComponent HMAC |
-| POST | `/api/2.0/webcomponent/subscription/portal` | Portal para Account | ✅ WebComponent HMAC |
-
-### Payloads (request/response) — Esperados
-
-```json
-// GET /api/1.0/tenants/{tenantId}/subscription
-// Response:
-{
-  "subscribable_type": "company",
-  "subscribable_id": 123,
-  "stripe_customer_id": "cus_xxx",
-  "stripe_subscription_id": "sub_xxx",
-  "tier": "pro",
-  "status": "active",
-  "current_period_start": "2026-01-01T00:00:00Z",
-  "current_period_end": "2026-02-01T00:00:00Z",
-  "last_payment_date": "2026-01-01T00:00:00Z"
-}
-```
-
-```json
-// POST /api/1.0/tenants/{tenantId}/subscription/checkout
-// Response:
-{
-  "checkout_url": "https://checkout.stripe.com/c/pay/cs_xxx"
-}
-```
-
-```json
-// POST /api/1.0/tenants/{tenantId}/subscription/portal
-// Response:
-{
-  "portal_url": "https://billing.stripe.com/p/session/xxx"
-}
-```
+### Códigos de respuesta clave
+| Código | Situación |
+|--------|-----------|
+| 200/201 | Operación exitosa |
+| 403 (`ErrQuotaBlocked`) | Feature bloqueada por consumo agotado |
+| 409 | Intento de crear segunda suscripción (checkout-session) |
+| 422 | Gates de overage fallaron (plan free, dunning, feature no en plan, etc.) |
 
 ---
 
-## Canvas (webcomponents-flow)
-
-> No aplica — El módulo de Billing no involucra el canvas de nodos.
-
----
-
-## Database
-
-> ⚠️ Schema propuesto — pendiente de implementación por DB expert.
+## Database (PostgreSQL — gateway schema)
 
 ### Tablas principales
 
-| Tabla | Descripción | Ubicación |
-|-------|-------------|-----------|
-| `subscriptions` | Suscripciones polimórficas (Company o Account) | `MAIN_DB` |
+| Tabla | Descripción |
+|-------|-------------|
+| `products` | Productos Stripe (IONFLOW, IONPDF, etc.) |
+| `plans` | Planes comerciales (free, go, pro, ion, enterprise) |
+| `features` | Features medibles (execution_time, ai_credits, pdf_templates, pdf_impressions) |
+| `plan_features` | Allowances por plan+feature+ventana (1 fila por ventana) |
+| `subscriptions` | Suscripción activa por company (1 per company) |
+| `feature_consumptions` | Consumo real por company+feature+ventana (fuente de verdad) |
+| `feature_consumption_logs` | Log audit append-only de cada consumo |
+| `subscription_renewals` | Log audit de ciclo de vida Stripe |
 
-### Modelo de datos propuesto
+### Columnas clave — `subscriptions`
 
-| Tabla | Columna | Tipo | Nullable | Descripción |
-|-------|---------|------|----------|-------------|
-| `subscriptions` | `id` | `uint64` / `uuid` | NO | PK |
-| `subscriptions` | `subscribable_type` | `string` | NO | `"company"` o `"account"` |
-| `subscriptions` | `subscribable_id` | `uint64` | NO | FK polimórfico |
-| `subscriptions` | `stripe_customer_id` | `string` | NO | ID de customer en Stripe |
-| `subscriptions` | `stripe_subscription_id` | `string` | YES | ID de suscripción en Stripe (null para Free/ION) |
-| `subscriptions` | `tier` | `enum` | NO | `free`, `go`, `pro`, `teams`, `ion` |
-| `subscriptions` | `status` | `enum` | NO | `active`, `past_due`, `canceled`, `unpaid`, `trialing` |
-| `subscriptions` | `current_period_start` | `timestamp` | YES | Inicio del período actual |
-| `subscriptions` | `current_period_end` | `timestamp` | YES | Fin del período (expiry_date) |
-| `subscriptions` | `last_payment_date` | `timestamp` | YES | Último pago exitoso |
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| `subscriber_type/id` | morph | Entidad suscrita (company o user) |
+| `plan_id` | FK | Plan actual |
+| `pending_plan_id` | FK nullable | Cambio de plan diferido |
+| `data` | jsonb | Snapshot de entitlement (price + overage + ventanas por feature) |
+| `stripe_subscription_id` | UK nullable | ID de suscripción en Stripe |
+| `canceled_at` | timestamp | Cancelación solicitada por usuario |
+| `expires_at` | timestamp | Cuándo termina el acceso |
+| `renews_at` | timestamp | Próxima renovación (base lines only) |
 
-### Relaciones (Foreign Keys)
+### Columnas clave — `feature_consumptions`
 
-| Tabla origen | Columna | Tabla destino | Columna destino | Tipo |
-|-------------|---------|--------------|-----------------|------|
-| `subscriptions` | `subscribable_id` (when type=`company`) | `companies` | `id` | Polimórfico |
-| `subscriptions` | `subscribable_id` (when type=`account`) | `accounts` | `id` | Polimórfico |
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| `feature_id` | FK bigint | Feature asociado |
+| `subscriber_type/id` | morph | Company o user |
+| `measure` | string | `absolute` \| `daily` \| `monthly` \| `weekly` \| `yearly` |
+| `consumed` | decimal | Uso actual en la ventana |
+| `available` | decimal | Límite; `-1` = ilimitado |
+| `reset_at` | timestamp | Próximo reset lazy; `NULL` = nunca (absolute) |
+| `blocked` | boolean GENERATED | `available <> -1 AND consumed >= available` — solo lectura |
+| `metadata` | jsonb | `{ period_unit, period_count }` |
 
-### Estados y transiciones
+### Estados de suscripción (derivados de timestamps)
 
 ```
-                    ┌─────────────┐
-                    │  (no record)│ ── checkout ──→ ┌──────────┐
-                    │  = "free"   │                 │ trialing │
-                    └─────────────┘                 └────┬─────┘
-                                                        │ payment success
-                                                        ▼
-┌──────────┐   invoice.payment_failed   ┌──────────┐
-│ past_due │ ◄───────────────────────── │  active   │
-└────┬─────┘                            └────┬─────┘
-     │ payment success                       │ customer.subscription.deleted
-     │ ──────────────► active                │
-     │                                       ▼
-     │ subscription.deleted             ┌──────────┐
-     └─────────────────────────────────►│ canceled │
-                                        └──────────┘
-
-     Tier ION: No pasa por Stripe, se asigna manualmente.
-     Status siempre "active", sin stripe_subscription_id.
+[Active]     canceled_at IS NULL AND (expires_at IS NULL OR expires_at > now)
+[Canceled]   canceled_at IS NOT NULL  (acceso hasta expires_at)
+[Dunning]    canceled_at IS NULL AND expires_at IS NOT NULL  (pago fallido)
+[Lapsed]     expires_at <= now  (sin acceso, hasta webhook deleted)
+[Free]       Post deleted webhook → DowngradeToFree
 ```
+
+### Seed defaults de entitlements
+
+| Feature \ Plan | free | go | pro | ion |
+|---|---|---|---|---|
+| `execution_time` (s/mes) | 600 | 3,600 | 86,400 | -1 (ilimitado) |
+| `ai_credits` | 100 | 100,000 | 500,000 | -1 |
+| `pdf_templates` (absoluto) | 1 | 3 | -1 | -1 |
+| `pdf_impressions` | 50/mes + 10/día | 2,000/mes + 100/día | -1 | -1 |
 
 ### Queries de verificación frecuentes
 
 ```sql
--- Verificar suscripción de una company
-SELECT * FROM subscriptions
-WHERE subscribable_type = 'company' AND subscribable_id = '<company_id>';
-
--- Verificar suscripción de un account
-SELECT * FROM subscriptions
-WHERE subscribable_type = 'account' AND subscribable_id = '<account_id>';
-
--- Buscar suscripción por stripe_customer_id
-SELECT * FROM subscriptions
-WHERE stripe_customer_id = '<cus_xxx>';
-
--- Verificar transición de estado post-webhook
-SELECT id, tier, status, current_period_end, last_payment_date
+-- Verificar suscripción activa de una company
+SELECT id, plan_id, canceled_at, expires_at, renews_at, stripe_subscription_id, data
 FROM subscriptions
-WHERE stripe_subscription_id = '<sub_xxx>';
+WHERE subscriber_type = 'company' AND subscriber_id = <company_id>;
 
--- Listar todas las suscripciones activas
-SELECT subscribable_type, subscribable_id, tier, status, current_period_end
-FROM subscriptions
-WHERE status = 'active'
-ORDER BY current_period_end ASC;
+-- Estado derivado de la suscripción
+SELECT
+  id,
+  CASE
+    WHEN canceled_at IS NULL AND (expires_at IS NULL OR expires_at > NOW()) THEN 'Active'
+    WHEN canceled_at IS NOT NULL THEN 'Canceled-serving'
+    WHEN canceled_at IS NULL AND expires_at IS NOT NULL THEN 'Dunning'
+    WHEN expires_at <= NOW() THEN 'Lapsed'
+  END AS derived_state
+FROM subscriptions WHERE subscriber_id = <company_id>;
 
--- Verificar tier ION (empleados internos)
-SELECT * FROM subscriptions
-WHERE tier = 'ion';
+-- Ver consumo actual por feature
+SELECT fc.measure, fc.consumed, fc.available, fc.blocked, fc.reset_at, f.slug
+FROM feature_consumptions fc
+JOIN features f ON fc.feature_id = f.id
+WHERE fc.subscriber_type = 'company' AND fc.subscriber_id = <company_id>
+ORDER BY f.slug, fc.measure;
 
--- Detectar suscripciones vencidas (past_due o expiradas)
-SELECT * FROM subscriptions
-WHERE status = 'past_due'
-   OR (status = 'active' AND current_period_end < NOW());
+-- Verificar renewal log (ciclo de vida Stripe)
+SELECT kind, event, period_start, period_end, amount, currency, created_at
+FROM subscription_renewals
+WHERE subscription_id = <sub_id>
+ORDER BY created_at DESC;
+
+-- Verificar logs de consumo de un feature
+SELECT consumed_before, consumed_after, qty, created_at, notification_type
+FROM feature_consumption_logs
+WHERE feature_consumption_id = <fc_id>
+ORDER BY created_at DESC
+LIMIT 20;
 ```
 
 ---
 
-## Stripe Integration
+## Lógica Backend (flow_binaries)
 
-### Tiers y Productos
+### Servicios involucrados
 
-| Tier | Stripe Product | Price | Notas |
-|------|---------------|-------|-------|
-| `free` | Sin producto | $0 | Estado default sin suscripción de Stripe |
-| `go` | `prod_XXX` | Config en env (`STRIPE_GO_PRICE_ID`) | Plan de entrada |
-| `pro` | `prod_XXX` | Config en env (`STRIPE_PRO_PRICE_ID`) | Tier medio |
-| `teams` | `prod_XXX` | Config en env (`STRIPE_TEAMS_PRICE_ID`) | Multi-usuario |
-| `ion` | Sin producto | Gratis | Interno/empleados. Ilimitado. Manual. |
+| Service | Archivo (tentativo) | Función |
+|---------|---------------------|---------|
+| `GuardFeature` / `IsBlocked` | `backend/ion/services/billing*.go` | Evalúa si feature está bloqueada antes de ejecución |
+| `RecordConsumption` | `backend/ion/services/billing*.go` | Registra consumo, aplica lazy reset, dispara meter Stripe |
+| `SyncConsumptions` | `backend/ion/services/billing*.go` | Sincroniza feature_consumptions desde plan_features |
+| `EnsureSubscription` | `backend/ion/services/billing*.go` | Garantiza sub free + sync en primer touch |
+| Stripe webhook handlers | `backend/ion/webhooks/stripe*.go` | `payment_succeeded`, `payment_failed`, `subscription.deleted` |
 
-### Webhook Events Procesados
+### Reglas de negocio críticas
 
-| Evento Stripe | Acción en IONFLOW | Campos actualizados |
-|---------------|-------------------|---------------------|
-| `checkout.session.completed` | Crear registro de suscripción, vincular Stripe Customer | `stripe_customer_id`, `stripe_subscription_id`, `tier`, `status` |
-| `customer.subscription.created` | Insert/update suscripción | `tier`, `status`, `current_period_start`, `current_period_end` |
-| `customer.subscription.updated` | Actualizar (maneja cambios de plan) | `tier`, `status`, `current_period_start`, `current_period_end` |
-| `customer.subscription.deleted` | Marcar como `canceled` | `status` → `canceled` |
-| `invoice.payment_succeeded` | Actualizar pago | `last_payment_date`, `status` → `active` |
-| `invoice.payment_failed` | Marcar como moroso | `status` → `past_due` |
+1. **Guard fail-open**: si hay error de infra, se permite (no se bloquea por error técnico)
+2. **Grace execution**: 1 ejecución de gracia cuando se agota saldo sin overage → luego bloqueo
+3. **Lazy resets**: no hay cron; el reset ocurre al leer/escribir cuando vence `reset_at`
+4. **Anchor lattice**: `reset_at` avanza desde el anchor anterior, nunca desde "now"
+5. **billableDelta**: `max(0, min(after, included+overage) - max(before, included))` — nunca over-bill
+6. **renews_at solo de base lines**: overage invoices no mueven la fecha de renovación del plan base
+7. **payment_failed**: revoca TODO el overage + abre dunning; recovery requiere re-activar overage manualmente
+8. **-1 = ilimitado**: nunca bloquea, nunca cobra overage
 
-### Variables de Entorno Requeridas
+### Archivos centinela
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `STRIPE_SECRET_KEY` | API key de Stripe (server-side) | `sk_test_xxx` |
-| `STRIPE_WEBHOOK_SECRET` | Secret para verificar firma de webhooks | `whsec_xxx` |
-| `STRIPE_GO_PRICE_ID` | Price ID del plan Go | `price_xxx` |
-| `STRIPE_PRO_PRICE_ID` | Price ID del plan Pro | `price_xxx` |
-| `STRIPE_TEAMS_PRICE_ID` | Price ID del plan Teams | `price_xxx` |
-
-### Flujo de Checkout (Secuencia)
-
-```
-Usuario (Owner) → IONFLOW API → Stripe Checkout Session → Stripe Hosted Page
-                                                              │
-                                                        (pago exitoso)
-                                                              │
-                                                              ▼
-Stripe webhook → IONFLOW /stripe/webhook → Verify signature → Route event
-                                                                   │
-                                              ┌────────────────────┤
-                                              ▼                    ▼
-                                    checkout.session       customer.subscription
-                                    .completed             .created
-                                              │                    │
-                                              ▼                    ▼
-                                    Create/Update           Update subscription
-                                    subscription record     tier, status, dates
-```
-
----
-
-## Componentes de Código (flow_binaries)
-
-### Archivos nuevos esperados
-
-| Archivo / Paquete | Fase | Descripción |
-|--------------------|------|-------------|
-| `backend/ion/services/stripe/` | 1A | Stripe API client (Go wrapper) |
-| `backend/ion/models/subscription.go` | 1A (interface) / 1B (impl) | Modelo de suscripción + binding polimórfico |
-| `backend/ion/services/subscription_service.go` | 1A (interface) / 1B (impl) | Servicio CRUD de suscripciones |
-| `backend/routes/api.go` | 1A-1C | Nuevas rutas de webhook, query, checkout |
-| `backend/ion/middleware/` | 1C | Middleware de inyección de contexto de suscripción |
-| `backend/ion/controllers/` | 1B-1C | Controllers de billing y suscripciones |
-
-### Patrones a seguir
-
-- **Polimorfismo**: Seguir el patrón existente de `Webhook` (`WebhookableType` + `WebhookableId`)
-- **Webhook HTTP**: Seguir la convención existente `/webhook/{tenantId}/{webhookUuid}`
-- **Middleware**: Insertar después de JWT/Tenant resolution como paso read-only (Fase 1)
-- **Service interface**: Definir interface primero (1A), implementar con GORM después (1B)
+| Repo | Área | Razón |
+|------|------|-------|
+| `flow_binaries` | `backend/ion/services/` | Motor de consumo y guard |
+| `flow_binaries` | `backend/ion/controllers/` | Endpoints billing API |
+| `flow_binaries` | `backend/ion/webhooks/` | Handlers de Stripe |
+| `gateway` | `database/migrations/` | Schema de todas las tablas de billing |
+| `gateway` | `database/seeders/` | Seed de planes, features y entitlements |
+| `gateway-ion` | `src/views/billing/` | UI de billing del tenant |
 
 ---
 
 ## Impacto Cruzado
 
 ### Módulos que Billing afecta
+
 | Módulo destino | Componente afectado | Tipo | Ejemplo |
-|---------------|--------------------|-----------------|---------| 
-| **Auth** | Middleware pipeline | Middleware | Billing inyecta contexto de suscripción post-auth (read-only F1) |
-| **Boards** | Ejecución de flows (Fase 2) | Ejecución | Futuro: enforcement de límites por tier |
-| **Executions** | Consumo (Fase 2) | Datos | Futuro: billing consultará `UnitsConsumed` de executions |
+|---------------|--------------------|----|---------|
+| **Executions** | Ejecución de flows | Bloqueo | Guard bloquea ejecución si `execution_time` agotado |
+| **Boards** | Ejecución live/dev | Bloqueo | Schedules y webhooks quedan activos pero la ejecución no corre |
+| **PDF Templates** | Creación de templates | Quota | `pdf_templates` es absoluto; si se agota no se crean más |
+| **Nodes (PDF)** | Nodo PDF en canvas | Bloqueo | `pdf_impressions` falla mid-execution si agotado |
+| **Dashboard** | Métricas de consumo | Datos | Dashboard debe reflejar consumo real del ledger |
 
 ### Módulos que afectan a Billing
+
 | Módulo origen | Componente | Tipo | Ejemplo |
-|--------------|------------|-----------------|---------| 
-| **Auth** | JWT + Tenant resolution | Middleware | Billing requiere auth válida para consultar suscripción |
-| **Accounts** | Account path | Datos | Accounts pueden tener suscripciones (polimórfico) |
-| **Developer Apps** | Creación de accounts | Datos | Dev apps crean accounts que pueden tener billing |
-| **Stripe (externo)** | Webhooks | Datos | Eventos Stripe actualizan estado de suscripción |
+|--------------|------------|------|---------|
+| **Executions** | `active_seconds` + `idle_seconds` | Consumo | Cada ejecución alimenta `execution_time` en el ledger |
+| **PDF Templates** | Creación/uso de template | Consumo | Usa `pdf_templates` (quota) y `pdf_impressions` (ventana) |
+| **Stripe** | Webhooks | Lifecycle | `payment_failed/succeeded/deleted` cambian estado de sub y entitlements |
 
 ### Tablas compartidas
+
 | Tabla | Módulos que la usan | Riesgo si cambia |
 |-------|---------------------|------------------|
-| `subscriptions` (PG) | Billing (exclusivo) | Solo billing por ahora; Fase 2 lo expone a más módulos |
-| `companies` (PG) | Billing (subscribable_id), Auth, TODOS | FK polimórfico: cambios en companies afectan billing |
-| `accounts` (PG) | Billing (subscribable_id), Accounts, Integrations | FK polimórfico: cambios en accounts afectan billing |
+| `feature_consumptions` | Billing, Executions, PDF Templates | Consumo incorrecto → bloqueos falsos o facturación errónea |
+| `subscriptions` | Billing, Boards, Dashboard | Estado de sub incorrecto → acceso no controlado |
+| `plan_features` | Billing, Admin | Cambio de allowances afecta entitlements de TODOS los subscribers |
 
 ---
 
-## Preguntas Abiertas (sin respuesta del PM)
+## Edge Cases Conocidos (Discovery)
 
-> ⚠️ Estas preguntas fueron identificadas en el análisis técnico y bloquean parcialmente Phase 1B.
-
-| ID | Pregunta | Impacto |
-|----|----------|---------|
-| Q1 | ¿Modelo polimórfico (Company+Account) es correcto, o solo un tipo inicialmente? | Diseño de tabla |
-| Q2 | ¿Quién maneja billing para Accounts creados por DeveloperApp? | Flujo de checkout/portal |
-| Q3 | ¿Cómo distinguir company owner vs member? (no hay `role` en `company_user`) | Permisos de billing |
-| Q4 | ¿Cómo se asigna el tier ION? ¿Manual? ¿Email domain? ¿Flag? | Implementación de override |
-| Q5 | ¿Free es suscripción de Stripe con $0 o simplemente ausencia de suscripción? | Lógica de createOrUpdate |
-
----
-
-## Test Data
-
-### Datos necesarios para testing
-
-| Dato | Cómo obtenerlo | Notas |
-|------|----------------|-------|
-| Stripe test API key | Stripe Dashboard → Developers → API keys (Test mode) | `sk_test_xxx` |
-| Stripe webhook secret | Stripe CLI o Dashboard | `whsec_xxx` |
-| Stripe test Products/Prices | Crear en Stripe Dashboard (Test mode) | Uno por tier (Go, Pro, Teams) |
-| Company de prueba | Crear via UI o DB seed | Para probar Company path |
-| Account de prueba | Crear via DeveloperApp API | Para probar Account path |
-| Tarjetas de prueba Stripe | `4242424242424242` (success), `4000000000000341` (fail) | [Stripe test cards](https://docs.stripe.com/testing) |
-
-### Herramientas de testing
-
-| Herramienta | Uso |
-|-------------|-----|
-| **Stripe CLI** | `stripe listen --forward-to localhost:PORT/stripe/webhook` — forward webhooks locales |
-| **Stripe CLI trigger** | `stripe trigger checkout.session.completed` — simular eventos |
-| **Postman** | Test de endpoints de query/checkout/portal |
-| **DBeaver** | Validación de tabla `subscriptions` |
+| ID | Descripción | Severidad |
+|----|-------------|-----------|
+| EC-001 | `renews_at` no debe avanzar en facturas de overage (solo base lines) | 🔴 Crítico |
+| EC-002 | `payment_succeeded` mientras `canceled_at IS NOT NULL` no debe deshacer la cancelación | 🔴 Crítico |
+| EC-003 | Lazy reset al 100% de consumo: `consumed` debe empezar en `qty`, no en `consumed + qty` | 🔴 Crítico |
+| EC-004 | Overage `billableDelta` al cruzar el límite de `included`: solo cobra la porción sobre el límite | 🟠 Alto |
+| EC-005 | Overage en plan anual + invoice mensual: no debe tocar `renews_at` anual | 🟠 Alto |
+| EC-006 | Enterprise tier: sin features configuradas → guard bloquea todo por default | 🟠 Alto |
+| EC-007 | Stripe redelivery de meter event no debe duplicar cargo (idempotencia `fcl:<log_id>`) | 🟠 Alto |
+| EC-008 | `webcomponents-flow` aún lee shape antiguo de suscripción (pendiente migración) | 🟡 Medio |
 
 ---
 
-## Tests E2E Existentes (bot-test)
-
-> ❌ No existen tests E2E para Billing — módulo completamente nuevo.
-
-### Tests a crear
-
-| Test | Cobertura | Prioridad |
-|------|-----------|-----------|
-| `billing-subscription-query.spec.ts` | Query de suscripción por Company y Account | 🔴 |
-| `billing-webhook-processing.spec.ts` | Procesamiento de webhooks de Stripe (simulated) | 🔴 |
-| `billing-checkout-flow.spec.ts` | Flujo de checkout end-to-end | 🟠 |
-| `billing-tier-ion.spec.ts` | Override de tier ION para empleados | 🟡 |
-| `billing-no-enforcement.spec.ts` | Regresión: flows siguen ejecutándose sin restricción | 🟡 |
-
----
-
-## Edge Cases Conocidos
-
-| ID | Descripción | Severidad | Mitigación |
-|----|-------------|-----------|------------|
-| EC-001 | Webhook duplicado — Stripe reintenta y el handler procesa el mismo evento dos veces | 🔴 Crítico | Handlers idempotentes, check de event ID procesado |
-| EC-002 | Race condition — Dos webhook events para la misma suscripción llegan simultáneamente | 🟠 Alto | DB locking o `ON CONFLICT` upsert en `stripe_subscription_id` |
-| EC-003 | Estado divergente — DB local desincronizado de Stripe (sin job de reconciliación en F1) | 🟠 Alto | Aceptado como limitación de Fase 1; sync job en futuro |
-| EC-004 | Company sin owner — `company_user` no tiene `role`; no se puede determinar quién accede a billing | 🟠 Alto | Depende de Q3 del PM |
-| EC-005 | Webhook sin firma válida — Si no se valida `STRIPE_WEBHOOK_SECRET`, cualquiera puede enviar eventos falsos | 🔴 Crítico | Verificación de firma obligatoria en handler |
-| EC-006 | Tier ION sin Stripe — Empleados no tienen `stripe_subscription_id`; queries deben manejar null | 🟡 Medio | Check de `tier == 'ion'` antes de llamar Stripe |
-| EC-007 | Free tier ambiguity — ¿Registro sin suscripción o suscripción con tier=free? Afecta queries | 🟡 Medio | Depende de Q5 del PM |
-
----
-
-## Historial de Actualizaciones
+## Historial de Cambios
 
 | Fecha | Tickets | Cambios | Actualizado por |
-|-------|---------|---------|-----------------|
-| 2026-06-02 | `86dzbhzdm` | Creación inicial del módulo L2 Billing basado en análisis técnico de Fase 1 Stripe | QA Catalyst |
+|-------|---------|---------|----------------|
+| 2026-06-14 | IONF-1056 | Creación inicial del módulo — Discovery prototipo | QA Catalyst |

@@ -1,0 +1,17 @@
+﻿internal_id,custom_id,nombre,status,prioridad,assignees,date_created,url
+86e29hc1r,IONF-1169,Quitar CORS para rutas publicas de webhooks,ready to merge,normal,Gustavo Mamani,1783708194607,https://app.clickup.com/t/86e29hc1r
+86e29e6jt,IONF-1168,Error de visualización (+4 horas) en los logs de ejecución de Company Schedules en UI Gateway,ready to merge,normal,Enrique Vicente,1783699365928,https://app.clickup.com/t/86e29e6jt
+86e23kyqt,IONF-1149,Protocolo de Despliegue Iond - Version v0.1.0,ready to merge,high,Rodolfo Merlo Ali,1782859694634,https://app.clickup.com/t/86e23kyqt
+86e22fzvx,IONF-1128,"v0.1.0 - Boards — Simple Decision compara valores numéricos como strings, resultado incorrecto",ready to merge,high,Gustavo Mamani,1782713659324,https://app.clickup.com/t/86e22fzvx
+86e22fzve,IONF-1127,"v0.1.0 - Boards — Scheduler ejecuta flow correctamente pero status queda en ""error""",ready to merge,high,Enrique Vicente,1782713657403,https://app.clickup.com/t/86e22fzve
+86e22fzut,IONF-1126,v0.1.0 - PDF Templates — Cambios sin guardar se pierden al presionar Escape o cerrar modal sin confirmación,ready to merge,high,Alex Chura,1782713654593,https://app.clickup.com/t/86e22fzut
+86e22fzrp,IONF-1121,v0.1.0 - Boards — Board sugiere cambios sin guardar tras commit exitoso al re-ingresar a la vista,ready to merge,normal,Gustavo Mamani,1782713645389,https://app.clickup.com/t/86e22fzrp
+86e22fzq9,IONF-1116,"v0.1.0 - PDF Templates — Sin límite de tamaño para Load Base PDF, la vista crashea con archivos grandes",ready to merge,high,Alex Chura,1782713635718,https://app.clickup.com/t/86e22fzq9
+86e22fzq7,IONF-1114,v0.1.0 - Connections — Reautorización por API Key crea conexión duplicada en lugar de sobrescribir,ready to merge,high,Gustavo Mamani,1782713632060,https://app.clickup.com/t/86e22fzq7
+86e20nmqx,IONF-1098,Implementar confirmación y cobro para primer escrapeo de plataformas,ready to merge,high,Jhoel_Legua,1782313028875,https://app.clickup.com/t/86e20nmqx
+86e1r2c6z,IONF-1075,[Ionflow] Refactorizar flujo y formulario de registro de compañía,ready to merge,normal,Gustavo Mamani,1780688347159,https://app.clickup.com/t/86e1r2c6z
+86e1mdnbq,IONF-1049,Syncronizacion de logs con R2,ready to merge,normal,Alex Chura,1780088359905,https://app.clickup.com/t/86e1mdnbq
+86e1gr6ug,IONF-1030,Mejoras de la interface en ionflow dualtrack,ready to merge,normal,Jose Enrique Ricaldi Juchani,1779403519376,https://app.clickup.com/t/86e1gr6ug
+86e1fawg0,IONF-1020,Implementar Monitoreo de Uso de Tokens por Usuario en Ion Flow (Flow Pilot),ready to merge,high,Jhoel_Legua,1779208004365,https://app.clickup.com/t/86e1fawg0
+86e19dtkw,IONF-1007,v0.1.0 - Error de sincronización UTC/Local en los disparadores de Company Schedules,ready to merge,high,Enrique Vicente,1778188793358,https://app.clickup.com/t/86e19dtkw
+86e18mbg9,IONF-1004,Soporte de Listings para Etsy y WooCommerce en Gateway,ready to merge,normal,Sonia Vale,1778086737292,https://app.clickup.com/t/86e18mbg9

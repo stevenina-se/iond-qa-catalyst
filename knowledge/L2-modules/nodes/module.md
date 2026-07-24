@@ -10,7 +10,7 @@
 | Criticidad | 🔴 Crítico |
 | Repo | `flow_binaries` — `core/actions/` |
 | Motor | Go + SQLite (ejecución por nodo) |
-| Última actualización | Initial setup — Fase 5 |
+| Última actualización | 2026-07-09 — v0.1.0 batch update |
 
 ---
 
@@ -62,7 +62,7 @@
 |-----------|------|----------------------|
 | `Agent/` | Agent | Config de system_prompt, input_prompt, timeout |
 | `AutoMapper/` | Mapper (transformer) | Editor visual del sub-flow mapper |
-| `Code/` | Code | Editor de código con selector Python/JS |
+| `Code/` | Code | Editor de código con selector Python/JS + botón **Ask FlowPilot** ✨ (IONF-950) |
 | `Condition/` | Simple Decision | Config de field/operator/value |
 | `Mapper/` | Form (mapper) | Editor de formulario con params |
 | `Store/` | Persistent Data | Config de data_store, key, params |
@@ -106,6 +106,15 @@
 - El código se lee desde `staticData` (no `processedData`) para evitar inyección de expresiones
 - Las variables se pasan como pares name/value
 - Soporta dependencias externas (pip/npm packages)
+
+**Integración con FlowPilot (IONF-950):**
+- Botón ✨ **"Ask Flow Pilot"** en el drawer de configuración del Code node
+- Al pulsar, abre el chat de FlowPilot con contexto del nodo: lenguaje, variables, dependencias, nodos downstream
+- FlowPilot genera código válido que respeta convenciones del Code Runner: sin `main()`, sin `processedData`, usando `input` para variables y `return` para resultados
+- También corrige errores: lee logs de error de ejecución y genera código corregido
+- Backend: regla CONFIDENTIALITY en `system.go` del agente para proteger contenido de skills
+- Frontend: nuevo módulo `codeContext.ts` (función pura), handler `open_node_copilot` en `FlowEditor.vue`
+- Tests: `codeContext.spec.ts` (148 líneas), `FlowEditor.spec.ts`
 
 ### 3. Condition (Canvas: "Simple Decision")
 
@@ -420,3 +429,4 @@ FIN
 |-------|---------|---------|----------------|
 | Initial | — | Catálogo completo desde `flow_binaries/core/actions/` + schema SQLite | QA Catalyst |
 | 2026-06-06 | — | Backend Logic + Impacto Cruzado con docs de flow_binaries | QA Catalyst |
+| 2026-07-09 | IONF-950 | Integración FlowPilot en Code node: botón Ask FlowPilot, codeContext.ts, CONFIDENTIALITY rule, handler open_node_copilot | QA Catalyst (batch v0.1.0) |

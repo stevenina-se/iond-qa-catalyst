@@ -1,0 +1,125 @@
+- generic [ref=e7]:
+  - complementary [ref=e8]:
+    - generic [ref=e9]:
+      - link "IonFlow logo" [ref=e10] [cursor=pointer]:
+        - /url: /dashboard
+        - img "IonFlow logo" [ref=e11]
+      - button "" [ref=e12]:
+        - generic [ref=e13]: 
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "Dashboard" [level=3] [ref=e17]
+        - link "Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard
+          - menuitem "Dashboard" [ref=e20]:
+            - generic [ref=e22]: 
+            - generic [ref=e23]: Dashboard
+      - generic [ref=e25]:
+        - heading "Boards" [level=3] [ref=e26]
+        - generic [ref=e27]:
+          - link "Boards" [ref=e28] [cursor=pointer]:
+            - /url: /workflows
+            - menuitem "Boards" [active] [ref=e29]:
+              - generic [ref=e31]: 
+              - generic [ref=e32]: Boards
+          - link "Execution History" [ref=e33] [cursor=pointer]:
+            - /url: /executions
+            - menuitem "Execution History" [ref=e34]:
+              - generic [ref=e36]: 
+              - generic [ref=e37]: Execution History
+          - link "Webhooks" [ref=e38] [cursor=pointer]:
+            - /url: /webhooks
+            - menuitem "Webhooks" [ref=e39]:
+              - generic [ref=e41]: 
+              - generic [ref=e42]: Webhooks
+          - link "Connections" [ref=e43] [cursor=pointer]:
+            - /url: /integrations
+            - menuitem "Connections" [ref=e44]:
+              - generic [ref=e46]: 
+              - generic [ref=e47]: Connections
+          - link "Persistent Data" [ref=e48] [cursor=pointer]:
+            - /url: /data-store
+            - menuitem "Persistent Data" [ref=e49]:
+              - generic [ref=e51]: 
+              - generic [ref=e52]: Persistent Data
+          - link "PDF Templates" [ref=e53] [cursor=pointer]:
+            - /url: /pdf-templates
+            - menuitem "PDF Templates" [ref=e54]:
+              - img "PDF Templates" [ref=e56]
+              - generic [ref=e57]: PDF Templates
+          - link "Credentials" [ref=e58] [cursor=pointer]:
+            - /url: /keys
+            - menuitem "Credentials" [ref=e59]:
+              - generic [ref=e61]: 
+              - generic [ref=e62]: Credentials
+      - generic [ref=e64]:
+        - heading "Apps" [level=3] [ref=e65]
+        - link "App Connectors" [ref=e67] [cursor=pointer]:
+          - /url: /connections
+          - menuitem "App Connectors" [ref=e68]:
+            - generic [ref=e70]: 
+            - generic [ref=e71]: App Connectors
+      - generic [ref=e73]:
+        - heading "Marketplace" [level=3] [ref=e74]
+        - generic [ref=e75]:
+          - link "Accounts" [ref=e76] [cursor=pointer]:
+            - /url: /accounts
+            - menuitem "Accounts" [ref=e77]:
+              - generic [ref=e79]: 
+              - generic [ref=e80]: Accounts
+          - link "Developer Apps" [ref=e81] [cursor=pointer]:
+            - /url: /developer-apps
+            - menuitem "Developer Apps" [ref=e82]:
+              - generic [ref=e84]: 
+              - generic [ref=e85]: Developer Apps
+          - link "Catalog" [ref=e86] [cursor=pointer]:
+            - /url: /services
+            - menuitem "Catalog" [ref=e87]:
+              - generic [ref=e89]: 
+              - generic [ref=e90]: Catalog
+    - generic "978e53d1803c511892d7fe052bcd382dd104c47f" [ref=e94]: DEVELOPMENT
+  - generic [ref=e95]:
+    - banner [ref=e96]:
+      - generic [ref=e97]:
+        - text: 
+        - button " Global Search Ctrl+ K" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: 
+          - text: Global Search
+          - generic [ref=e101]: Ctrl+ K
+        - generic [ref=e102]:
+          - button "" [ref=e103] [cursor=pointer]:
+            - generic [ref=e104]: 
+          - button "88 " [ref=e132] [cursor=pointer]:
+            - generic [ref=e133]: "88"
+            - generic [ref=e107]: 
+          - button "" [ref=e108] [cursor=pointer]:
+            - generic [ref=e109]: 
+          - button "products-logo" [ref=e110] [cursor=pointer]:
+            - img "products-logo" [ref=e111]
+          - generic [ref=e113] [cursor=pointer]:
+            - img [ref=e116]
+            - generic [ref=e117]:
+              - generic [ref=e118]: Steve Nina
+              - generic [ref=e119]: skuanquis@gmail.com
+            - generic [ref=e120]: 
+    - main [ref=e121]:
+      - generic [ref=e331]:
+        - generic [ref=e332]:
+          - heading "Boards" [level=1] [ref=e334]
+          - button "Create Board" [ref=e336] [cursor=pointer]:
+            - generic [ref=e337]: 
+            - generic [ref=e338]: Create Board
+        - generic [ref=e342]:
+          - generic [ref=e343]:
+            - generic [ref=e344]:
+              - textbox "Search boards…" [ref=e345]
+              - button [ref=e346] [cursor=pointer]: 
+            - generic [ref=e347] [cursor=pointer]:
+              - combobox "All status" [ref=e348]
+              - img [ref=e350]
+          - generic [ref=e352]:
+            - paragraph [ref=e353]: 0 Boards
+            - button "Collapse All" [ref=e355] [cursor=pointer]:
+              - generic [ref=e356]: 
+              - generic [ref=e357]: Collapse All
+          - status "Loading..." [ref=e358]
