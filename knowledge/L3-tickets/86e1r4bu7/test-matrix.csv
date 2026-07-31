@@ -1,0 +1,40 @@
+TC ID,Suite,Tipo,OBS Ref,Caso de Test,Prioridad,Origen,Estado
+TC-001,Smoke,Smoke,,Templates accesible desde Admin,🔴,Ticket,⬜ Pendiente
+TC-002,Smoke,Smoke,,Templates accesible desde Tenant,🔴,Ticket,⬜ Pendiente
+TC-003,Happy Path,HP,,Admin: Crear template tipo Flow,🔴,Ticket AC-5,⬜ Pendiente
+TC-004,Happy Path,HP,,Admin: Crear template tipo PDF,🔴,Ticket AC-5,⬜ Pendiente
+TC-005,Happy Path,HP,,Admin: Editar template existente,🔴,Ticket AC-5,⬜ Pendiente
+TC-006,Happy Path,HP,,Admin: Eliminar template,🟠,Ticket AC-5,⬜ Pendiente
+TC-007,Happy Path,HP,,Admin: Asignar categorías con color,🟠,Ticket AC-5,⬜ Pendiente
+TC-008,Happy Path,HP,,Tenant: Buscar template en marketplace,🔴,Ticket AC-6,⬜ Pendiente
+TC-009,Happy Path,HP,,Tenant: Preview de template,🟠,Ticket AC-6,⬜ Pendiente
+TC-010,Happy Path,HP,,Tenant: Instalar template con wizard,🔴,Ticket AC-4/7,⬜ Pendiente
+TC-OBS-01,Re-test OBS 🔴,Re-test,OBS-01,Buscador de compañías funcional,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-02,Re-test OBS 🔴,Re-test,OBS-02,Validación de JSON sin nodos,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-03,Re-test OBS 🔴,Re-test,OBS-03,Validación de estado y campos en PDF,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-04,Re-test OBS 🔴,Re-test,OBS-04,Filtro de activos funcional,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-05,Re-test OBS 🔴,Re-test,OBS-05,Campos no editables con estilo diferenciado,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-06,Re-test OBS 🔴,Re-test,OBS-06,Botón cerrar modal con nombres largos,🔴,Ronda 1,⬜ Pendiente
+TC-OBS-07,Re-test OBS 🟡,Re-test,OBS-07,Modal creación no se rompe con nombres largos,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-08,Re-test OBS 🟡,Re-test,OBS-08,Tabla no se estira con nombres largos,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-09,Re-test OBS 🟡,Re-test,OBS-09,Card en tenant no se rompe con nombres largos,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-10,Re-test OBS 🟡,Re-test,OBS-10,Botón de recarga en tabla admin,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-11,Re-test OBS 🟡,Re-test,OBS-11,Selector de compañías muestra todos los registros,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-12,Re-test OBS 🟡,Re-test,OBS-12,Alerta para flows sin nodos (nuevo enfoque),🟠,Ronda 1,⬜ Pendiente
+TC-OBS-13,Re-test OBS 🟡,Re-test,OBS-13,Límite de tags por card,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-14,Re-test OBS 🟡,Re-test,OBS-14,Expandir/colapsar tags en card,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-15,Re-test OBS 🟡,Re-test,OBS-15,Tags con nombre largo truncados,🟠,Ronda 1,⬜ Pendiente
+TC-OBS-16,Re-test OBS 🟡,Re-test,OBS-16,Labels correctos en idioma español,🟠,Ronda 1,⬜ Pendiente
+TC-EC-01,Edge Cases,EC,,Template con JSON vacío,🟠,QA,⬜ Pendiente
+TC-EC-02,Edge Cases,EC,,Instalar mismo template dos veces,🟠,QA,⬜ Pendiente
+TC-EC-03,Edge Cases,EC,,Template con nodos pdfme_schema_id clonación PDFs,🔴,QA,⬜ Pendiente
+TC-EC-04,Edge Cases,EC,,toBase64Raw devuelve resultado correcto,🟡,QA,⬜ Pendiente
+TC-NEG-01,Negativos,NEG,,Template inactivo no visible en marketplace,🟠,QA,⬜ Pendiente
+TC-NEG-02,Negativos,NEG,,Credenciales no heredadas al instalar,🔴,QA,⬜ Pendiente
+TC-REG-01,Regresión,REG,,Boards existentes siguen funcionando,🟠,QA,⬜ Pendiente
+TC-REG-02,Regresión,REG,,PDF Templates existentes no afectados,🟠,QA,⬜ Pendiente
+TC-CR-001,Code Review,EC,RISK-CR-001,Búsqueda + paginación de compañías funciona correctamente,🟠,Code Review,⬜ Pendiente
+TC-CR-002,Code Review,EC,RISK-CR-002,Opciones de gestión para templates community bloqueadas,🟠,Code Review,⬜ Pendiente
+TC-CR-003,Code Review,EC,RISK-CR-003,No hay textos hardcoded en inglés con idioma español,🟡,Code Review,⬜ Pendiente
+TC-CR-004,Code Review,EC,EDGE-CR-001,Toggle rápido activo/inactivo con verificación de revert,🟡,Code Review,⬜ Pendiente
+TC-CR-005,Code Review,EC,EDGE-CR-002,Crear dos templates con mismo título - manejo duplicados,🟡,Code Review,⬜ Pendiente
