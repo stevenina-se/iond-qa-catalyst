@@ -9,12 +9,12 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Total de casos | 62 |
+| Total de casos | 69 |
 | Happy path | 24 |
 | Edge cases | 16 |
 | Negativos | 8 |
 | Regresión | 14 |
-| Code Review | 0 |
+| Code Review | 7 |
 | Automatizables | 38 |
 | Cobertura de AC | 20/20 |
 
@@ -255,10 +255,27 @@ AND name = '<flow_name>';
 
 ---
 
+## Code Review TCs (inyectados por Code Review QA)
+
+> Origen: `code-review-qa.md` — generado 2026-08-02 por Code Review QA (modo Deployment / Bug Hunting)
+
+| ID | Módulo | AC | Tipo | Caso de Test | Precondición | Pasos | Resultado Esperado | Prioridad | Auto | Estado |
+|----|--------|-----|------|-------------|--------------|-------|-------------------|-----------|------|--------|
+| TC-CR-001 | Keys | AC-C4 | Code Review — RISK | Buscar keys por texto en ruta account | Cuenta con ≥3 keys de distinto nombre | Company Login > Sidebar: Configuración > Keys (ruta account) > Search: nombre parcial > Verify: resultados filtrados | Si la ruta es por account, search debería filtrar. Si no filtra, confirmar que el FE usa ruta company (RISK-CR-001) | 🟠 | ❌ | ⬜ |
+| TC-CR-002 | DataStore | AC-D1 | Code Review — RISK | Ordenar Data Store por columna no whitelisted | ≥2 data stores existentes | Company Login > Sidebar: Data Store > Intentar ordenar por columna inválida (modificar request en DevTools: `order_by=DROP`) > Verify: Error 400 | La API rechaza columnas no whitelisted con error 400 (RISK-CR-002) | 🟡 | ❌ | ⬜ |
+| TC-CR-003 | Keys | AC-C4 | Code Review — RISK | OrderDirection con valor no estándar en keys listing | ≥2 keys existentes | Company Login > DevTools > Modificar request: `order_direction=desc;DROP` > Verify: Error o ignorado | OrderDirection solo acepta asc/desc. Valores inválidos son rechazados o normalizados (RISK-CR-003) | 🟠 | ❌ | ⬜ |
+| TC-CR-004 | Boards | AC-C1 | Code Review — RISK | Listado de flows con filtros de status y search | ≥3 flows con distintos status | Company Login > Sidebar: Boards > Filtrar por status "active" > Search: nombre parcial > Verify: Resultados correctos | Filtros de status y búsqueda funcionan correctamente juntos (RISK-CR-004) | 🟡 | ✅ | ⬜ |
+| TC-CR-005 | Layout | AC-A1 | Code Review — EDGE | Toasts no se duplican (PrimeVue + vue-sonner) | Usuario tenant logueado | Company Login > Realizar una acción que genera toast (ej: crear board) > Verify: Solo UN toast aparece, no duplicado | Solo un toast visible. No hay duplicación entre PrimeVue Toast y vue-sonner Toaster (EDGE-CR-001) | 🟡 | ❌ | ⬜ |
+| TC-CR-006 | Layout | AC-A3 | Code Review — EDGE | 3 clics rápidos en delete — dedup de toasts | ≥1 item eliminable | Company Login > Sidebar: Data Store > Create 3 test stores > Delete cada uno rápidamente (clic-clic-clic) > Verify: Toasts deduplicados | No se apilan 3 toasts idénticos. La deduplicación funciona (EDGE-CR-002) | 🟡 | ❌ | ⬜ |
+| TC-CR-007 | DataStore | AC-D1 | Code Review — EDGE | Data Store filtra correctamente por tenant | ≥2 tenants con data stores | Company Login como tenant A > Sidebar: Data Store > Verify: Solo data stores de tenant A visibles | Data Store aislado por tenant. No se ven stores de otros tenants (EDGE-CR-003) | 🟡 | ❌ | ⬜ |
+
+---
+
 ## Notas
 
 - Queries de PostgreSQL ejecutadas en DBeaver (via SSH tunnel)
 - Queries de SQLite (Data Store) verificadas via UI — no acceso directo
 - Los TCs de Canvas (TC-002, TC-024, TC-025) NO son automatizables con Playwright por limitaciones de webcomponents-flow
 - Los TCs visuales (TC-052, TC-054) requieren inspección manual — no son automatizables
-- Total automatizables: 38/62 (61%)
+- 7 TCs inyectados por Code Review QA (TC-CR-001 a TC-CR-007) — requieren verificación manual
+- Total automatizables: 38/69 (55%)
