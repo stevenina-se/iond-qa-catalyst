@@ -1,98 +1,80 @@
-# Release Notes — [VERSIÓN]
+# Release notes — [producto] v[X.Y.Z] — [interna | cliente]
 
-> Template generado por `skills/release/notes`
-> Fecha: [fecha]
-> Tipo: `internal` / `client`
-
-<!--
-Este template se usa para generar DOS documentos:
-  - release-notes-internal.md → equipo interno (dev, producto, soporte, compañeros)
-  - release-notes-client.md → clientes (solo cambios visibles, sin jerga técnica)
-
-Reglas:
-  - Versión INTERNA: incluir repos, detalles técnicos, breaking changes técnicos
-  - Versión CLIENTE: solo beneficios user-facing, lenguaje "Ahora puedes...", sin repos ni jerga
-  - La sección "Cambios Internos" solo va en la versión interna
--->
-
----
-
-## Resumen Ejecutivo
+> **Plantilla del QA Catalyst** — notas de la versión semanal de un producto (fuente canónica §7.1 y C-29 · `Q-36`).
+> **Se guardan en:** `knowledge/releases/[producto]/v[X.Y.Z]/release-notes-internal.md` y `release-notes-client.md` · **Skill:** `skills/release/notes.md` · Se enlazan en el C-29 (`**Release notes:** [interna] · [cliente]`).
+> Una versión por producto y semana (Sprint [N], [fecha inicio] – [fecha fin]). Se excluyen los tickets con `diferido` o revertidos de la RC. La interna la aprueba el SM; la de cliente la aprueba y comunica el **PO**, apoyado por el soporte general de la empresa.
 
 <!--
-Versión interna: 3-5 oraciones + estadísticas (N features, N bugs, N mejoras)
-Versión cliente: 2-3 oraciones user-friendly, orientadas a beneficios
+Reglas por variante (borrar este bloque en el documento final):
+
+| | Interna | Cliente |
+|---|---|---|
+| Lectores | Development, producto, soporte general de la empresa | Clientes y usuarios |
+| Lenguaje | Técnico | Beneficio: "Ahora puedes…", "Corregimos…", "Mejoramos…" |
+| IDs de ticket, repos, ramas | Sí | No |
+| Cambios internos e infraestructura | Sí | No |
+| Nombres de módulos | Iond Subcategory | Nombre amigable (p. ej. "Automatización de flujos" para Boards) |
+
+Clasificación por TYPE: New Feature → 🚀 · Bug → 🐛 · Improvement → ⚡ · Refactor / Task → 🔧 (solo interna).
+Subagrupar por Iond Subcategory. Los tickets con Project = Gateway van en las notas de iond, en su propia sección.
 -->
 
-[Resumen]
+## Resumen
 
-**Estadísticas:** [N] nuevas funcionalidades · [N] correcciones · [N] mejoras
+[Interna: 3–5 oraciones con totales por TYPE y por módulo · Cliente: 2–3 oraciones orientadas a beneficios]
 
----
+**En números:** [n] nuevas funcionalidades · [n] correcciones · [n] mejoras · [n] cambios internos *(solo interna)*
 
-## 🚀 Nuevas Funcionalidades
+## Destacados
 
-<!--
-Cada item: [TICKET-ID] Descripción
-Versión interna: incluir repo afectado
-Versión cliente: describir el beneficio, no el ticket
--->
+1. **[Destacado 1]** — [descripción breve]
+2. **[Destacado 2]** — [descripción breve]
+3. **[Destacado 3]** — [descripción breve]
 
-- [Descripción de la funcionalidad]
+## 🚀 Nuevas funcionalidades
 
----
+### [Módulo]
+- [Interna: #[id] Título — repos afectados] · [Cliente: beneficio para el usuario]
 
 ## 🐛 Correcciones
 
-- [Descripción de la corrección]
-
----
+### [Módulo]
+- [Interna: #[id] Título — *re-validado* si tuvo rechazos] · [Cliente: "Corregimos…"]
 
 ## ⚡ Mejoras
 
-- [Descripción de la mejora]
+### [Módulo]
+- [...]
 
----
+## 🔧 Cambios internos *(solo interna)*
 
-## 🔧 Cambios Internos
+- #[id] [Refactor / Task] — [descripción técnica breve]
 
-<!--
-⚠️ SOLO VERSIÓN INTERNA — Eliminar esta sección en la versión cliente
--->
+## Gateway *(solo en iond, si hay tickets con Project = Gateway)*
 
-- [Descripción del cambio interno]
+- [...]
 
----
+## Infraestructura y despliegue *(solo interna)*
 
-## ⚠️ Breaking Changes
+| Tipo | Nombre (nunca el valor) | Repo | Ticket |
+|---|---|---|---|
+| Variable nueva / migración / dependencia | [...] | [...] | #[id] |
 
-<!--
-Versión interna: qué cambió técnicamente y cómo adaptarse
-Versión cliente: "Qué necesitas hacer" con instrucciones claras
--->
+## Problemas conocidos
 
-- [Descripción del breaking change y acciones necesarias]
+- *Interna:* hallazgos aceptados en un CONDITIONAL GO — [ID — severidad — workaround — fix agendado: #[id], v[X.Y.Z+1]].
+- *Cliente:* [solo si afecta al usuario: qué pasa y cómo evitarlo, en lenguaje simple].
 
----
+## Qué necesitas hacer *(cliente, solo si hay acción requerida)*
 
-## 📋 Información del Release
+1. [Paso para el cliente]
+
+## Información de la versión
 
 | Campo | Valor |
-|-------|-------|
-| Versión | `v[X.Y.Z]` |
-| Fecha de deploy | [fecha] |
-| Entorno | producción |
-| Contacto | [nombre / canal de Slack] |
-
----
-
-## Highlights
-
-<!--
-Los 3-5 cambios más importantes de esta versión.
-Tanto para interna como para cliente.
--->
-
-1. **[Highlight 1]** — [descripción breve]
-2. **[Highlight 2]** — [descripción breve]
-3. **[Highlight 3]** — [descripción breve]
+|---|---|
+| Producto / versión | [iond / IonMind / StageMind] v[X.Y.Z] |
+| Semana | Sprint [N] ([fecha inicio] – [fecha fin]) |
+| Fecha de despliegue | [AAAA-MM-DD] |
+| Decisión Go/No-Go | GO / CONDITIONAL GO (C-29 [AAAA-MM-DD]) *(solo interna)* |
+| Contacto | Soporte general de la empresa *(cliente)* · canal del equipo IOND *(interna)* |

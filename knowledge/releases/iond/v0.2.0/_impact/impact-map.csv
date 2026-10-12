@@ -1,0 +1,47 @@
+TICKET,PRIORIDAD_SANITY,AREA,GLOB_E2E
+86e35wv7f,urgent,Websockets (tiempo real),tenant > notifications > open
+86e35wv7f,urgent,Websockets (tiempo real),tenant > execution history > details
+86e35wv7f,urgent,Websockets (tiempo real),tenant > boards > list > create board > preview
+86e35wv7f,urgent,Websockets (tiempo real),tenant > app connectors > create > connector via ionmind > analize
+86e35882c,urgent,Menú y accesos de billing,tenant > dashboard
+86e35882c,urgent,Menú y accesos de billing,tenant > settings > *
+86e35882c,urgent,Menú y accesos de billing,tenant > laanguaje > *
+86e35882c,urgent,Menú y accesos de billing,tenant > account > update personal information
+86e35882c,urgent,Menú y accesos de billing,tenant > templates > public templates > preview
+86e35882c,urgent,Menú y accesos de billing,tenant > credentials > edit key
+86e1y463z,urgent,Marketplace NOVASPHERE y pagos,admin gateway > customer > login > available market place > *
+86e1y463z,urgent,Marketplace NOVASPHERE y pagos,admin gateway > customer > login > configured channels > grapp instalation
+86e1y463z,urgent,Marketplace NOVASPHERE y pagos,admin > apps > add app > grapps > *
+86e1y463z,urgent,Marketplace NOVASPHERE y pagos,admin > apps > list > grapps > *
+86e1mdnbq,urgent,Logs de ejecución en R2,tenant > execution history > details
+86e1fawg0,urgent,Flow Pilot (tokens y costo),tenant > boards > list > create board > flow pilot > *
+86e20nmqx,urgent,Costo de scraping IonMind,tenant > app connectors > create > connector via ionmind > *
+86e20nmqx,urgent,Costo de scraping IonMind,tenant > app connectors > create > endpoints via ionmind > *
+86e22fzw2,urgent,Nodo Timer,tenant > boards > list > create board > all tools > timer
+86e21f52d,urgent,Rebranding iond,kc > login with sso
+86e21f52d,urgent,Rebranding iond,kc > register with sso
+86e21f52d,urgent,Rebranding iond,kc > forgot password
+86e21f52d,urgent,Rebranding iond,tenant > dashboard
+86e21f52d,urgent,Rebranding iond,tenant > boards > list > download
+86e21f52d,urgent,Rebranding iond,tenant > boards > list > create board > export
+86e2mc23t,urgent,Webcomponent del marketplace,admin gateway > customer > login > available market place > *
+86e2fazfh,urgent,Endpoints de App Connectors,tenant > app connectors > list > nodes > *
+86e2fazfh,urgent,Endpoints de App Connectors,tenant > app connectors > list > base > edit
+86e2fazfh,urgent,Endpoints de App Connectors,tenant > app connectors > filters > search
+86e2fpp9y,urgent,Acceso de soporte del admin,admin > companies > list > company > user > log as a user
+86e31pbz9,urgent,Acceso de soporte del admin,admin > companies > list > company > user > log as a user
+86e2nazxp,urgent,Ciclo de vida de ejecuciones,tenant > boards > list > create board > preview
+86e2nazxp,urgent,Ciclo de vida de ejecuciones,tenant > boards > list > active-pause
+86e2nazxp,urgent,Ciclo de vida de ejecuciones,tenant > execution history > details
+86e1pzyug,urgent,Billing y consumo,admin > billing > *
+86e1pzyug,urgent,Billing y consumo,admin > companies > list > company > subscription > assign plan
+86e1pzyug,urgent,Billing y consumo,tenant > execution history > details
+86e1wfgam,urgent,DevApp API 2.0,admin > developers > list > *
+86e1wfgam,urgent,DevApp API 2.0,tenant > pdf templates > new template
+86e2mt70g,urgent,Tier de IonMind,tenant > app connectors > create > connector via ionmind > analize
+86e2xnjyz,urgent,SQLite persistente,tenant > boards > list > create board > preview
+86e2xnjyz,urgent,SQLite persistente,tenant > boards > list > create board > storage > *
+86e2xnjyz,urgent,SQLite persistente,tenant > execution history > details
+86e2ak75f,urgent,Historial y replay,tenant > execution history > *
+86e1fknjv,urgent,Logos con Logo.dev,tenant > app connectors > create > connector via ionmind > upload a logo via logo.dev
+86e1fknjv,urgent,Logos con Logo.dev,tenant > app connectors > create > manual connector

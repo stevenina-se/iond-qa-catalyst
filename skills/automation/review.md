@@ -1,90 +1,52 @@
 # Skill: automation/review
 
-> Revisa tests E2E generados por IA antes de que se consideren confiables. Verifica calidad del código, selectores, assertions y decide si el test pasa a suite permanente.
+> Revisa los tests E2E entregados por el responsable de bot-test antes de contarlos como cobertura del E2E maestro: calidad del código, trazabilidad al caso y **estabilidad 3/3**. Solo lectura sobre bot-test.
 
-## Cuándo usar este skill
+## Cuándo usar
 
-- **Post-generación**: Después de que `automation/code` genere los tests
-- **Post-ejecución**: Después de ejecutar los tests para validar resultados
+- Cuando una spec nueva o modificada está en un PR o rama de bot-test.
+- Frase disparadora: `Revisar automatización: <spec | PR de bot-test>`.
 
-## Pre-requisitos
+## Pre-requisitos (gates)
 
-- ✅ `L3-tickets/<ticket-id>/automation-result.md`
-- ✅ Acceso a los tests generados en `../bot-test/apps/bot-test/tests/IONFLOW/tickets/<ticket-id>/`
-- ✅ `L3-tickets/<ticket-id>/test-matrix.md` — Para verificar que el test cubre el TC
+| Check | Si falla |
+|---|---|
+| `automation-handoff.md` del alcance | Revisar contra la Matriz de Pruebas o las filas E2E |
+| La rama del PR de bot-test está disponible localmente (solo lectura) | Pedir al QA que la traiga (`git fetch`) |
 
----
+## Contexto a cargar
 
-## Instrucciones de Ejecución
+`automation-handoff.md`, las specs y page objects entregados, `skills/_shared/bot-test.md`.
 
-### Stage 1 — PLANNING
+## Stage 1 — Planning
 
-Reporta al QA Engineer:
-1. Los tests que vas a revisar
-2. Los TCs que deben cubrir
+Anunciar las specs a revisar y los casos que deben cubrir. Esperar confirmación.
 
-### Stage 2 — EXECUTION
+## Stage 2 — Execution
 
-#### Paso 1: Revisión de código
+1. **Revisión de código** por spec:
 
-Para cada test file generado, evalúa:
+   | Criterio | ✅/❌ |
+   |---|---|
+   | Selectores reales y estables (rol, label, test id; sin CSS frágil ni índices) | |
+   | Assertions verifican el resultado esperado del caso (no solo visibilidad) | |
+   | Independencia y limpieza de datos (`autobot-*`, `afterAll` sin remanentes) | |
+   | Login compartido por archivo; sin `waitForTimeout` ni `networkidle` | |
+   | IDs `TC-…` únicos en el título y tags correctos (incluidos `@smoke`/`@prod-safe` si aplica) | |
+   | Bugs conocidos en cuarentena visible (`@bug` / `test.fail()`), no `expect.soft` silencioso | |
+   | Reutiliza page objects y componentes existentes | |
 
-| Criterio | Estado | Notas |
-|----------|--------|-------|
-| **Selectores** — ¿Son reales y estables? (data-testid, IDs, no clases CSS frágiles) | ✅/❌ | |
-| **Assertions** — ¿Verifican lo correcto según el TC? | ✅/❌ | |
-| **Independencia** — ¿El test funciona solo, sin depender del orden? | ✅/❌ | |
-| **Setup/Teardown** — ¿Se prepara y limpia el estado correctamente? | ✅/❌ | |
-| **Login** — ¿Se maneja la autenticación correctamente? | ✅/❌ | |
-| **Waits** — ¿Usa waits apropiados (no hardcoded timeouts)? | ✅/❌ | |
-| **Page Objects** — ¿Se reusan donde es posible? | ✅/❌ | |
-| **Naming** — ¿El describe/it describe claramente qué se testea? | ✅/❌ | |
-| **Error handling** — ¿Maneja casos donde un elemento no aparece? | ✅/❌ | |
+2. **Estabilidad:** el QA ejecuta la spec **3 veces seguidas** con el perfil de preprod. Consistente = 3/3 verdes.
+3. **Decisión por test:** 🟢 cuenta como cobertura · 🟡 corregir y volver a revisar · 🔴 descartar o reescribir.
 
-#### Paso 2: Verificar ejecución
+## Stage 3 — Reporting
 
-Si los tests ya se ejecutaron:
+- `automation-review.md` (junto al handoff) con la tabla de criterios, las 3 corridas y la decisión por test.
+- Para los 🟢: actualizar `_config/rules.csv` (`BOT_TEST_SPEC`, `BOT_TEST_TC`, `AUTOMATIZACION = En PR` o `Ejecutable` cuando se integre) y reimportar el maestro.
+- Observaciones para el responsable de bot-test (sin comentar el PR desde el catalyst).
 
-| Test | TC-ID | Resultado | Consistente | Notas |
-|------|-------|-----------|-------------|-------|
-| `should create flow` | TC-001 | ✅/❌ | ✅ (3/3 runs) | |
+## Reglas
 
-> Un test es **consistente** si pasa al menos 3 de 3 ejecuciones consecutivas.
-
-#### Paso 3: Decidir destino
-
-| Test | Calidad | Consistencia | Decisión |
-|------|---------|-------------|----------|
-| `should create flow` | ✅ Buena | ✅ 3/3 | 🟢 Migrar a suite permanente |
-| `should validate form` | ⚠️ Parcial | ✅ 3/3 | 🟡 Corregir y re-evaluar |
-| `should handle error` | ❌ Mala | ❌ 1/3 | 🔴 Descartar o reescribir |
-
-### Stage 3 — REPORTING
-
-Guarda en `L3-tickets/<ticket-id>/automation-review.md`:
-
-```markdown
-# Review de Tests E2E — [TICKET-ID]
-
-## Resumen
-- Tests revisados: [N]
-- Aprobados para suite permanente: [N]
-- Requieren corrección: [N]
-- Descartados: [N]
-
-## Decisiones
-[tabla del Paso 3]
-
-## Migración
-Tests aprobados para migrar de:
-  tickets/[TICKET-ID]/ → <módulo>/
-```
-
----
-
-## Reglas de este Skill
-
-1. **Un test flaky es peor que no tener test** — Si falla intermitentemente, no se sube
-2. **3 ejecuciones consecutivas** es el mínimo para considerar un test estable
-3. **Los selectores deben ser estables** — `data-testid` > ID > role > class
-4. **El QA Engineer aprueba la migración** a suite permanente
+- Un test inestable no suma cobertura.
+- 3 corridas consecutivas verdes es el mínimo.
+- El LQA aprueba que un test cuente para el smoke o el baseline.

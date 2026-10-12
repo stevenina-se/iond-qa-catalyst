@@ -1,11 +1,22 @@
 # Módulo: [NOMBRE DEL MÓDULO]
 
-> Conocimiento de nivel 2 para el módulo **[nombre]** de Ionflow.
-> Última actualización: [fecha]
+> Conocimiento de nivel 2 para el módulo **[nombre]** de iond.
+> Iond Subcategory que lo cubren: [valores de `knowledge/test-suites/_config/subcategory-map.csv`] · Prefijo(s) del E2E maestro: [`TEN-XXX`]
+> Última actualización: [fecha] · Último release reflejado: [producto vX.Y.Z]
 
 ## Overview
 
-Breve descripción de qué hace este módulo en el contexto de Ionflow.
+Breve descripción de qué hace este módulo en el contexto de iond.
+
+---
+
+## Reglas de negocio
+
+> Reglas vigentes del módulo, con su origen. Las reglas que entran por un ticket se copian de su Matriz de Requerimientos (REQ críticos) después del despliegue.
+
+| ID | Regla | Origen (ticket · REQ-ID · versión) | Crítica |
+|----|-------|-------------------------------------|---------|
+| RN-01 | ... | [#id · REQ-03 · iond vX.Y.Z] | Sí/No |
 
 ---
 
@@ -119,16 +130,32 @@ WHERE a.id = '<id>';
 
 ---
 
-## Tests E2E Existentes (bot-test)
+## Specs bot-test
 
-| Test file | Cobertura | Estado |
-|-----------|-----------|--------|
-| `tests/IONFLOW/.../spec.ts` | Happy path de... | ✅ Activo |
+> Fuente: `../bot-test/apps/bot-test/tests/IONFLOW/` (solo lectura). Estados según `skills/_shared/bot-test.md`.
 
-### Page Objects
-| Page Object | Ubicación | Selectores principales |
-|------------|-----------|----------------------|
-| `module.page.ts` | `tests/IONFLOW/pages/` | ... |
+| Spec | TC-IDs | Cobertura | Estado (`Ejecutable` / `En PR` / `Rota`) |
+|------|--------|-----------|------------------------------------------|
+| `Company-ION/<módulo>/company-<módulo>.spec.ts` | `TC-XXX-01`…`TC-XXX-0N` | ... | ... |
+
+### Page objects y componentes
+| Archivo | Ubicación | Selectores principales |
+|---------|-----------|------------------------|
+| `<módulo>-page.ts` | `Company-ION/<módulo>/` | ... |
+
+---
+
+## Filas E2E
+
+> Resumen de las filas del E2E maestro del módulo (`knowledge/test-suites/e2e-master.csv`, prefijo `[TEN-XXX]`). No se copian las filas: se resumen y se señalan las brechas.
+
+| Indicador | Valor |
+|-----------|-------|
+| Filas vigentes | [n] |
+| Automatizadas / ejecutables | [n] / [n] |
+| Filas en el baseline crítico | [n] |
+| Grupo(s) de rotación | [G1–G4] |
+| Features sin fila en la hoja (proponer al LQA) | [lista] |
 
 ---
 

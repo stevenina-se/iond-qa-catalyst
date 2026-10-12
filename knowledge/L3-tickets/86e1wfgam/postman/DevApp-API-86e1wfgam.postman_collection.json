@@ -1,0 +1,1280 @@
+{
+  "info": {
+    "name": "DevApp API — 86e1wfgam (Full Suite)",
+    "description": "Suite completa QA para Motor de exposición por API (FASE 1).\nTicket: 86e1wfgam | Branch: IONF-1082\n\nCobertura:\n- 43 TCs de la test-matrix (excluye TC-033/034/039, REG-001/002/004/005 que son UI/BD)\n- 15 edge cases adicionales de seguridad y robustez\n- 10 endpoints descubiertos por revisión de código (devapp.go)\n- Total: 68 requests\n\nFolders:\n0. Setup — Tokens para App A, B, C\n1. Motor de Tokens y Auth (TC-001 a TC-007)\n2. Accounts CRUD (TC-008 a TC-012)\n3. Scope y Token Edge Cases (TC-013 a TC-015)\n4. Connectors Autodescriptivos (TC-016 a TC-026)\n5. PDF Templates (TC-027 a TC-032)\n6. Flows por API (TC-041 a TC-043)\n7. Accounts Compartidos Multi-App (TC-035 a TC-040)\n8. Regresión API (REG-003)\n9. Edge Cases Adicionales (seguridad, robustez)\n10. Endpoints Descubiertos en Código (devapp.go)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "{{base_url}}" },
+    { "key": "token", "value": "" },
+    { "key": "token_app_b", "value": "" },
+    { "key": "token_app_c", "value": "" },
+    { "key": "token_read_only", "value": "" },
+    { "key": "account_id", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "0. Setup — Obtener Tokens",
+      "description": "Genera tokens para App A (completo), App B (misma compañía), App C (otra compañía), y tokens especiales (read-only, sin PDF scope).",
+      "item": [
+        {
+          "name": "Setup · Token App A (completo)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token App A emitido', () => {",
+            "  pm.response.to.have.status(200);",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.access_token).to.be.a('string');",
+            "  pm.collectionVariables.set('token', json.access_token);",
+            "  pm.environment.set('token', json.access_token);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] }
+          }
+        },
+        {
+          "name": "Setup · Token App B (misma compañía)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token App B emitido', () => {",
+            "  pm.response.to.have.status(200);",
+            "  const json = pm.response.json();",
+            "  pm.collectionVariables.set('token_app_b', json.access_token);",
+            "  pm.environment.set('token_app_b', json.access_token);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id_app_b}}\",\n  \"client_secret\": \"{{client_secret_app_b}}\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] }
+          }
+        },
+        {
+          "name": "Setup · Token App C (otra compañía)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token App C emitido', () => {",
+            "  pm.response.to.have.status(200);",
+            "  const json = pm.response.json();",
+            "  pm.collectionVariables.set('token_app_c', json.access_token);",
+            "  pm.environment.set('token_app_c', json.access_token);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id_app_c}}\",\n  \"client_secret\": \"{{client_secret_app_c}}\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] }
+          }
+        },
+        {
+          "name": "Setup · Token read-only (solo scope read)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token read-only emitido', () => {",
+            "  pm.response.to.have.status(200);",
+            "  const json = pm.response.json();",
+            "  pm.collectionVariables.set('token_read_only', json.access_token);",
+            "  pm.environment.set('token_read_only', json.access_token);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"read\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] }
+          }
+        },
+        {
+          "name": "Setup · Token sin scope PDF",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token sin PDF scope emitido', () => {",
+            "  pm.response.to.have.status(200);",
+            "  const json = pm.response.json();",
+            "  pm.environment.set('token_no_pdf_scope', json.access_token);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"read execute account\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Motor de Tokens y Auth",
+      "description": "SUPERFICIE 1: TC-001 a TC-007 — OAuth2 client_credentials, emisión JWT RS256, matriz completa de errores",
+      "item": [
+        {
+          "name": "TC-001 · Emitir token OAuth2 válido → 200",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('JWT RS256 access_token presente', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.access_token).to.be.a('string');",
+            "  pm.expect(json.token_type).to.eql('Bearer');",
+            "});",
+            "pm.test('Scopes incluidos', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.scope || json.scopes).to.exist;",
+            "});",
+            "// Guardar token para el resto de la suite",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('token', json.access_token);"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-1 | Happy Path | Emitir JWT RS256 con client_credentials"
+          }
+        },
+        {
+          "name": "TC-002 · Grant type no soportado → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Sin stack trace expuesto', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('stack');",
+            "  pm.expect(body).to.not.include('trace');",
+            "  pm.expect(body).to.not.include('vendor/');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"authorization_code\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Grant type authorization_code no soportado"
+          }
+        },
+        {
+          "name": "TC-003 · Sin scope → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Sin campo scope en body"
+          }
+        },
+        {
+          "name": "TC-004 · Scope desconocido → 422",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 422', () => pm.response.to.have.status(422));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"scope_inexistente_qa_test\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Scope que no existe en el sistema"
+          }
+        },
+        {
+          "name": "TC-005 · Secret incorrecto → 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "pm.test('Sin leak del secret real', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('secret');",
+            "  pm.expect(body).to.not.include('password');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"WRONG_SECRET_QA_TEST_12345\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Secret incorrecto, sin leak de datos"
+          }
+        },
+        {
+          "name": "TC-006 · Client ID de otro guard → 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id_non_apps}}\",\n  \"client_secret\": \"any_secret_value\",\n  \"scope\": \"{{scopes}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Client ID con provider != 'apps'"
+          }
+        },
+        {
+          "name": "TC-007 · Body malformado → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "this is not valid json at all {{{" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "AC-2 | Negativo | Body no es JSON válido"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Accounts CRUD",
+      "description": "SUPERFICIE 1 (cont): TC-008 a TC-012 — Registro, listado, detalle, Account-Id validation",
+      "item": [
+        {
+          "name": "TC-008 · Registrar customer → 201",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Customer data correcta', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.remote_id).to.eql('QA-CUST-001');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"QA-CUST-001\",\n  \"name\": \"QA Test Customer\",\n  \"email\": \"qa-test@ionflow.io\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-3 | Happy Path | Crear customer con remote_id"
+          }
+        },
+        {
+          "name": "TC-009 · Repetir remote_id → 409",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 409 (unique por compañía)', () => pm.response.to.have.status(409));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"QA-CUST-001\",\n  \"name\": \"Duplicate Attempt\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-3 | Edge Case | remote_id duplicado en misma compañía"
+          }
+        },
+        {
+          "name": "TC-010a · Listar accounts",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('QA-CUST-001 en lista', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  const found = Array.isArray(data) && data.some(a => a.remote_id === 'QA-CUST-001');",
+            "  pm.expect(found).to.be.true;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-3 | Happy Path | Listar accounts"
+          }
+        },
+        {
+          "name": "TC-010b · Detalle account por remote_id",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Detalle coincide con creación', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.remote_id).to.eql('QA-CUST-001');",
+            "  pm.collectionVariables.set('account_id', data.id || data.remote_id);",
+            "  pm.environment.set('account_id', data.id || data.remote_id);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts/QA-CUST-001", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts","QA-CUST-001"] },
+            "description": "AC-3 | Happy Path | Detalle de account por remote_id"
+          }
+        },
+        {
+          "name": "TC-011 · Ruta account-scoped sin Account-Id → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Mensaje indica Account-Id requerido', () => {",
+            "  const body = pm.response.text().toLowerCase();",
+            "  pm.expect(body).to.include('account');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}"] },
+            "description": "AC-4 | Negativo | Sin header Account-Id en ruta account-scoped"
+          }
+        },
+        {
+          "name": "TC-012 · Account-Id de otra compañía → 404",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404 (uniforme, sin leak)', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id_other_company}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}"] },
+            "description": "AC-4 | Edge Case | Account-Id de cuenta ajena → 404 uniforme"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Scope y Token Edge Cases",
+      "description": "TC-013 a TC-015 — Scope parcial, token revocado, token expirado",
+      "item": [
+        {
+          "name": "TC-013 · Scope parcial (read sin execute) → 403",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403', () => pm.response.to.have.status(403));",
+            "pm.test('Nombre del scope faltante en respuesta', () => {",
+            "  const body = pm.response.text().toLowerCase();",
+            "  pm.expect(body).to.include('scope');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_read_only}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"params\":{}}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-5 | Edge Case | Token solo read intentando execute"
+          }
+        },
+        {
+          "name": "TC-014 · Token revocado → 401 Invalid token",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "pm.test('Mensaje uniforme Invalid token', () => {",
+            "  const body = pm.response.text().toLowerCase();",
+            "  pm.expect(body).to.include('invalid');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_revoked}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "AC-6 | Edge Case | Token revocado en BD → mismo 401 uniforme"
+          }
+        },
+        {
+          "name": "TC-015 · Token expirado → 401 Invalid token",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "pm.test('Mismo mensaje que revocado (no distingue)', () => {",
+            "  const body = pm.response.text().toLowerCase();",
+            "  pm.expect(body).to.include('invalid');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_expired}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "AC-6 | Edge Case | Token expirado → mismo 401 uniforme (deliberado)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Connectors Autodescriptivos",
+      "description": "SUPERFICIE 2: TC-016 a TC-026 — Catálogo, detalle, namespacing, ejecución síncrona, negativos",
+      "item": [
+        {
+          "name": "TC-016 · Catálogo connectors namespaced",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Connectors con namespace app.*', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(Array.isArray(data)).to.be.true;",
+            "  const hasNamespaced = data.some(c => (c.name || '').startsWith('app.'));",
+            "  pm.expect(hasNamespaced).to.be.true;",
+            "  // Guardar primer connector_id",
+            "  if (data.length > 0) pm.environment.set('connector_id', data[0].id || data[0].name);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "AC-7 | Happy Path | Catálogo con names namespaced app.<tipo>"
+          }
+        },
+        {
+          "name": "TC-017 · Alias shipedge = app.shipedge",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "// Guardar response para comparar con canónico",
+            "pm.environment.set('alias_response', pm.response.text());"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/shipedge", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","shipedge"] },
+            "description": "AC-7 | Edge Case | Alias corto resuelve igual que canónico"
+          }
+        },
+        {
+          "name": "TC-017b · Canónico app.shipedge (comparar con alias)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Mismo resultado que alias', () => {",
+            "  const aliasResp = pm.environment.get('alias_response');",
+            "  if (aliasResp) pm.expect(pm.response.text()).to.eql(aliasResp);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/app.shipedge", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","app.shipedge"] },
+            "description": "AC-7 | Edge Case | Verificar que canónico = alias"
+          }
+        },
+        {
+          "name": "TC-018 · Namespace tenant → 404",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/tenant.shipedge", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","tenant.shipedge"] },
+            "description": "AC-7 | Negativo | Prefijo tenant.* reservado"
+          }
+        },
+        {
+          "name": "TC-019 · Detalle connector CON Account-Id",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Actions habilitadas presentes', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.actions || data.connections).to.exist;",
+            "  // Guardar action_name si existe",
+            "  if (data.actions && data.actions.length > 0) {",
+            "    pm.environment.set('action_name', data.actions[0].name || data.actions[0].id);",
+            "  }",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}"] },
+            "description": "AC-8 | Happy Path | Detalle con actions + conexiones del customer"
+          }
+        },
+        {
+          "name": "TC-020 · Detalle connector SIN Account-Id → solo specs",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Solo specs, sin conexiones de customer', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  // Sin Account-Id no debería haber conexiones específicas",
+            "  pm.expect(data).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}"] },
+            "description": "AC-8 | Edge Case | Sin Account-Id → solo specs, sin conexiones"
+          }
+        },
+        {
+          "name": "TC-021 · Ejecución con Connection-Id explícito → raw",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Respuesta es JSON (raw del proveedor)', () => {",
+            "  pm.response.to.be.json;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Connection-Id", "value": "{{connection_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-9 | Happy Path | Ejecución síncrona con Connection-Id, respuesta raw"
+          }
+        },
+        {
+          "name": "TC-022 · Ejecución con 1 conexión (implícita) → OK",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 (conexión implícita usada)', () => pm.response.to.have.status(200));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id_single_conn}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-9 | Edge Case | Customer con 1 sola conexión → se usa implícitamente sin Connection-Id"
+          }
+        },
+        {
+          "name": "TC-023 · >1 conexiones sin Connection-Id → 409",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 409', () => pm.response.to.have.status(409));",
+            "pm.test('Lista de conexiones candidatas', () => {",
+            "  const json = pm.response.json();",
+            "  const candidates = json.connections || json.candidates || json.data;",
+            "  pm.expect(candidates).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id_multi_conn}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-9 | Edge Case | Múltiples conexiones → 409 con lista de candidatas"
+          }
+        },
+        {
+          "name": "TC-024 · Connector no vinculado → 404",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/connector_no_vinculado_qa", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","connector_no_vinculado_qa"] },
+            "description": "AC-10 | Negativo | Connector que no está vinculado a la app"
+          }
+        },
+        {
+          "name": "TC-025 · Action no habilitada → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Connection-Id", "value": "{{connection_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/action_deshabilitada_qa/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","action_deshabilitada_qa","execute"] },
+            "description": "AC-10 | Negativo | Action no habilitada en el connector"
+          }
+        },
+        {
+          "name": "TC-026 · Token read-only intentando execute → 403",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403', () => pm.response.to.have.status(403));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_read_only}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-10 | Negativo | Token con solo scope read intentando ejecutar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. PDF Templates",
+      "description": "SUPERFICIE 3: TC-027 a TC-032 — Spec, render simple, render batch, negativos",
+      "item": [
+        {
+          "name": "TC-027 · Spec de template PDF → autodescriptivo",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Spec con params array', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.params || data.spec || data.schema).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/{{pdf_template_id}}/spec", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","{{pdf_template_id}}","spec"] },
+            "description": "AC-11 | Happy Path | Spec autodescriptivo de template PDF"
+          }
+        },
+        {
+          "name": "TC-028 · Render simple → filename + public_url",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('filename y public_url presentes', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.filename).to.be.a('string');",
+            "  pm.expect(data.public_url).to.be.a('string');",
+            "  pm.expect(data.public_url).to.include('http');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"template_id\": \"{{pdf_template_id}}\",\n  \"params\": [\n    {\n      \"customer_name\": \"QA Test Customer\",\n      \"order_number\": \"ORD-QA-001\",\n      \"total\": \"$125.00\"\n    }\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","execute"] },
+            "description": "AC-11 | Happy Path | Render simple, binario NO en respuesta"
+          }
+        },
+        {
+          "name": "TC-029 · Render batch (2 páginas)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('PDF multi-página generado', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.public_url).to.be.a('string');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"template_id\": \"{{pdf_template_id}}\",\n  \"params\": [\n    { \"customer_name\": \"Page 1\", \"order_number\": \"ORD-P1\", \"total\": \"$100.00\" },\n    { \"customer_name\": \"Page 2\", \"order_number\": \"ORD-P2\", \"total\": \"$200.00\" }\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","execute"] },
+            "description": "AC-11 | Edge Case | Render batch con 2 elementos en params"
+          }
+        },
+        {
+          "name": "TC-030 · PDF sin scope → 403",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 403', () => pm.response.to.have.status(403));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_no_pdf_scope}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/{{pdf_template_id}}/spec", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","{{pdf_template_id}}","spec"] },
+            "description": "AC-12 | Negativo | Token sin scope PDF"
+          }
+        },
+        {
+          "name": "TC-031 · PDF execute sin Account-Id → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"template_id\": \"{{pdf_template_id}}\",\n  \"params\": [{ \"customer_name\": \"Test\" }]\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","execute"] },
+            "description": "AC-12 | Negativo | Sin Account-Id en render"
+          }
+        },
+        {
+          "name": "TC-032 · Template de otra compañía → 404",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/{{pdf_template_id_other_company}}/spec", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","{{pdf_template_id_other_company}}","spec"] },
+            "description": "AC-12 | Negativo | Template de otra compañía"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Flows por API",
+      "description": "SUPERFICIE 6: TC-041 a TC-043 — Listado y ejecución de flows",
+      "item": [
+        {
+          "name": "TC-041 · Listar flows (agregado sin Account-Id)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('account_remote_id en items', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  if (Array.isArray(data) && data.length > 0) {",
+            "    pm.expect(data[0]).to.have.property('account_remote_id');",
+            "  }",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/flows", "host": ["{{base_url}}"], "path": ["api","2.0","app","flows"] },
+            "description": "AC-18 | Happy Path | Agregado de toda la app con account_remote_id"
+          }
+        },
+        {
+          "name": "TC-042 · Ejecutar flow activo → OK",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"params\": {} }" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/flows/{{flow_id_active}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","flows","{{flow_id_active}}","execute"] },
+            "description": "AC-18 | Happy Path | Ejecución síncrona de flow ACTIVE"
+          }
+        },
+        {
+          "name": "TC-043 · Ejecutar flow inactivo → 409",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 409', () => pm.response.to.have.status(409));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"params\": {} }" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/flows/{{flow_id_inactive}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","flows","{{flow_id_inactive}}","execute"] },
+            "description": "AC-18 | Negativo | Flow INACTIVE → 409 (pero GET sí funciona)"
+          }
+        },
+        {
+          "name": "TC-043b · GET flow inactivo → 200 (lectura sí funciona)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 (lectura sí funciona)', () => pm.response.to.have.status(200));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/flows/{{flow_id_inactive}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","flows","{{flow_id_inactive}}"] },
+            "description": "AC-18 | Complementario | Flow INACTIVE se puede leer pero no ejecutar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Accounts Compartidos Multi-App",
+      "description": "SUPERFICIE 5: TC-035 a TC-040 — Prueba central del modelo de propiedad por compañía",
+      "item": [
+        {
+          "name": "TC-035a · App A crea customer SHARED-001",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"SHARED-001\",\n  \"name\": \"Shared Customer from App A\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-14 | Pre-req | App A crea customer SHARED-001"
+          }
+        },
+        {
+          "name": "TC-035b · App B ve customer SHARED-001",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('SHARED-001 visible para App B', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  const found = Array.isArray(data) && data.some(a => a.remote_id === 'SHARED-001');",
+            "  pm.expect(found).to.be.true;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_b}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-14 | Happy Path | App B (misma compañía) ve customer de App A"
+          }
+        },
+        {
+          "name": "TC-035c · App B detalla SHARED-001",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Detalle OK', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.remote_id).to.eql('SHARED-001');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_b}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts/SHARED-001", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts","SHARED-001"] },
+            "description": "AC-14 | Happy Path | App B puede detallar customer compartido"
+          }
+        },
+        {
+          "name": "TC-036 · App B intenta crear SHARED-001 → 409",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 409 (unique por compañía)', () => pm.response.to.have.status(409));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_b}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"SHARED-001\",\n  \"name\": \"Duplicate from App B\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-15 | Edge Case | Unique por compañía, no por app"
+          }
+        },
+        {
+          "name": "TC-037 · App C (otra compañía) crea SHARED-001 → 201",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201 (sin conflicto entre compañías)', () => pm.response.to.have.status(201));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_c}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"SHARED-001\",\n  \"name\": \"Same ID different company\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "AC-15 | Happy Path | Otra compañía puede usar mismo remote_id"
+          }
+        },
+        {
+          "name": "TC-038 · App C ve SU customer, no el de compañía A",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Retorna customer de compañía C', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.remote_id).to.eql('SHARED-001');",
+            "  pm.expect(data.name).to.eql('Same ID different company');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_c}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts/SHARED-001", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts","SHARED-001"] },
+            "description": "AC-15 | Edge Case | Aislamiento: cada compañía ve solo sus customers"
+          }
+        },
+        {
+          "name": "TC-040 · App B ejecuta contra customer de App A",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 (ejecución compartida OK)', () => pm.response.to.have.status(200));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token_app_b}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Connection-Id", "value": "{{connection_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}","execute"] },
+            "description": "AC-17 | Edge Case | App B ejecuta connector contra customer compartido de App A"
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Regresión API",
+      "description": "REG-003: Rutas Laravel existentes siguen respondiendo igual",
+      "item": [
+        {
+          "name": "REG-003 · Ruta Laravel existente /api/2.0/app (convivencia)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status NO es 404/500 (ruta existe)', () => {",
+            "  pm.expect(pm.response.code).to.not.eql(404);",
+            "  pm.expect(pm.response.code).to.not.eql(500);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app", "host": ["{{base_url}}"], "path": ["api","2.0","app"] },
+            "description": "AC-21 | Regresión | Endpoints Laravel existentes siguen respondiendo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Edge Cases Adicionales",
+      "description": "Escenarios extra de seguridad y robustez NO en la test-matrix original",
+      "item": [
+        {
+          "name": "EXTRA-001 · Sin Authorization header → 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "Seguridad | Sin header Authorization → 401"
+          }
+        },
+        {
+          "name": "EXTRA-002 · Token vacío → 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "Seguridad | Bearer con token vacío"
+          }
+        },
+        {
+          "name": "EXTRA-003 · Token random/garbage → 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "pm.test('Sin info sensible', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('key');",
+            "  pm.expect(body).to.not.include('private');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.GARBAGE.INVALID", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors"] },
+            "description": "Seguridad | JWT con firma inválida"
+          }
+        },
+        {
+          "name": "EXTRA-004 · SQL injection en remote_id → sin éxito",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500 (inyección manejada)', () => {",
+            "  pm.expect(pm.response.code).to.not.eql(500);",
+            "});",
+            "pm.test('Sin datos de BD expuestos', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('pg_');",
+            "  pm.expect(body).to.not.include('sql');",
+            "  pm.expect(body).to.not.include('SELECT');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"'; DROP TABLE accounts; --\",\n  \"name\": \"SQL Injection Test\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "Seguridad | SQL injection en campo remote_id"
+          }
+        },
+        {
+          "name": "EXTRA-005 · XSS en name field → sanitizado",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => {",
+            "  pm.expect(pm.response.code).to.not.eql(500);",
+            "});",
+            "pm.test('Script no se refleja sin sanitizar', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('<script>');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"XSS-TEST-001\",\n  \"name\": \"<script>alert('xss')</script>\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "Seguridad | XSS en campo name"
+          }
+        },
+        {
+          "name": "EXTRA-006 · Body vacío en POST token → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Robustez | Body completamente vacío en POST /token"
+          }
+        },
+        {
+          "name": "EXTRA-007 · Content-Type incorrecto → manejo graceful",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => {",
+            "  pm.expect(pm.response.code).to.not.eql(500);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "text/xml" }],
+            "body": { "mode": "raw", "raw": "<xml><grant_type>client_credentials</grant_type></xml>" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Robustez | Content-Type XML en endpoint que espera JSON"
+          }
+        },
+        {
+          "name": "EXTRA-008 · Campos extra en body → ignorados",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 o 201 (campos extra ignorados)', () => {",
+            "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"{{scopes}}\",\n  \"admin\": true,\n  \"is_superuser\": true,\n  \"company_id\": \"OTHER_COMPANY\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Seguridad | Campos extra (admin, is_superuser, company_id) deben ignorarse"
+          }
+        },
+        {
+          "name": "EXTRA-009 · Account remote_id muy largo → manejado",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => {",
+            "  pm.expect(pm.response.code).to.not.eql(500);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"remote_id\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"name\": \"Long Remote ID Test\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts"] },
+            "description": "Robustez | remote_id de 270+ caracteres"
+          }
+        },
+        {
+          "name": "EXTRA-010 · Método HTTP incorrecto (PUT /token) → 405",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 405 o 404 (método no permitido)', () => {",
+            "  pm.expect(pm.response.code).to.be.oneOf([404, 405]);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Robustez | PUT en endpoint que solo acepta POST"
+          }
+        },
+        {
+          "name": "EXTRA-011 · DELETE en endpoint de accounts → 405",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404 o 405', () => {",
+            "  pm.expect(pm.response.code).to.be.oneOf([404, 405]);",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/2.0/app/accounts/QA-CUST-001", "host": ["{{base_url}}"], "path": ["api","2.0","app","accounts","QA-CUST-001"] },
+            "description": "Robustez | DELETE no es parte de la API FASE 1"
+          }
+        },
+        {
+          "name": "EXTRA-012 · Connector con path traversal → sanitizado",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => pm.expect(pm.response.code).to.not.eql(500));",
+            "pm.test('Sin file disclosure', () => {",
+            "  const body = pm.response.text();",
+            "  pm.expect(body).to.not.include('root:');",
+            "  pm.expect(body).to.not.include('/etc/');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/../../etc/passwd", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","..","..","etc","passwd"] },
+            "description": "Seguridad | Path traversal en connector_id"
+          }
+        },
+        {
+          "name": "EXTRA-013 · PDF render con params vacío → manejo graceful",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => pm.expect(pm.response.code).to.not.eql(500));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"template_id\": \"{{pdf_template_id}}\",\n  \"params\": []\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/pdf-templates/execute", "host": ["{{base_url}}"], "path": ["api","2.0","app","pdf-templates","execute"] },
+            "description": "Robustez | params array vacío en render PDF"
+          }
+        },
+        {
+          "name": "EXTRA-014 · Account-Id con caracteres especiales → manejado",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('No es 500', () => pm.expect(pm.response.code).to.not.eql(500));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "'; DROP TABLE accounts;--" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}"] },
+            "description": "Seguridad | SQL injection en header Account-Id"
+          }
+        },
+        {
+          "name": "EXTRA-015 · Múltiples scopes válidos + 1 inválido → 422",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 422 (scope inválido detectado)', () => pm.response.to.have.status(422));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"scope\": \"read execute scope_falso_qa\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Edge Case | Mezcla de scopes válidos con 1 inválido"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Endpoints Descubiertos en Código",
+      "description": "Endpoints encontrados en flow_binaries/backend/routes/devapp.go que NO estaban en la test-matrix original. Descubiertos al revisar el código post-pull a DEVELOPMENT.",
+      "item": [
+        {
+          "name": "CODE-001 · GET action spec individual",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Spec de la action presente', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/{{action_name}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","{{action_name}}"] },
+            "description": "Ruta: GET /connectors/{connector}/actions/{action}\nScope: app:connector-read\nNo cubierto en test-matrix. Retorna spec autodescriptivo de UNA action específica."
+          }
+        },
+        {
+          "name": "CODE-002 · GET action spec — action inexistente → 404",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connectors/{{connector_id}}/actions/action_inexistente_qa", "host": ["{{base_url}}"], "path": ["api","2.0","app","connectors","{{connector_id}}","actions","action_inexistente_qa"] },
+            "description": "Negativo: action que no existe en el connector"
+          }
+        },
+        {
+          "name": "CODE-003 · GET /connections (listar conexiones del customer)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Array de conexiones', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(Array.isArray(data)).to.be.true;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connections", "host": ["{{base_url}}"], "path": ["api","2.0","app","connections"] },
+            "description": "Ruta: GET /connections\nScope: app:connection-read\nNo cubierto en test-matrix. Lista conexiones del customer (Account-Id)."
+          }
+        },
+        {
+          "name": "CODE-004 · GET /connections filtrado por connector",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connections?connector={{connector_id}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","connections"], "query": [{ "key": "connector", "value": "{{connector_id}}" }] },
+            "description": "Filtrar conexiones por connector (query param ?connector=)"
+          }
+        },
+        {
+          "name": "CODE-005 · GET /connections sin Account-Id → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/2.0/app/connections", "host": ["{{base_url}}"], "path": ["api","2.0","app","connections"] },
+            "description": "Negativo: connections requiere Account-Id"
+          }
+        },
+        {
+          "name": "CODE-006 · POST /mappers/run (ejecución efímera)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Resultado de mapper presente', () => {",
+            "  const json = pm.response.json();",
+            "  pm.expect(json.data || json).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"mapper\": {\n    \"name\": \"qa-test-mapper\",\n    \"nodes\": [],\n    \"connections\": []\n  },\n  \"params\": {\n    \"input\": \"test-value\"\n  }\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/mappers/run", "host": ["{{base_url}}"], "path": ["api","2.0","app","mappers","run"] },
+            "description": "Ruta: POST /mappers/run\nScope: app:mapper-run\nNo cubierto en test-matrix. Ejecuta un mapper efímero (no almacenado)."
+          }
+        },
+        {
+          "name": "CODE-007 · POST /mappers/run sin Account-Id → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"mapper\": { \"name\": \"test\", \"nodes\": [] },\n  \"params\": {}\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/mappers/run", "host": ["{{base_url}}"], "path": ["api","2.0","app","mappers","run"] },
+            "description": "Negativo: mapper requiere Account-Id (es account-scoped)"
+          }
+        },
+        {
+          "name": "CODE-008 · POST /mappers/run body vacío → 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Mensaje de parse error', () => {",
+            "  const body = pm.response.text().toLowerCase();",
+            "  pm.expect(body).to.include('parse');",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Account-Id", "value": "{{account_id}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/mappers/run", "host": ["{{base_url}}"], "path": ["api","2.0","app","mappers","run"] },
+            "description": "Robustez: body vacío en mapper run → 400 parse error"
+          }
+        },
+        {
+          "name": "CODE-009 · GET /flows/{flowId} (detalle individual)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Flow data presente', () => {",
+            "  const json = pm.response.json();",
+            "  const data = json.data || json;",
+            "  pm.expect(data.id || data.name).to.exist;",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/2.0/app/flows/{{flow_id_active}}", "host": ["{{base_url}}"], "path": ["api","2.0","app","flows","{{flow_id_active}}"] },
+            "description": "Ruta: GET /flows/{flowId}\nScope: app:flow-read\nDetalle de un flow individual (la test-matrix solo cubre listing y execute)."
+          }
+        },
+        {
+          "name": "CODE-010 · Rate limiting en /token → 429",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "// Este test requiere que DEVAPP_TOKEN_RATE sea bajo (ej: 3).",
+            "// Si falla con 400, significa que el rate limit no se alcanzó.",
+            "pm.test('Status 429 (Too Many Requests)', () => {",
+            "  pm.expect(pm.response.code).to.be.oneOf([429, 400]);",
+            "  if (pm.response.code === 429) {",
+            "    pm.expect(pm.response.headers.get('Retry-After')).to.exist;",
+            "  }",
+            "});"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"WRONG\",\n  \"scope\": \"read\"\n}" },
+            "url": { "raw": "{{base_url}}/api/2.0/app/token", "host": ["{{base_url}}"], "path": ["api","2.0","app","token"] },
+            "description": "Rate Limiting: DEVAPP_TOKEN_RATE controla requests/min por IP.\nEnviar rápidamente para alcanzar el límite (por defecto 10/min).\nPara probar: bajar DEVAPP_TOKEN_RATE=3 y ejecutar este request 4 veces seguidas."
+          }
+        }
+      ]
+    }
+  ]
+}

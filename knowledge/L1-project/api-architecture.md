@@ -100,8 +100,8 @@
 | Framework | Playwright |
 | Monorepo | NX workspace |
 | Tests Ionflow | `apps/bot-test/tests/IONFLOW/` |
-| Skill de IA | `.agents/skills/ionflow-playwright-creator/SKILL.md` |
-| Ejecución | `npx nx run bot-test:test:ionflow --args="--spec=..."` |
+| Skill de IA (la usa el responsable de bot-test) | `.agents/skills/e2e-playwright-creator/SKILL.md` |
+| Ejecución | `npx playwright test <specs> --config=tests/IONFLOW/playwright.ionflow.config.ts -g "<IDs>"` desde `apps/bot-test` (ver `skills/_shared/bot-test.md`) |
 
 ## Relaciones entre Repos
 

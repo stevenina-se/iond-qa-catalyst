@@ -1,0 +1,31 @@
+SIDE,MODULE,CODE,L2_MODULE,NOTA
+KC,*,AUT,auth,"Keycloak: login, registro y recuperación de contraseña"
+ADMIN,Dashboard,DSH,dashboard,
+ADMIN,Templates,TPL,boards,Templates de boards (admin)
+ADMIN,Companies,CMP,auth,"Companies, migraciones, suscripción y log as user"
+ADMIN,Connectors,APC,connections,Listado de App Connectors (admin)
+ADMIN,Boards,BRD,boards,Listado de boards (admin)
+ADMIN,Apps,APP,services,"Apps legacy, applications, Grapps y custom"
+ADMIN,Developers,DEV,developer-apps,
+ADMIN,Settings,SET,services,Categorías
+ADMIN,Billing,BIL,billing,"Productos, planes y features (Stripe)"
+TENANT,Dashboard,DSH,dashboard,
+TENANT,Boards,BRD,boards,"Lista, editor, commits, export/import, Flow Pilot y nodos (All Tools)"
+TENANT,Execution History,EXH,executions,
+TENANT,Templates,TPL,boards,Templates públicos y de comunidad
+TENANT,Webhooks,WHK,webhooks,
+TENANT,Connections,CNX,integrations,Conexiones activas (L2 integrations)
+TENANT,Persisten Data,PDS,data-store,Persistent Data (nombre tal como figura en la hoja)
+TENANT,PDF Templates,PDF,pdf-templates,
+TENANT,Credentials,CRD,keys,Credenciales de LLM y servicios
+TENANT,App Connectors,APC,connections,App Connectors (L2 connections)
+TENANT,Accounts,ACC,accounts,
+TENANT,Developer Apps,DVA,developer-apps,
+TENANT,Catalog,CAT,services,
+TENANT,Notifications,NTF,dashboard,
+TENANT,Settings,SET,accounts,Información de la company y apariencia
+TENANT,Teams,TEA,auth,Invitaciones y permisos
+TENANT,Account,PRF,auth,Datos personales del usuario
+TENANT,Laanguaje,LNG,dashboard,Idioma e i18n (nombre tal como figura en la hoja)
+ADMIN GATEWAY,Apps,APP,services,Apps del Gateway
+ADMIN GATEWAY,Customer,CUS,services,Experiencia del cliente en el Gateway

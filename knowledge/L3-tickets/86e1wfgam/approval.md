@@ -1,30 +1,6 @@
-# Aprobación — 86e1wfgam
-
 Estimado @Rodolfo Merlo Ali
 
 **El resultado de pruebas para este ticket es: APROBADO ✅**
-
-**Ticket**: 86e1wfgam — Motor de exposición por API (FASE 1)
-**Módulo**: DevApp API — Connectors, Accounts, Flows, Mappers, PDF Templates
-**QA Engineer**: Steve Nina
-**Fecha**: 2026-08-23
-**Prioridad**: Urgent
-
-### 📋 Subtareas del Ticket
-
-| ID | Subtarea | Estado |
-|----|----------|--------|
-| 86e1wfgt2 | App Channels — Exponer app connectors/channels vía API | ⏸ done w/d (incorporado en ticket padre) |
-| 86e1wfguh | PDF Template — Gestión de plantillas PDF en la API | ⏸ done w/d (incorporado en ticket padre) |
-| 86e1wfgxk | PDF Mapper — Gestión de mappers PDF vía API | ⏸ done w/d (incorporado en ticket padre) |
-
-> **Nota**: Las tres subtareas fueron desarrolladas e integradas directamente en la rama del ticket padre (IONF-1082), por lo que se marcan como "done without delivery" individual. Todo el trabajo se entrega y valida como parte del ticket principal.
-
-### 📊 Resumen de Testing
-- **Criterios de aceptación validados**: 13 (AC-1 a AC-13)
-- **Áreas cubiertas**: OAuth2 tokens, accounts, connectors, connections, flows, mappers, PDF templates, UI diseñador PDF
-- **Bugs encontrados**: 0
-- **Limitaciones conocidas documentadas**: 2 (aceptadas, no son bugs)
 
 ---
 
@@ -96,36 +72,6 @@ Se incluyó un canal de demostración sobre el motor genérico de la aplicación
 - **Rutas Laravel existentes responden igual**: No se eliminó ningún endpoint. Convivencia permanente. ✅
 - **Vista de Accounts sin cambios en UI**: La gestión desde tenant → Accounts sigue como estaba. ✅
 - **Cambio esperado de mensajes de error**: Token desconocido/revocado/expirado ahora devuelve 401 "Invalid token" uniforme (antes distinguía mensajes). El status no cambia, la uniformidad es deliberada para no permitir enumerar clientes. ✅
-
----
-
-### 🔍 Code Review QA
-
-- **Repos revisados**:
-  - `webcomponents-flow` — [PR #28](https://github.com/altacrest/ion_webcomponents_flow/pull/28)
-  - `gateway-ion` — [PR #52](https://github.com/altacrest/ion_gateway_ion/pull/52)
-  - `flow_binaries` — [PR #16](https://github.com/altacrest/ion_flow_binaries/pull/16/changes)
-  - `gateway` — [PR #51](https://github.com/altacrest/ion_gateway/pull/51)
-- **Code review aprobado por**: Gustavo Mamani ✅
-- **Tests del Developer**:
-  - Binaries (Go): 1554 tests PASS, 0 FAIL
-  - Ionflow (Vue): 1625 passed, 3 skipped
-  - Webcomponents (Vue): 797 passed, 1 skipped
-  - Gateway (Laravel): Suite pre-existente con fallas de entorno local (no relacionadas con este ticket)
-
-### ⚠️ Limitaciones Conocidas (documentadas, no son bugs)
-
-- **Laravel `POST /api/2.0/app/accounts`**: Valida `remote_id` como único global (rechaza con 422 un `remote_id` que otra compañía ya usa). La superficie Go sí lo permite. Falla seguro, no corrompe datos. Se resolverá en el ticket que scopee los controllers de Laravel por compañía.
-- **Seq Scan en `accounts`**: Con pocos registros, el planner de PostgreSQL descarta el índice nuevo cuando recorrer la tabla completa es más barato. Es correcto; el beneficio aparece al crecer la tabla.
-
-### 📂 Evidencia
-- **PRs**: [webcomponents-flow #28](https://github.com/altacrest/ion_webcomponents_flow/pull/28), [gateway-ion #52](https://github.com/altacrest/ion_gateway_ion/pull/52), [flow_binaries #16](https://github.com/altacrest/ion_flow_binaries/pull/16/changes), [gateway #51](https://github.com/altacrest/ion_gateway/pull/51)
-- **Colecciones .http**: `devapp-token.http`, `devapp-connectors.http`, `devapp-pdf.http`
-- **Test Matrix**: `knowledge/L3-tickets/86e1wfgam/test-matrix.md`
-- **AC Consolidados**: `knowledge/L3-tickets/86e1wfgam/ac-consolidated.md`
-- **Test Plan**: `knowledge/L3-tickets/86e1wfgam/test-plan.md`
-- **Documentación**: `ion-binaries/docs/features/devapp-api/`
-
 ---
 
 ### 📝 Conclusión de QA
@@ -138,4 +84,4 @@ El ticket 86e1wfgam implementa exitosamente la primera fase del Motor de exposic
 | BRANCH | IONF-1082 (merged to DEVELOPMENT) |
 | ENV | dev-app.ionflow.io |
 | TEST MATRIX | knowledge/L3-tickets/86e1wfgam/test-matrix.md |
-| MERGE REQUESTS | [webcomponents-flow PR #28](https://github.com/altacrest/ion_webcomponents_flow/pull/28), [gateway-ion PR #52](https://github.com/altacrest/ion_gateway_ion/pull/52), [flow_binaries PR #16](https://github.com/altacrest/ion_flow_binaries/pull/16/changes), [gateway PR #51](https://github.com/altacrest/ion_gateway/pull/51) |
+| MERGE REQUESTS | YES|

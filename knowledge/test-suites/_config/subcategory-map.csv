@@ -1,0 +1,35 @@
+IOND_SUBCATEGORY,L2_MODULE,E2E_MODULES,E2E_EXCLUDE,CROSS_SYSTEM,NOTA
+Boards,boards,TEN-BRD ADM-BRD TEN-TPL ADM-TPL TEN-EXH,tenant > boards > list > create board > all tools > *;tenant > boards > list > create board > storage > *;tenant > boards > list > create board > ion pdf > *;tenant > boards > list > create board > tenant app > *,,"Editor, lista, commits y ejecución; el historial depende del motor"
+Board Design,boards,TEN-BRD,tenant > boards > list > create board > all tools > *;tenant > boards > list > create board > storage > *;tenant > boards > list > create board > ion pdf > *;tenant > boards > list > create board > tenant app > *,,Diseño de boards de integración
+Nodo *,nodes,,,,"Cualquier ""Nodo <nombre>"": se selecciona la fila de ese nodo (All Tools, Storage, ION PDF o Tenant App) por similitud de nombre; el baseline ya cubre la ejecución y el historial"
+Flowpilot,boards,TEN-BRD TEN-CRD,tenant > boards > list > create board > all tools > *;tenant > boards > list > create board > storage > *;tenant > boards > list > create board > ion pdf > *;tenant > boards > list > create board > tenant app > *,IonMind,Flow Pilot usa IonMind y las credenciales de LLM
+API,boards,TEN-BRD TEN-EXH TEN-WHK TEN-APC TEN-CNX TEN-PDS TEN-PDF,tenant > boards > list > create board > all tools > *;tenant > boards > list > create board > storage > *;tenant > boards > list > create board > ion pdf > *;tenant > boards > list > create board > tenant app > *,,API workspace: contrato con consumidores externos; agregar pruebas de API/contrato como filas RGR en la matriz
+App Connectors,connections,TEN-APC ADM-APC TEN-CNX,,IonMind,Incluye la generación con IonMind
+App Stores,services,ADM-APP ADM-DEV TEN-ACC TEN-DVA TEN-CAT GTW-APP GTW-CUS,,Gateway;Stripe,Marketplace y Gateway
+Gateway,services,GTW-APP GTW-CUS ADM-APP,,Gateway,
+PDF Templates,pdf-templates,TEN-PDF,,,Incluye el nodo ION PDF vía TEN-BRD si el cambio toca el canvas
+Persistent Data,data-store,TEN-PDS,,,"Si el cambio toca el nodo Storage, agregar también ""Nodo Storage"""
+Webhooks,webhooks,TEN-WHK,,,"Si el cambio toca el nodo Webhook, agregar también ""Nodo Webhook"""
+Execution History,executions,TEN-EXH,,,
+Connections,integrations,TEN-CNX TEN-APC,,Apps externas,Autorización con apps externas
+Integrations,integrations,TEN-CNX TEN-APC,,Apps externas,
+Credentials,keys,TEN-CRD,,,
+Billing,billing,ADM-BIL ADM-CMP TEN-EXH,,Stripe,Consumo visible en el historial; Stripe
+Subscriptions,billing,ADM-BIL ADM-CMP,,Stripe,
+Auth,auth,KC-AUT TEN-TEA TEN-PRF ADM-CMP,,Keycloak,Keycloak
+Keycloak,auth,KC-AUT TEN-PRF,,Keycloak,
+Register Company,auth,KC-AUT ADM-CMP,,Keycloak,
+Teams,auth,TEN-TEA,,,
+Settings,accounts,TEN-SET,,,
+Notifications,dashboard,TEN-NTF,,,
+Dashboard,dashboard,TEN-DSH ADM-DSH,,,
+Menu,dashboard,TEN-DSH TEN-SET TEN-LNG,,,Navegación global: el smoke ya recorre los accesos principales
+Feedback,dashboard,TEN-DSH,,,Widget de feedback in-app
+Admin Companies,auth,ADM-CMP,,,
+Templates,boards,TEN-TPL ADM-TPL,,,
+Language,dashboard,TEN-LNG,,,
+Ionmind,connections,TEN-APC TEN-CNX,,IonMind,"Funciones de IonMind usadas desde iond: discovery/mining, extracción de conectores, notificaciones de error"
+Grapps,services,ADM-APP GTW-APP GTW-CUS TEN-CAT,,Gateway,"Grapps del Gateway: instalación, configuración de flows, schedules por cuenta"
+Admin,auth,ADM-CMP,,,Accesos administrativos (sesión de soporte / log as user): permisos y seguridad
+Form Builder,nodes,,,,"Usar ""Nodo Form"" en la selección (fila del nodo Form)"
+Infra,executions,TEN-BRD TEN-EXH,tenant > boards > list > create board > all tools > *;tenant > boards > list > create board > storage > *;tenant > boards > list > create board > ion pdf > *;tenant > boards > list > create board > tenant app > *,,"Cambios de infraestructura del motor (persistencia, conexiones): ejecución e historial"

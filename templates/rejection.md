@@ -1,140 +1,50 @@
-# Template de Rechazo — [TICKET-ID]
+# Rechazo de QA — C-14 (`mock testing` → `to do`)
 
-Estimado @name_dev
+> **Plantilla del QA Catalyst = C-14** de la fuente canónica (§14; copia generada en `templates/comments/C-14.md`; si difieren, prevalece la generada).
+> **Borrador en:** `knowledge/L3-tickets/[id-clickup]/comments/C-14-[AAAA-MM-DD].md` · **Skill:** `skills/mock-testing/report.md` · Lo publica el Reviewer QA; luego mueve el ticket a `to do` (Discovery e Improvements) y suma **Rejection_count + 1** (uno por iteración, no por observación; recordatorio A-09).
+> La frase **`El resultado de pruebas para este ticket es: RECHAZADO ❌`** es fija: la usan las skills y la auditoría para detectar el veredicto. No se modifica.
 
-**El resultado de pruebas para este ticket es: RECHAZADO ❌**
+## Antes de publicar
 
-**Ticket**: [TICKET-ID] — [Título]
-**Módulo**: [módulo]
-**QA Engineer**: [nombre]
-**Fecha**: [fecha]
+- [ ] Cada OBS cita el REQ-ID incumplido de la matriz vigente con `po-vobo` (o el contrato de `prototype review` que la matriz referencia). Implementar algo distinto de lo acordado **sí** es rechazo.
+- [ ] Lo no contemplado en la matriz **no** es rechazo: va como ticket nuevo con `fuera-de-matriz` y C-17.
+- [ ] Excepción: un hallazgo `urgent` **provocado por el cambio** (regresión, pérdida de datos, seguridad, cobro incorrecto) sí es rechazo aunque no tenga REQ: en el título de la OBS, `Sin REQ (regresión provocada por el cambio)` en lugar de `REQ-[xx]`.
+- [ ] QA y Dev coinciden en la interpretación; si no, se escala con C-15 + `escalado-po` en lugar de rechazar.
+- [ ] Un requerimiento tardío que el PO exige incluir no es rechazo: vuelve a `to do` con C-08, sin sumar Rejection_count.
+- [ ] Evidencia completa (Estándar de QA §8.4) y datos sensibles enmascarados.
 
-### Resumen de Testing
-- Casos ejecutados: [N] (incluyendo [N] del Code Review)
-- Casos aprobados: [N]
-- Casos fallidos: [N]
-- Bugs encontrados en Code Review: [N]
-- Bugs encontrados en Testing: [N]
-- Bugs totales (bloqueantes): [N]
+## Comentario (copiar en ClickUp)
 
-### Code Review QA
-> Resumen de la revisión de código realizada antes del testing funcional.
-
-- Repos revisados: [lista]
-- Hallazgos: [N] (🔴: [N], 🟠: [N], 🟡: [N])
-- TCs inyectados en la test matrix desde el code review: [N]
-- Bugs del código que contribuyen al rechazo: [lista de BUG-CR-xxx si aplica]
-
+```markdown
+Estimado @[dev]
+**El resultado de pruebas para este ticket es: RECHAZADO ❌** — Iteración [N] (Rejection_count → [N])
+**Matriz de Requerimientos:** v[N]
+### OBS-01 — [urgent/high/normal/low] — REQ-[xx] — Estado: Nuevo / Persistente / Regresión
+**Área / Flujo:** [...]
+**Pasos:** 1. ...
+**Resultado esperado (según REQ-[xx]):** [...]
+**Resultado actual:** [...]
+**Evidencia:** [...]
 ---
+**Hallazgos fuera de matriz (no son causa de rechazo):** [#id]
+**Ambiente / rama / PRs:** [...]
+→ TO DO
+```
 
-### 📌 Observaciones
+## Cómo completarlo
 
-**🔴 OBS-01 - Urgent - Estado: Nuevo / Persistente / Regresión**
-**Área / Flujo: {{modulo}}**
+- **Una sección `### OBS-xx` por observación** (hasta el `---`), ordenadas por severidad: `urgent` → `high` → `normal` → `low`.
+- **Severidad = prioridad nativa de ClickUp:**
 
-**Descripción:**
-Descripción clara y corta del problema (qué falla).
+  | Prioridad | Severidad | Rechaza en `mock testing` |
+  |---|---|---|
+  | `urgent` | Bloqueante: core roto sin workaround, pérdida o corrupción de datos, seguridad, cobro incorrecto | Siempre |
+  | `high` | Funcionalidad importante falla con workaround | Si incumple un REQ |
+  | `normal` | Funcionalidad secundaria o UX con impacto moderado | Si incumple un REQ (fuera de matriz → ticket nuevo) |
+  | `low` | Cosmético | Solo si incumple un REQ explícito |
 
-**Pasos de reproducción:**
-> Los pasos deben ser reproducibles y en formato breadcrumb.
-
-1. Company Login > Sidebar: [Módulo] > ...
-2. ...
-3. ...
-
-**Resultado esperado:**
-Qué debería ocurrir.
-
-**Comportamiento actual:**
-Qué ocurre actualmente.
-
-**Evidencia:**
-- Screenshot(s): {{link_imagen o ruta a L3-tickets/<id>/screenshots/FAIL-TC-xxx.png}}
-- Logs / Payload (si aplica)
-
----
-
-**🟡 OBS-02 - High - Estado: Nuevo / Persistente**
-**Área / Flujo: {{modulo}}**
-
-**Descripción:**
-Descripción clara y corta del problema (qué falla).
-
-**Pasos de reproducción:**
-1. Company Login > Sidebar: [Módulo] > ...
-2. ...
-3. ...
-
-**Resultado esperado:**
-Qué debería ocurrir.
-
-**Comportamiento actual:**
-Qué ocurre actualmente.
-
-**Evidencia:**
-- Screenshot(s): {{link_imagen o ruta a L3-tickets/<id>/screenshots/FAIL-TC-xxx.png}}
-- Logs / Payload (si aplica)
-
----
-
-**🔵 OBS-03 - Normal - Estado: Nuevo**
-**Área / Flujo: {{modulo}}**
-
-**Descripción:**
-Descripción clara y corta del problema (qué falla).
-
-**Pasos de reproducción:**
-1. Company Login > Sidebar: [Módulo] > ...
-2. ...
-3. ...
-
-**Resultado esperado:**
-Qué debería ocurrir.
-
-**Comportamiento actual:**
-Qué ocurre actualmente.
-
-**Evidencia:**
-- Screenshot(s): {{link_imagen o ruta a L3-tickets/<id>/screenshots/FAIL-TC-xxx.png}}
-- Logs / Payload (si aplica)
-
----
-
-**⚪ OBS-04 - Low - Estado: Nuevo**
-**Área / Flujo: {{modulo}}**
-
-**Descripción:**
-Descripción clara y corta del problema (qué falla).
-
-**Pasos de reproducción:**
-1. Company Login > Sidebar: [Módulo] > ...
-2. ...
-3. ...
-
-**Resultado esperado:**
-Qué debería ocurrir.
-
-**Comportamiento actual:**
-Qué ocurre actualmente.
-
-**Evidencia:**
-- Screenshot(s): {{link_imagen o ruta a L3-tickets/<id>/screenshots/FAIL-TC-xxx.png}}
-- Logs / Payload (si aplica)
-
----
-
-### Evidencia General
-- Test Matrix: [link o referencia]
-- QA Report: [link o referencia]
-- Code Review QA: [link o referencia]
-- DB Evidence: [link o referencia]
-- Screenshots de fallos: [link a L3-tickets/<id>/screenshots/]
-
-| Details | |
-|---|---|
-| BROWSER | Chrome |
-| BRANCH | {{branch}} |
-| ENV | dev-app.ionflow.io |
-| TEST MATRIX | {{link_documento}} |
-| CODE REVIEW | ✅ Realizado |
-| MERGE REQUEST | PENDIENTE (bugs encontrados) |
+- **Estado de la OBS:** *Nuevo* (primera vez) · *Persistente* (reportada en una iteración anterior y sin corregir) · *Regresión* (funcionaba en la iteración anterior y el fix la rompió).
+- **Pasos:** numerados, en breadcrumb y desde un estado conocido, con los datos, el usuario y el rol usados (`Company Login > Sidebar: [Módulo] > ...`).
+- **Evidencia:** `screenshots/[TC-ID]-[paso].png`, logs, `transaction_id`, request/response.
+- **Ambiente / rama / PRs:** ambiente asignado al QA, rama del ticket, build o commit y Merge Request.
+- **Pendiente de decisión PO:** si un REQ tiene una duda abierta, no se rechaza por él; se avanza con los demás.

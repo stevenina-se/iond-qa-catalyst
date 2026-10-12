@@ -1,0 +1,38 @@
+SIDE,MODULE/FEATURE,,,,,TIPO REGRESION,ASSIGNED,RESOLUTION,COMMENTS,OBSERVATION,TICKET,PRIORITY
+STAGEMIND,Endpoints/API,Creación de boxes,,,,DIRECTA,,,,Boxes creados correctamente respuesta 200,86e0rqvqr,critico
+,,Creación de boxes - validación input,,,,DIRECTA,,,,Error 400 descriptivo con body inválido,86e0rqvqr,alto
+,,Escalado de imágenes,,,,DIRECTA,,,,Imagen escalada correctamente,86e0rqwgd,critico
+,,Escalado - imagen válida NO devuelve Error 400,,,,DIRECTA,,,,Fix del bug previo,86e0tkajg,critico
+,,Escalado - imagen inválida devuelve error controlado,,,,DIRECTA,,,,Error descriptivo no crash,86e0tkajg,alto
+,,Generación de prompts de edición,,,,DIRECTA,,,,Prompt generado correctamente,86e0rxzem,critico
+,,STAGEMIND v1.4 funcionalidad general,,,,DIRECTA,,,,Pipeline completo funcional,86e0ega5d,alto
+,,API endpoints accesibles desde Xenvio,,,,INDIRECTA,,,,Respuestas correctas desde Xenvio,86e2ee6d6,medio
+,,,,,,,,,,,
+,Observabilidad,Tiempos de respuesta por request,,,,DIRECTA,,,,Breakdown por etapa registrado,86e0ethmp,alto
+,,Métricas operativas registradas,,,,DIRECTA,,,,CPU memoria requests/s visibles,86e0ethmv,alto
+,,Umbrales de performance,,,,DIRECTA,,,,Alertas al exceder umbrales,86e0ethmr,alto
+,,Documentación observabilidad actualizada,,,,DIRECTA,,,,Docs reflejan nuevas métricas,86e0ethmq,medio
+,,Validación de costos documentada,,,,DIRECTA,,,,Docs de costos actualizados,86e0ethmq,medio
+,,Performance bajo carga,,,,INDIRECTA,,,,Tiempos dentro de umbrales bajo carga,86e0ethmp,alto
+,,,,,,,,,,,
+,Costos/Billing,Cálculo costos Replicate robusto,,,,DIRECTA,,,,Costo calculado correctamente,86e0ethmn,alto
+,,Monitoreo costos Replicate,,,,DIRECTA,,,,Costos monitoreados en tiempo real,86e0ethmn,alto
+,,Consulta mensual gastos por proveedor,,,,DIRECTA,,,,Reporte mensual con desglose,86e0fazj2,medio
+,,Gastos múltiples proveedores,,,,DIRECTA,,,,Total correcto por proveedor,86e0fazj2,medio
+,,,,,,,,,,,
+,Seguridad/NSFW,Imagen inapropiada bloqueada,,,,DIRECTA,,,,Imagen rechazada con mensaje,86e0j62tv,critico
+,,Imagen apropiada aceptada,,,,DIRECTA,,,,Sin falso positivo,86e0j62tv,critico
+,,Edge cases imagen ambigua,,,,DIRECTA,,,,Comportamiento predecible,86e0j62tv,alto
+,,NSFW no bloquea productos legítimos,,,,INDIRECTA,,,,Ropa y accesorios procesan OK,86e0j62tv,alto
+,,,,,,,,,,,
+,Feedback/Xenvio,Enviar feedback de ejecución,,,,DIRECTA,,,,Feedback registrado y accesible,86e2ee6d6,medio
+,,Feedback con campos custom,,,,DIRECTA,,,,Campos custom persistidos,86e2ee6d6,medio
+,,Feedback accesible desde Xenvio,,,,DIRECTA,,,,Filtrable desde Xenvio,86e2ee6d6,medio
+,,,,,,,,,,,
+,Catalog Builder,Catalog Builder v1.3.5 con StageMind,,,,DIRECTA,,,,Catálogo generado con StageMind,86e0rj0u4,medio
+,,Generación de productos,,,,DIRECTA,,,,Productos con imágenes y descripciones,86e0rj0u4,medio
+,,,,,,,,,,,
+,Baseline,Pipeline completo imagen,,,,BASELINE,,,,Imagen procesada end-to-end,BASELINE,critico
+,,Health check servicio,,,,BASELINE,,,,Respuesta 200 OK,BASELINE,alto
+,,Autenticación API Key / Bearer,,,,BASELINE,,,,401 con key inválida,BASELINE,alto
+,,Rate limiting funcional,,,,BASELINE,,,,429 al exceder límite,BASELINE,medio

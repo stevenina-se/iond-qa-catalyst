@@ -1,0 +1,52 @@
+SIDE,MODULE/FEATURE,,,,,TIPO REGRESION,ASSIGNED,RESOLUTION,COMMENTS,OBSERVATION,TICKET,PRIORITY
+IONMIND,Extracción,Messenger Platform API,,,,DIRECTA,,,Extraer endpoints y generar App Connector,Verificar sin duplicados,86e2j45du,alto
+,,Instagram API,,,,DIRECTA,,,,Verificar extracción completa,86e2j4509,alto
+,,WhatsApp Cloud API,,,,DIRECTA,,,,Verificar extracción completa,86e2j44hg,alto
+,,Telegram Bot API,,,,DIRECTA,,,,Verificar extracción completa,86e2j43xg,alto
+,,APIs mensajería batch,,,,DIRECTA,,,,Generar App Connectors batch sin duplicados,86e2j43eg,alto
+,,UPS Track Alert,,,,DIRECTA,,,,Conector generado correctamente,86e2e8gde,alto
+,,FedEx Supply Chain,,,,DIRECTA,,,,Conector generado correctamente,86e2e8gde,alto
+,,Transformación XML a ConnectorDraft v1,,,,DIRECTA,,,,XML transformado sin errores,86e2mt6w7,alto
+,,Persistir descripciones endpoints,,,,DIRECTA,,,,Descripciones guardadas en BD,86e2ft73m,medio
+,,Escanear Invoicing.co,,,,DIRECTA,,,,App Connector generado,86e31uj4w,medio
+,,Escanear Pinecone,,,,DIRECTA,,,,App Connector generado,86e31uj4w,medio
+,,Demo Locus Robotics API falsa,,,,DIRECTA,,,,Demo funcional con mock API,86e2mt73u,medio
+,,Conectores visibles en iond,,,,INDIRECTA,,,,Verificar en iond App Connectors,86e2j43eg,alto
+,,Descripciones propagadas a iond,,,,INDIRECTA,,,,Verificar en iond interfaz,86e2ft73m,medio
+,,,,,,,,,,,
+,Tiers,Implementación Tiers de Servicio,,,,DIRECTA,,,,Tier creado y configurable,86e14d8w5,alto
+,,Asignación de tier a análisis,,,,DIRECTA,,,,Análisis usa tier seleccionado,86e14d8w5,alto
+,,Selección tier desde iond,,,,DIRECTA,,,,Tier seleccionado desde interfaz iond,86e2mt70g,alto
+,,Tier afecta cobro primer escrapeo,,,,INDIRECTA,,,,Cobro corresponde al tier,86e20nmqx,medio
+,,,,,,,,,,,
+,Core,IONMIND V1.9 funcionalidad,,,,DIRECTA,,,,Análisis completo sin errores,86e1f9qfg,alto
+,,Metodología Delta detección cambios,,,,DIRECTA,,,,Cambios detectados vs versión anterior,86e1f9qk3,alto
+,,Hardcoding plataformas por BD,,,,DIRECTA,,,,Plataformas cargadas correctamente,86e186nkx,medio
+,,Confirmación y cobro primer escrapeo,,,,DIRECTA,,,,Confirmación visible cobro procesado,86e20nmqx,critico
+,,V1.9 conectores funcionales en iond,,,,INDIRECTA,,,,Nodos V1.9 funcionan en flows,86e1f9qfg,alto
+,,,,,,,,,,,
+,Bug Fixes,Webhook registros en cache corregido,,,,DIRECTA,,,,Notificación webhook funciona,86e27q216,alto
+,,Tests y script de limpieza,,,,DIRECTA,,,,Tests pasan limpieza sin errores,86e27q2bw,medio
+,,Recuperar análisis tras sesión expirada,,,,DIRECTA,,,,Análisis recuperado tras re-login,86e2p459r,critico
+,,Endpoints duplicados corregidos,,,,DIRECTA,,,,Sin duplicados en App Connectors,86e2g4ev0,critico
+,,Endpoints no duplicados en iond,,,,INDIRECTA,,,,Lista sin duplicados en iond,86e2g4ev0,critico
+,,,,,,,,,,,
+,Logo.dev,Integrar Logo.dev en pipeline,,,,DIRECTA,,,,Logo.dev como fallback,86e1fkxz7,medio
+,,API actualización logos,,,,DIRECTA,,,,Logos actualizados via API,86e1fkxz7,medio
+,,Logos visibles en iond,,,,INDIRECTA,,,,Logo con atribución en iond,86e1fkxz7,medio
+,,,,,,,,,,,
+,Notificaciones,Errores por email,,,,DIRECTA,,,,Email enviado al error,86e25j0rn,medio
+,,Errores por Mattermost,,,,DIRECTA,,,,Notificación en canal Mattermost,86e25j0rn,medio
+,,Notificación visible en iond,,,,INDIRECTA,,,,Error visible en interfaz iond,86e25j0rn,medio
+,,,,,,,,,,,
+,BD/Migraciones,Migraciones automáticas,,,,DIRECTA,,,,Esquema actualizado sin errores,86e1r05nh,alto
+,,Rollback de migración,,,,DIRECTA,,,,BD restaurada tras migración fallida,86e1r05nh,alto
+,,,,,,,,,,,
+,Benchmark,Comparación modelos LLM,,,,DIRECTA,,,,Reporte con métricas por modelo,86e1f9qkq,medio
+,,,,,,,,,,,
+,Documentación,Docs v1.8.x/1.9 actualizados,,,,DIRECTA,,,,Documentación actualizada,86e1f9qkx,bajo
+,,,,,,,,,,,
+,Baseline,Análisis básico API happy path,,,,BASELINE,,,,Extracción completa funcional,BASELINE,critico
+,,Persistencia conectores en BD,,,,BASELINE,,,,Conector disponible tras restart,BASELINE,alto
+,,Health check servicio,,,,BASELINE,,,,200 OK con métricas,BASELINE,alto
+,,Integración IonMind - iond flujo completo,,,,BASELINE,,,,Conector creado en iond desde IonMind,BASELINE,critico

@@ -1,98 +1,85 @@
-# Architecture Brief — QA Checklist — [TICKET-ID]
+# Checklist técnico de QA — `prototype review` — [id-clickup] · [título del ticket]
 
-> Checklist de QA para validar el Architecture Brief del ticket.
-> Referencia: Paso 7 del Altacrest Dual-Track (Architecture Brief - Mandatory)
-> Skill: `test-docs/document` (modo Architecture Brief)
-> Fecha: [fecha]
+> **Plantilla del QA Catalyst** — revisión técnica de QA sobre el R&D (C-03) y el prototipo (D-03 / D-04 · `Q-09`, `Q-10`, `Q-13`, `Q-24` · Estándar de QA §3.A).
+> Se completa **antes** de la reunión de `prototype review` y alimenta `prototype-review-qa.md` (observaciones para el acta C-04 y pendientes para `requirements`). Se pega como anexo de `prototype-review-qa.md`; en tickets L o con cambios de contrato o de BD se guarda aparte en `knowledge/L3-tickets/[id-clickup]/architecture-brief-qa.md`. **Skill:** `skills/prototype-review/review.md`.
+> Estado de cada punto: ✅ cubierto · ⚠️ observación · ❌ bloqueante · N/A.
 
-## Información del Ticket
+## Insumos revisados
 
-| Campo | Valor |
-|-------|-------|
-| Ticket ID | |
-| Título | |
-| Developer | |
-| Módulo principal | |
-| Architecture Brief revisado | ✅/❌ |
+| Insumo | Referencia |
+|---|---|
+| R&D (C-03) | Opciones, recomendación, repos afectados, dependencias, riesgos, requisitos no funcionales — [enlace] |
+| Prototipo (`Q-09`) | Wireframe/UX navegable · contrato OpenAPI · diseño de board y mapeo de datos · dataset y criterio de calidad (IA) — [enlace] |
+| Contrato de interfaz | [versión / enlace] |
+| Repos afectados | [gateway-ion / flow_binaries / webcomponents-flow / gateway / ...] |
+| L2 del módulo | `knowledge/L2-modules/[módulo]` — reglas, *Impacto Cruzado*, *Archivos centinela* |
 
----
+## 1. Contrato de interfaz (`Q-10`)
 
-## Checklist de Validación QA
+| # | Punto | Estado | Observación |
+|---|---|---|---|
+| 1 | El contrato (OpenAPI, mapeo de datos, diseño del board) está versionado y se puede referenciar desde la matriz | | |
+| 2 | Request/response, validaciones de entrada y códigos de error (4xx / 5xx) definidos | | |
+| 3 | Compatibilidad hacia atrás con los consumidores existentes (iond ↔ IonMind ↔ StageMind ↔ Gateway) | | |
+| 4 | Autenticación y permisos por rol definidos (SSO Keycloak; respuesta esperada sin permiso, p. ej. 403) | | |
+| 5 | Idempotencia y reintentos (doble clic, webhooks duplicados, reintentos del proveedor) | | |
 
-### Seguridad y Permisos
+## 2. Testabilidad
 
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 1 | ¿Se validaron permisos por company (multi-tenant)? | ⬜ | |
-| 2 | ¿Se validaron permisos por rol de usuario? | ⬜ | |
-| 3 | ¿Los endpoints nuevos requieren autenticación (SSO Keycloak)? | ⬜ | |
-| 4 | ¿Se evita el acceso cruzado entre companies? | ⬜ | |
-| 5 | ¿Las credenciales se manejan de forma segura? | ⬜ | |
+| # | Punto | Estado | Observación |
+|---|---|---|---|
+| 6 | Cada comportamiento produce un resultado observable (UI, respuesta de API, historial de ejecuciones, log con `transaction_id`) | | |
+| 7 | Los datos persistidos se pueden verificar (BD en solo lectura desde las migraciones, o UI/API del historial) | | |
+| 8 | El ambiente asignado al QA puede desplegar la rama del ticket con migraciones y variables (`Q-05`) | | |
+| 9 | El aislamiento entre companies se puede verificar | | |
+| 10 | Los errores de servicios externos (timeouts, respuestas de error) se pueden simular | | |
 
-### API y Endpoints
+## 3. Requisitos no funcionales (`Q-13`) → filas `REQ-NF`
 
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 6 | ¿Los endpoints nuevos tienen validación de input? | ⬜ | |
-| 7 | ¿Se documentaron los contratos de request/response? | ⬜ | |
-| 8 | ¿Se manejan correctamente los errores (4xx, 5xx)? | ⬜ | |
-| 9 | ¿Los endpoints existentes mantienen retrocompatibilidad? | ⬜ | |
+| # | Punto | Estado | Observación |
+|---|---|---|---|
+| 11 | Rendimiento con métrica y condición de medición (p. ej. p95 ≤ [n] s con [n] registros en preprod) | | |
+| 12 | Seguridad: manejo de credenciales, datos sensibles y acceso cruzado entre companies | | |
+| 13 | Impacto en el motor de ejecución de boards (volumen, concurrencia, ejecuciones en curso) | | |
+| 14 | Observabilidad: logs y trazas suficientes para diagnosticar | | |
+| 15 | Refactor: métrica que no puede empeorar · POC: pregunta y criterio de éxito | | |
+| 16 | Salida de IA: corpus de referencia y criterio de calidad medible (`Q-24`) | | |
 
-### Base de Datos
+## 4. Datos de prueba
 
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 10 | ¿Las migraciones son reversibles? | ⬜ | |
-| 11 | ¿Se mantiene la integridad referencial? | ⬜ | |
-| 12 | ¿Se consideró el impacto en la BD de ejecuciones (SQLite)? | ⬜ | |
-| 13 | ¿Hay índices para las queries frecuentes? | ⬜ | |
+| # | Punto | Estado | Observación |
+|---|---|---|---|
+| 17 | Companies, usuarios y roles necesarios | | |
+| 18 | Sandbox o mock para cada integración (proveedor de pagos, App Connectors, apps externas); si no hay sandbox: mock, colección simulada o cuenta de prueba | | |
+| 19 | Mecanismos especiales (fechas simuladas, seeds, migraciones) y quién los prepara (QA o Dev, informado en C-09) | | |
+| 20 | Compatibilidad con datos existentes y migración de registros previos | | |
 
-### Ejecución de Flows/Nodos
+## 5. Dependencias, despliegue y rollback
 
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 14 | ¿Se afecta la ejecución de flows existentes? | ⬜ | |
-| 15 | ¿Qué pasa si un nodo falla a mitad de ejecución? | ⬜ | |
-| 16 | ¿Se registran correctamente los logs de ejecución? | ⬜ | |
-| 17 | ¿El cambio funciona en modo Development y Production? | ⬜ | |
+| # | Punto | Estado | Observación |
+|---|---|---|---|
+| 21 | Dependencias de otros productos o terceros que deban simularse o desplegarse antes | | |
+| 22 | Migraciones reversibles y plan de rollback (BD principal y BD de ejecuciones) | | |
+| 23 | Variables nuevas y orden de despliegue entre repos y productos | | |
+| 24 | Impacto cruzado en otros módulos (L2) → candidatos a no regresión de zonas cercanas | | |
+| 25 | Webhooks, conexiones y App Connectors existentes se mantienen estables | | |
 
-### Connectors y Apps
+## 6. ¿UAT requerido?
 
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 18 | ¿El feature funciona para connectors globales y de company? | ⬜ | |
-| 19 | ¿Las conexiones existentes se mantienen estables? | ⬜ | |
-| 20 | ¿Se manejan las credenciales de apps externas correctamente? | ⬜ | |
-
-### Rollback y Recuperación
-
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 21 | ¿Se puede revertir el cambio sin pérdida de datos? | ⬜ | |
-| 22 | ¿Hay un plan de rollback documentado? | ⬜ | |
-| 23 | ¿Los webhooks se mantienen estables después del cambio? | ⬜ | |
-
-### Performance
-
-| # | Pregunta | Estado | Observación |
-|---|----------|--------|-------------|
-| 24 | ¿El cambio puede impactar el rendimiento del motor de ejecución? | ⬜ | |
-| 25 | ¿Se consideraron escenarios con alto volumen de datos? | ⬜ | |
-
----
+| # | Punto | Propuesta | Motivo |
+|---|---|---|---|
+| 26 | El cambio requiere validación del cliente o de SH antes del merge | Sí / No | [...] — propuesta de QA para `uat-requerido`; decide el PO en `requirements` (Improvements no tiene `uat`) |
 
 ## Resumen
 
-| Métrica | Valor |
-|---------|-------|
-| Total de checks | 25 |
-| Aprobados | |
-| Pendientes | |
-| Con observaciones | |
-| Bloqueantes | |
+| Total | ✅ | ⚠️ | ❌ | N/A |
+|---|---|---|---|---|
+| 26 | | | | |
 
-## Conclusión
+**Conclusión de QA para el acta (C-04):**
+- [ ] Testable, sin observaciones.
+- [ ] Testable con observaciones → pendientes para `requirements`.
+- [ ] No testable todavía → propuesta: volver a `r, d & architect review` ([motivo]). Decide el PO.
 
-> ⬜ **Aprobado para Deployment** — El Architecture Brief cumple con los estándares de QA
-> ⬜ **Aprobado con observaciones** — Requiere atención en los puntos marcados
-> ⬜ **Requiere revisión** — Los puntos bloqueantes deben resolverse antes de continuar
+**Pendientes para `requirements`:** [...]
+**Candidatos a `REQ-NF`:** [...]

@@ -1,0 +1,85 @@
+/* Estilo de impresión de los documentos SDLC IOND (A4). */
+:root {
+  --ink: #1f2933;
+  --muted: #52606d;
+  --brand: #1b4f8a;
+  --brand-soft: #e8f0fa;
+  --line: #cbd2d9;
+  --zebra: #f5f7fa;
+  --code-bg: #f4f6f8;
+}
+@page { size: A4; margin: 16mm 14mm 14mm 14mm; }
+html, body { background: #ffffff; color: var(--ink); }
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.45;
+  margin: 0;
+}
+main { max-width: 100%; }
+
+/* Portada */
+.cover {
+  min-height: 245mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 8px solid var(--brand);
+  padding: 0 0 0 14mm;
+  page-break-after: always;
+  break-after: page;
+}
+.cover h1 { font-size: 26pt; color: var(--brand); margin: 0 0 6mm 0; border: 0; line-height: 1.15; }
+.cover p { font-size: 11.5pt; color: var(--muted); margin: 1.5mm 0; }
+.cover p strong { color: var(--ink); font-size: 13pt; }
+
+h1 { font-size: 18pt; color: var(--brand); border-bottom: 2px solid var(--brand); padding-bottom: 2mm; margin-top: 8mm; }
+h2 { font-size: 14pt; color: var(--brand); margin-top: 8mm; border-bottom: 1px solid var(--line); padding-bottom: 1.5mm; page-break-after: avoid; break-after: avoid; }
+h3 { font-size: 12pt; color: var(--ink); margin-top: 6mm; page-break-after: avoid; break-after: avoid; }
+h4 { font-size: 10.5pt; color: var(--brand); margin: 5mm 0 1.5mm 0; page-break-after: avoid; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+ul, ol { padding-left: 6mm; }
+li { margin: 0.6mm 0; }
+blockquote {
+  margin: 3mm 0; padding: 2mm 4mm; background: var(--brand-soft);
+  border-left: 4px solid var(--brand); color: var(--ink);
+}
+blockquote p { margin: 1mm 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 6mm 0; }
+code { font-family: Consolas, "Courier New", monospace; font-size: 8.8pt; background: var(--code-bg); padding: 0 1mm; border-radius: 2px; }
+pre {
+  background: var(--code-bg); border: 1px solid var(--line); border-radius: 3px;
+  padding: 2.5mm 3mm; white-space: pre-wrap; word-break: break-word;
+  font-size: 8.4pt; line-height: 1.35; page-break-inside: avoid; break-inside: avoid;
+}
+pre code { background: transparent; padding: 0; font-size: inherit; }
+
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; font-size: 8.8pt; page-break-inside: auto; }
+table.wide { font-size: 7.8pt; }
+/* Tablas de tarjetas de dashboards (07): anchos fijos por columna */
+table.cards { table-layout: fixed; }
+table.cards th:nth-child(1) { width: 4%; }
+table.cards th:nth-child(2) { width: 13%; }
+table.cards th:nth-child(3) { width: 26%; }
+table.cards th:nth-child(4) { width: 7%; }
+table.cards th:nth-child(5) { width: 20%; }
+table.cards th:nth-child(6) { width: 15%; }
+table.cards th:nth-child(7) { width: 15%; }
+table.cards td:nth-child(2), table.cards td:nth-child(4) { word-break: normal; }
+thead { display: table-header-group; }
+tr { page-break-inside: avoid; break-inside: avoid; }
+th { background: var(--brand); color: #ffffff; text-align: left; font-weight: 600; }
+th, td { border: 1px solid var(--line); padding: 1.3mm 1.8mm; vertical-align: top; word-break: break-word; }
+tbody tr:nth-child(even) td { background: var(--zebra); }
+td:first-child code { white-space: nowrap; word-break: keep-all; }
+
+.mermaid { text-align: center; margin: 4mm 0; page-break-inside: avoid; break-inside: avoid; }
+.mermaid svg { height: auto; }
+
+input[type="checkbox"] { margin-right: 1.5mm; }
+
+.build-error { color: #b42318; background: #fee4e2; border: 1px solid #b42318; }
+
+@media screen {
+  body { max-width: 210mm; margin: 0 auto; padding: 10mm; }
+}

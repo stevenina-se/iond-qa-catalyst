@@ -1,8 +1,8 @@
 # Skill: release/bug-hunt
 
-> Búsqueda proactiva de bugs antes de salir a producción.
-> Dado un módulo, combina análisis de código estático + API attack vectors + opcionalmente Playwright MCP.
-> Todos los bugs deben ser reproducibles. Se integra con `bug-reporter/create` cuando el QA lo autoriza.
+> Búsqueda proactiva de bugs por módulo: análisis de código estático + vectores de ataque a la API + (opcional) Playwright MCP.
+> Es la herramienta de QA para el **bug bash quincenal** (ACT-03, `Q-39`, 60–90 min con QA + Dev + SM) y para investigar un módulo de riesgo antes de un release.
+> Todos los bugs deben ser reproducibles. Los hallazgos van a Improvements `backlog` con `det-exploratorio` (vía `bug-reporter/create`, cuando el QA lo autoriza).
 
 ---
 
@@ -15,22 +15,22 @@ Bug Hunt: <Módulo>
 
 Seguida opcionalmente de:
 - **Área específica** — ej. `Bug Hunt: Boards — validaciones de duplicación`
-- **Versión del release** — ej. `para v1.0.0` (para guardar en el directorio correcto)
+- **Release** — ej. `para iond v0.3.0` (guarda el reporte en la carpeta de ese release)
 
 **Ejemplos:**
 ```
 Bug Hunt: Boards
 Bug Hunt: Connections — métodos de autenticación
-Bug Hunt: Data Store — CRUD operations para v1.0.0
+Bug Hunt: Data Store — CRUD operations para iond v0.3.0
 ```
 
 ---
 
 ## Pre-requisitos
 
-- ✅ `knowledge/L1-project/` completo (business-rules, test-priorities, api-architecture, stack-overview)
+- ✅ `knowledge/L1-project/` (business-rules, api-architecture, stack-overview) y `knowledge/test-suites/smoke-master.md` (caminos críticos)
 - ✅ `knowledge/L2-modules/<módulo>/module.md` del módulo indicado
-- ✅ Los 4 repositorios de desarrollo accesibles en `../` y actualizados a DEVELOPMENT
+- ✅ Los 4 repositorios de desarrollo accesibles en `../` y actualizados a DEVELOPMENT (para un release: la rama RC de cada repo, informada en el C-23)
 
 ---
 
@@ -277,8 +277,8 @@ El QA Engineer decide para cada bug:
 
 Una vez que el QA Engineer terminó de clasificar los bugs:
 
-1. **`bug-hunt-<modulo>.md`** → `knowledge/releases/<version>/` (si hay versión)
-   - O → `knowledge/L3-tickets/` (si es standalone)
+1. **`bug-hunt-<modulo>-<AAAA-MM-DD>.md`** → `knowledge/releases/<producto>/<versión>/` (si es para un release)
+   - O → `knowledge/dashboards/bug-bash/` (sesión quincenal ACT-03)
 2. Usar template `templates/bug-hunt-report.md`
 
 ### Paso 3.2 — Sugerir siguiente paso
@@ -287,13 +287,13 @@ Una vez que el QA Engineer terminó de clasificar los bugs:
 🐛 BUG HUNT [Módulo] — COMPLETADO ✅
 
 Artefactos:
-  ✅ knowledge/releases/[version]/bug-hunt-[modulo].md
-  ✅ [N] tickets creados vía bug-reporter/create
+  ✅ [ruta del reporte]
+  ✅ [N] borradores de bug (T-02, tag det-exploratorio) vía bug-reporter/create
 
 Siguientes pasos:
   - Bug Hunt de otro módulo → "Bug Hunt: [otro módulo]"
-  - Regression matrix → "Generar regression matrix: v[X.Y.Z]"
-  - Smoke matrix → "Generar smoke matrix: v[X.Y.Z]"
+  - Si un hallazgo revela una feature sin cobertura → proponer la fila en la hoja del E2E maestro
+  - Si un hallazgo es `urgent` en producción → carril de hotfix (C-32)
 ```
 
 ---

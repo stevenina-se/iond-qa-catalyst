@@ -13,10 +13,23 @@ Thumbs.db
 *.swo
 *~
 
-# Release plan skills (privadas del Scrum Master)
-skills/release/plan.md
-skills/release/plan-v1.md
+# Skills de plan de release del modelo anterior (privadas del Scrum Master)
+docs/history/skills-legacy/release/plan.md
+docs/history/skills-legacy/release/plan-v1.md
 
 # CSVs de referencia (no son artefactos del repo)
 Test Plan - IONFLOW - Smoke Test.csv
 Ionflow Version Release - Sheet1.csv
+
+# Logs y capturas del MCP de Playwright (locales)
+.playwright-mcp/
+
+# Perfiles de ambiente de QA (credenciales: nunca en el repo)
+.env.*
+!.env.sample
+
+# Entornos de Postman con valores reales (se versiona solo la colección)
+*.postman_environment.local.json
+
+# Python
+__pycache__/

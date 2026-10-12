@@ -1,0 +1,88 @@
+ID,Subtarea,Módulo,AC,Tipo,Caso de Test,Precondición,Pasos,Resultado Esperado,Prioridad,Automatizable,Estado
+TC-001,IONF-1279,Auth/API,AC-1.1,Happy Path,Crear PAT con scopes y TTL 30d,Usuario autenticado Keycloak con company,"Company Login > Settings > API Tokens > Button: Create Token > Select scopes > Select TTL: 30 days > Button: Create > Verify: Token value displayed",Token creado con prefix iondwk_,Crítico,Sí,Pendiente
+TC-002,IONF-1279,Auth/API,AC-1.2,Happy Path,Token se muestra una sola vez,"Token recién creado","TC-001 > Copy token > Close dialog > Navigate: API Tokens list > Verify: Value NOT visible",Solo metadatos visibles,Crítico,Sí,Pendiente
+TC-003,IONF-1279,Auth/API,AC-1.3,Happy Path,PAT aceptado como bearer,PAT válido,"API: GET /api/2.0/workspace/me > Header: Authorization: Bearer iondwk_... > Verify: 200",200 con datos usuario y company,Crítico,Sí,Pendiente
+TC-004,IONF-1279,Auth/API,AC-1.4,Happy Path,Doble llave scope+TPerm → 200,"PAT con scope X, usuario tiene TPerm X","API: GET /api/2.0/workspace/{recurso} > Verify: 200",Operación exitosa,Crítico,Sí,Pendiente
+TC-005,IONF-1279,Auth/API,AC-1.5,Edge Case,Quitar TPerm → 403 → devolver → 200,"PAT con scope, usuario con TPerm","API: Verify 200 > Remove TPerm > API: Same request > Verify: 403 > Restore TPerm > Verify: 200",403 con nombre permiso luego 200,Crítico,Sí,Pendiente
+TC-006,IONF-1279,Auth/API,AC-1.6,Seguridad,Usuario removido de company → PAT rechazado,"PAT activo, usuario miembro","API: Verify 200 > Remove user from company > API: Same request > Verify: rejection",Rechazado sin fuga datos,Crítico,Sí,Pendiente
+TC-007,IONF-1279,Auth/API,AC-1.7,Negativo,PAT expirado → 401,PAT vencido,"API: GET /api/2.0/workspace/me > Bearer expired_token > Verify: 401",401 Unauthorized,Crítico,Sí,Pendiente
+TC-008,IONF-1279,Auth/API,AC-1.7,Negativo,PAT revocado → 401,PAT revocado,"Revoke token > API: GET /api/2.0/workspace/me > Verify: 401",401 Unauthorized,Crítico,Sí,Pendiente
+TC-009,IONF-1279,Auth/API,AC-1.8,Seguridad,App token rechazado en workspace,App token válido,"API: GET /api/2.0/workspace/me > Bearer app_token > Verify: 401",401 sin elevación,Crítico,Sí,Pendiente
+TC-010,IONF-1279,Auth/API,AC-1.10,Edge Case,Token limit: crear #4 con limit=3,"3 tokens activos, WORKSPACE_TOKEN_LIMIT=3","API: POST create token (4th) > Verify: Error limit",Error token no creado,Alto,Sí,Pendiente
+TC-011,IONF-1279,Auth/API,AC-1.11,Happy Path,UI: Listar y revocar tokens,Tokens existentes,"Company Login > Settings > API Tokens > Verify: Listed > Click Revoke > Verify: Removed",Token revocado desaparece,Alto,No,Pendiente
+TC-012,IONF-1279,Auth/API,AC-1.13,Seguridad,Cross-company: ID otra company → 404,"2 companies con recursos","API: GET /api/2.0/workspace/{resource}/{id_other_company} > Verify: 404 uniform",404 uniforme sin fuga,Crítico,Sí,Pendiente
+TC-013,IONF-1279,Auth/API,AC-1.13,Seguridad,ID malformado → mismo 404,PAT válido,"API: GET /api/2.0/workspace/boards/not-a-uuid > Verify: 404",Mismo 404 que cross-company,Crítico,Sí,Pendiente
+TC-014,IONF-1279,Auth/API,AC-1.14,Seguridad,Account-Id header no altera company,"PAT company A, Account-Id company B","API: GET /api/2.0/workspace/me > Header: Account-Id: other > Verify: Shows company A",Company del PAT no del header,Crítico,Sí,Pendiente
+TC-015,IONF-1284,Connections,AC-2.1,Happy Path,Listar connections filtro app_name,Connections existentes,"API: GET /api/2.0/workspace/connections?app_name=X > Verify: 200 filtered",Filtrado correcto,Alto,Sí,Pendiente
+TC-016,IONF-1284,Connections,AC-2.1,Edge Case,Filtro app_name + tenant_app_name juntos,N/A,"API: GET connections?app_name=X&tenant_app_name=Y > Verify: Error or ignored",No acepta ambos filtros,Medio,Sí,Pendiente
+TC-017,IONF-1284,Connections,AC-2.2,Happy Path,Listar App Connectors instalados,Connectors instalados,"API: GET /api/2.0/workspace/connectors > Verify: 200",Catálogo visible,Alto,Sí,Pendiente
+TC-018,IONF-1284,Connections,AC-2.3,Happy Path,Ver connector con actions,Connector existente,"API: GET /api/2.0/workspace/connectors/{id} > Verify: Details with actions",Connector con actions,Alto,Sí,Pendiente
+TC-019,IONF-1284,Connections,AC-2.4,Happy Path,Ver contrato de action,Action existente,"API: GET connectors/{id}/actions/{actionId} > Verify: specs and sample",Contrato completo,Alto,Sí,Pendiente
+TC-020,IONF-1284,Connections,AC-2.5,Negativo,Connector borrador no aparece,Connector draft,"API: GET /api/2.0/workspace/connectors > Verify: Draft NOT listed",Borrador excluido,Alto,Sí,Pendiente
+TC-021,IONF-1284,Connections,AC-2.6,Seguridad,Connection otra company → 404,Connection company B,"API: GET connections/{id_company_B} > Verify: 404",404 uniforme,Crítico,Sí,Pendiente
+TC-022,IONF-1284,Connections,AC-2.6,Happy Path,Connection propia → sin datos sensibles,Connection existente,"API: GET connections/{id} > Verify: No secrets in response",Solo campos seguros,Alto,Sí,Pendiente
+TC-023,IONF-1285,Boards,AC-3.1,Happy Path,Listar boards de company,Boards existentes,"API: GET /api/2.0/workspace/boards > Verify: 200",Boards de la company,Alto,Sí,Pendiente
+TC-024,IONF-1285,Boards,AC-3.2,Happy Path,Ver board con nodos y schema,Board existente,"API: GET /api/2.0/workspace/boards/{id} > Verify: 200 with nodes",Board completo,Alto,Sí,Pendiente
+TC-025,IONF-1285,Boards,AC-3.3,Happy Path,Ejecutar board → execution_id,"Board válido, permisos OK","API: POST /api/2.0/workspace/boards/{id}/executions > Verify: 200/202 with id",Execution creada,Crítico,Sí,Pendiente
+TC-026,IONF-1285,Boards,AC-3.4,Edge Case,Board >5 min → 202,Board lento,"API: POST execute > Verify: 202 > GET execution > Verify: In progress",202 + consulta posterior,Alto,Sí,Pendiente
+TC-027,IONF-1285,Boards,AC-3.5,Negativo,Sin execute-board → 403,PAT sin permiso,"API: POST execute > Verify: 403",403 Forbidden,Crítico,Sí,Pendiente
+TC-028,IONF-1285,Boards,AC-3.6,Happy Path,Trigger type = api,Board ejecutado API,"API: Execute > GET executions > Verify: trigger_type=api",trigger_type correcto,Alto,Sí,Pendiente
+TC-029,IONF-1285,Boards,AC-3.7,Seguridad,Board otra company → 404,Board company B,"API: GET boards/{id_B} > Verify: 404",404 uniforme,Crítico,Sí,Pendiente
+TC-030,IONF-1285,Boards,AC-3.9,Edge Case,Connection de otro connector → error antes de llamar,Board con connection cruzada,"API: Execute board > Verify: Error before provider call",Error pre-proveedor,Crítico,Sí,Pendiente
+TC-031,IONF-1285,Boards,AC-3.10,Happy Path,Nodo core Preview → 2 créditos,Board con nodo core,"API: Execute preview > Verify: 2 credits",2 créditos cobrados,Alto,Sí,Pendiente
+TC-032,IONF-1285,Boards,AC-3.8,Negativo,Flow de account no aparece como board,Flow de account,"API: GET boards > Verify: Account flows NOT listed",Solo boards company,Alto,Sí,Pendiente
+TC-033,IONF-1286,Executions,AC-4.1,Happy Path,Listar executions con filtros,Executions existentes,"API: GET executions?status=completed&trigger_type=api > Verify: 200",Filtrado correcto,Alto,Sí,Pendiente
+TC-034,IONF-1286,Executions,AC-4.2,Happy Path,Ver execution por UUID,Execution existente,"API: GET executions/{uuid} > Verify: 200 details",Detalle execution,Alto,Sí,Pendiente
+TC-035,IONF-1286,Executions,AC-4.3,Edge Case,Retention: execution vieja no aparece,"Execution 8 días, RETENTION=7","API: GET executions > Verify: Old NOT listed",Excluida por retención,Medio,Sí,Pendiente
+TC-036,IONF-1286,Executions,AC-4.4,Happy Path,Ejecutar action → execution + consumo,Action con connection,"API: POST action execute + Connection-Id > Verify: 200 + execution + consumed once",Execution + consumo exacto,Crítico,Sí,Pendiente
+TC-037,IONF-1286,Executions,AC-4.5,Happy Path,Ejecutar mapper → execution + consumo,Mapper disponible,"API: POST mapper execute > Verify: Execution + consumption",Mapper cobrado 1 vez,Alto,Sí,Pendiente
+TC-038,IONF-1286,Executions,AC-4.6,Negativo,Action sin Connection-Id → 400 sin cobrar,Action requiere connection,"API: POST action execute (no Connection-Id) > Verify: 400 no execution no charge",400 sin cobrar,Crítico,Sí,Pendiente
+TC-039,IONF-1286,Executions,AC-4.7,Negativo,Sin execute-app → 403,PAT sin permiso,"API: POST action execute > Verify: 403",403,Alto,Sí,Pendiente
+TC-040,IONF-1286,Executions,AC-4.8,Regresión,Devapp recurso único sin envoltorio,Account con recursos,"API: GET /api/2.0/app/accounts/{remote_id} > Verify: No wrapper",Respuesta directa,Alto,Sí,Pendiente
+TC-041,IONF-1287,Webhooks,AC-5.1,Happy Path,Listar webhooks API,Webhooks existentes,"API: GET /api/2.0/workspace/webhooks > Verify: 200",Lista webhooks,Alto,Sí,Pendiente
+TC-042,IONF-1287,Webhooks,AC-5.1,Happy Path,Habilitar/deshabilitar webhook API,Webhook existente,"API: POST disable > Verify: disabled > POST enable > Verify: enabled",Toggle funciona,Alto,Sí,Pendiente
+TC-043,IONF-1287,Webhooks,AC-5.2,Happy Path,Enable/disable UI tenant (Go),Webhook existente,"Company Login > Connectors > Connector > Webhooks > Toggle > Verify",UI funciona via Go,Alto,No,Pendiente
+TC-044,IONF-1287,Webhooks,AC-5.3,Edge Case,Deshabilitar webhook app → no llama proveedor,Webhook app,"API: POST disable app webhook > Verify: No external call",Sin llamada externa,Alto,Sí,Pendiente
+TC-045,IONF-1287,Schedules,AC-5.4,Happy Path,Listar y pausar schedules,Schedules existentes,"API: GET schedules > POST pause > Verify: paused",Schedule pausado,Alto,Sí,Pendiente
+TC-046,IONF-1287,Schedules,AC-5.5,Edge Case,Pausa sobrevive guardar board,Schedule pausado,"API: Pause > Save board > Verify: Still paused",Pausa persiste,Alto,Sí,Pendiente
+TC-047,IONF-1287,Schedules,AC-5.6,Negativo,Schedule vencido → 409,Schedule fecha pasada,"API: POST resume expired > Verify: 409",409 Conflict,Medio,Sí,Pendiente
+TC-048,IONF-1287,Schedules,AC-5.8,Regresión,Bug LIKE: board 1 vs board 12,"Board 1+12 con schedules","Save Board 1 > Verify: Board 12 schedules OK > Delete Board 1 > Verify: Board 12 OK",Schedules 12 intactos,Crítico,Sí,Pendiente
+TC-049,IONF-1287,Schedules,AC-5.8,Edge Case,Bug LIKE: IDs similares 1/10/100/11,"Boards con IDs similares","Save Board 1 > Verify: 10/100/11 schedules untouched",Coincidencia exacta,Crítico,Sí,Pendiente
+TC-050,IONF-1287,Schedules,AC-5.7,Negativo,Sin read-cron → 403,PAT sin permiso,"API: GET schedules > Verify: 403",403,Medio,Sí,Pendiente
+TC-051,IONF-1288,Connectors,AC-6.1,Happy Path,Crear connector API,PAT con permisos,"API: POST /api/2.0/workspace/connectors > Verify: 201",Connector creado,Alto,Sí,Pendiente
+TC-052,IONF-1288,Connectors,AC-6.4,Negativo,Name duplicado → 422,Connector existente,"API: POST create (same name) > Verify: 422 message",422 con mensaje,Alto,Sí,Pendiente
+TC-053,IONF-1288,Connectors,AC-6.2,Negativo,Action inválida → 422 con rutas,N/A,"API: POST action (invalid) > Verify: 422 with paths",Errores estilo Laravel,Alto,Sí,Pendiente
+TC-054,IONF-1288,Connectors,AC-6.5,Happy Path,PATCH parcial connector,Connector existente,"API: PATCH (partial) > Verify: Only sent fields changed",Update parcial,Alto,Sí,Pendiente
+TC-055,IONF-1288,Connectors,AC-6.6,Happy Path,Validate + Publish,Connector con drafts,"API: POST validate > No changes > POST publish > draft→active",Validate idempotente,Crítico,Sí,Pendiente
+TC-056,IONF-1288,Connectors,AC-6.6,Negativo,Publish sin publish-app → 403,PAT sin permiso,"API: POST publish > Verify: 403",403,Alto,Sí,Pendiente
+TC-057,IONF-1288,Connectors,AC-6.7,Negativo,Borrar connector en uso → 409,Connector usado,"API: DELETE > Verify: 409 with usage list",409 con detalle,Crítico,Sí,Pendiente
+TC-058,IONF-1288,Connectors,AC-6.8,Seguridad,Common cifrado muestra ••••,Auth-method con common,"API: GET auth-method > Verify: •••• > DB: Verify encrypted",Cifrado + enmascarado,Crítico,Sí,Pendiente
+TC-059,IONF-1288,Connectors,AC-6.9,Edge Case,Guardar sin tocar secreto → conserva,Auth-method con secreto,"API: PATCH (no common) > DB: Verify secret unchanged",Secreto intacto,Alto,Sí,Pendiente
+TC-060,IONF-1288,Connectors,AC-6.10,Happy Path,UI edición connector Go,Connector existente,"Company Login > Connectors > Edit > Modify > Save > Verify",Edición via Go OK,Alto,No,Pendiente
+TC-061,IONF-1288,Connectors,AC-6.12,Regresión,Motor lee common cifrado,Connector con common cifrado,"Execute board with connector > Verify: Auth works",Flow ejecuta OK,Crítico,Sí,Pendiente
+TC-062,IONF-1288,Connectors,AC-6.13,Regresión,HTTP method post → POST,Connector method post en DB,"Execute action > Verify: POST sent to provider",Método correcto,Alto,Sí,Pendiente
+TC-063,IONF-1291,Data Store,AC-7.1,Happy Path,CRUD structures,PAT con permisos,"API: POST > GET > PATCH > DELETE structure > Verify each",CRUD completo,Alto,Sí,Pendiente
+TC-064,IONF-1291,Data Store,AC-7.8,Edge Case,Structure todos los tipos editor,N/A,"API: POST with all types > Verify: 201",Tipos aceptados,Alto,Sí,Pendiente
+TC-065,IONF-1291,Data Store,AC-7.8,Negativo,Structure tipo desconocido → 422,N/A,"API: POST type unknown > Verify: 422",Tipo rechazado,Medio,Sí,Pendiente
+TC-066,IONF-1291,Data Store,AC-7.5,Happy Path,"Registros: crear, PUT, PATCH, borrar, buscar",Store con structure,"API: POST > PUT > PATCH > DELETE > POST search > Verify",CRUD registros,Crítico,Sí,Pendiente
+TC-067,IONF-1291,Data Store,AC-7.5,Edge Case,Key repetida → 409,Registro con key,"API: POST same key > Verify: 409",409 Conflict,Alto,Sí,Pendiente
+TC-068,IONF-1291,Data Store,AC-7.10,Negativo,Required en collection anidada → 422,Structure con required nested,"API: POST missing required nested > Verify: 422",422 validación,Alto,Sí,Pendiente
+TC-069,IONF-1291,Data Store,AC-7.7,Edge Case,Campo extra: API→422 board→guarda,Structure definida,"API: POST extra field > 422 > Board: ion.store.add > Saved",API strict board permisivo,Crítico,Sí,Pendiente
+TC-070,IONF-1291,Data Store,AC-7.3,Negativo,Borrar store en uso → 409,Store usado,"API: DELETE store > Verify: 409 with boards",409 con detalle,Alto,Sí,Pendiente
+TC-071,IONF-1291,Data Store,AC-7.12,Seguridad,Store ID no-UUID → validado,ID malformado,"API: GET /data-stores/not-uuid > Verify: 404 no injection",UUID validado,Crítico,Sí,Pendiente
+TC-072,IONF-1291,Data Store,AC-7.6,Regresión,Nodos ion.store.* post-refactor,Board con nodos store,"Execute board > Verify: add/update/get/delete/search/count OK",Comportamiento preservado,Crítico,Sí,Pendiente
+TC-073,IONF-1291,Data Store,AC-7.11,Edge Case,Búsqueda max 1000,>1000 registros,"API: POST search limit=2000 > Verify: Max 1000",Cap en 1000,Medio,Sí,Pendiente
+TC-074,IONF-1292,PDF Templates,AC-8.1,Happy Path,CRUD PDF template,PAT con permisos,"API: POST > GET > PATCH > DELETE > Verify each",CRUD + PATCH parcial,Alto,Sí,Pendiente
+TC-075,IONF-1292,PDF Templates,AC-8.2,Negativo,Schema pdfme inválido → 422,N/A,"API: POST invalid pdfme > Verify: 422",Validación server,Alto,Sí,Pendiente
+TC-076,IONF-1292,PDF Templates,AC-8.3,Happy Path,Export → Import consistente,Template existente,"API: GET export > POST import > Verify: Identical",Import/export OK,Alto,Sí,Pendiente
+TC-077,IONF-1292,PDF Templates,AC-8.4,Happy Path,Spec muestra campos,Template con campos,"API: GET spec > Verify: Fields listed",Spec completo,Medio,Sí,Pendiente
+TC-078,IONF-1292,PDF Templates,AC-8.5,Happy Path,Imprimir → 2 créditos + 1 impresión,Template activo,"API: POST execute > Verify: PDF URL + 2 credits + 1 impression",Cobro exacto,Crítico,Sí,Pendiente
+TC-079,IONF-1292,PDF Templates,AC-8.5,Edge Case,Render falla → no cobra,Template error render,"API: POST execute (fail) > Verify: No charge + impression returned",Sin cobro en fallo,Crítico,Sí,Pendiente
+TC-080,IONF-1292,PDF Templates,AC-8.6,Negativo,Template inactive → 409,Template inactivo,"API: POST execute inactive > Verify: 409",409,Medio,Sí,Pendiente
+TC-081,IONF-1292,PDF Templates,AC-8.6,Negativo,Sin execute-pdf-template → 403,PAT sin permiso,"API: POST execute > Verify: 403",403,Alto,Sí,Pendiente
+TC-082,IONF-1292,PDF Templates,AC-8.9,Regresión,Total no cuenta borrados,Templates con borrados,"API: GET list > Verify: Total excludes deleted",Conteo correcto,Medio,Sí,Pendiente
+TC-083,Transversal,Regresión,AC-9.1,Regresión,Suite devapp /api/2.0/app pasa,Suite existente,"Run devapp suite > Verify: All pass",Suite aprobada,Crítico,Sí,Pendiente
+TC-084,Transversal,Motor,AC-9.4,Happy Path,Graceful shutdown,Backend Go corriendo,"Send SIGTERM > Verify: Clean shutdown",Apagado limpio,Medio,Sí,Pendiente
+TC-085,Transversal,UI,AC-9.5,Happy Path,Cambiar company sin recargar,"2 companies, datos distintos","Switch company > Verify: New data shown",Datos actualizados,Alto,No,Pendiente
+TC-086,Transversal,UI,AC-9.6,Edge Case,Diálogo token no cierra con Esc,Token recién creado,"Create token > Press Esc > Verify: Dialog open",Diálogo persiste,Medio,No,Pendiente
+TC-087,Transversal,Motor,AC-9.13,Regresión,Motor con common cifrado: OAuth funciona,Connector OAuth cifrado,"Execute flow post-encryption > Verify: Auth OK",Flow funciona,Crítico,Sí,Pendiente

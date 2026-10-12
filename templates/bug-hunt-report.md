@@ -1,161 +1,82 @@
-# Bug Hunt Report — [MÓDULO]
+# Bug bash — [módulo / área] — [AAAA-MM-DD]
 
-> Template generado por `skills/release/bug-hunt`
-> Fecha: [fecha]
-> Versión: [versión del release]
-> Módulo: [nombre del módulo]
-> QA Engineer: [nombre]
+> **Plantilla del QA Catalyst** — exploratory testing / bug bash (ACT-03 · `Q-39` · Estándar de QA §3.D): sesión **quincenal de 60–90 min** con QA + Dev + SM, con un objetivo y un área definidos.
+> **Se guarda en:** `knowledge/dashboards/bug-bash/bug-hunt-[módulo]-[AAAA-MM-DD].md` (o en `knowledge/releases/[producto]/v[X.Y.Z]/` si la sesión es para un release) · **Skill:** `skills/release/bug-hunt.md`.
+> Los hallazgos van a Improvements `backlog` con la plantilla T-02 (`templates/bug-ticket.md`) y el tag **`det-exploratorio`**; los registra QA (el catalyst prepara con `skills/bug-reporter/create.md`). Un incidente `urgent` en producción va por el carril de hotfix (C-32), no por `backlog`.
 
----
+## Sesión
+
+| Campo | Valor |
+|---|---|
+| Fecha · duración | [AAAA-MM-DD] · [60–90] min |
+| Participantes (roles) | QA · Dev · SM |
+| Producto / versión · ambiente | [iond / IonMind / StageMind] v[X.Y.Z] · [QA / preprod] |
+| Objetivo | [pregunta o riesgo que se quiere explorar] |
+| Área | [Iond Subcategory] — `knowledge/L2-modules/[módulo]` |
+| Heurísticas | [permisos · límites · datos inválidos · concurrencia · aislamiento entre companies · errores externos · ...] |
 
 ## Resumen
 
 | Métrica | Valor |
-|---------|-------|
-| Bugs confirmados (UI) | |
-| Bugs confirmados (Backend) | |
-| Riesgos no verificados | |
-| Falsos positivos descartados | |
-| Tickets creados vía bug-reporter | |
+|---|---|
+| Hallazgos confirmados (UI · API) | [n] · [n] |
+| Riesgos no verificados | [n] |
+| Falsos positivos descartados | [n] |
+| Tickets propuestos (`det-exploratorio`) | [n] |
 
----
+## Hallazgos confirmados
 
-## Bugs Confirmados — UI
+Solo se confirma lo reproducido (a mano o con Playwright MCP, con el QA supervisando).
 
-<!--
-Bugs reproducibles encontrados en la interfaz de usuario.
-Cada bug debe tener pasos breadcrumb + screenshot de evidencia.
-Solo se marca como CONFIRMADO si se reprodujo vía Playwright MCP o manualmente.
--->
-
-### BUG-BH-001 — [Descripción corta]
+### BB-01 — [resumen en una línea]
 
 | Campo | Valor |
-|-------|-------|
-| Prioridad | `urgent` / `high` / `normal` / `low` |
-| Canal | UI |
-| Módulo | |
-| Ticket creado | _Sí — [link]_ / _No — documentado internamente_ |
-
-**Pasos de reproducción:**
-1. [Paso breadcrumb]
-
-**Resultado actual:**
-[Lo que ocurre]
-
-**Resultado esperado:**
-[Lo que debería ocurrir]
-
-**Evidencia técnica:**
-```
-[CONFIRMADA] Código / screenshot / respuesta
-```
-
----
-
-## Bugs Confirmados — Backend
-
-<!--
-Bugs reproducibles encontrados vía API requests.
-Cada bug debe incluir: request completo, response, y el código confirmado con grep.
--->
-
-### BUG-BH-002 — [Descripción corta]
-
-| Campo | Valor |
-|-------|-------|
-| Prioridad | `urgent` / `high` / `normal` / `low` |
-| Canal | API |
-| Endpoint | `[METHOD] /api/[ruta]` |
-| Ticket creado | _Sí — [link]_ / _No — documentado internamente_ |
-
-**Request:**
-```
-[METHOD] /api/[ruta]
-Headers: [headers relevantes]
-Body: [JSON del body]
-```
-
-**Response actual:**
-```
-Status: [código]
-Body: [respuesta]
-```
-
-**Response esperado:**
-```
-Status: [código esperado]
-Body: [respuesta esperada]
-```
-
-**Evidencia técnica:**
-```
-[CONFIRMADA] ../[repo]/[archivo]:[línea]
-[código relevante]
-```
-
-**Vector de ataque:**
-[Qué tipo de vector: payload malformado, multi-tenant, auth bypass, etc.]
-
----
-
-## Riesgos No Verificados
-
-<!--
-Hallazgos estáticos del código que no se pudieron reproducir.
-Quedan como RIESGO A VERIFICAR para revisión manual futura.
--->
-
-### RISK-BH-001 — [Descripción]
-
-| Campo | Valor |
-|-------|-------|
-| Confianza | `alta` / `media` / `baja` |
+|---|---|
+| Severidad propuesta (prioridad) | `urgent` / `high` / `normal` / `low` |
 | Canal | UI / API |
-| Razón de no verificación | [por qué no se pudo reproducir] |
+| Módulo · tag de área | [Iond Subcategory] · `iond-core` / `iond-uxui` / `iond-infra` / `iond-ia` |
+| ¿Contradice un REQ vigente? | REQ-[xx] de la matriz v[N] del ticket #[id] · No (fuente del esperado: [...]) |
+| Ticket | Propuesto (T-02 + `det-exploratorio`) · creado #[id] |
 
-**Código:**
+**Pasos para reproducir:**
+1. Company Login > Sidebar: [Módulo] > [...]
+
+**Resultado esperado:** [...]
+
+**Resultado actual:** [...]
+
+**Evidencia:** [captura / video / log / `transaction_id`]
+
+*API (si aplica):*
+```text
+Request:  [MÉTODO] /api/[ruta] · Body: [JSON con datos sensibles enmascarados]
+Esperado: [código] · [respuesta]
+Actual:   [código] · [respuesta]
 ```
-[CONFIRMADA] ../[repo]/[archivo]:[línea]
-[fragmento de código]
-```
 
-**Nota:** [Qué se necesita para verificar]
+## Riesgos no verificados
 
----
+Hallazgos del análisis de código (solo lectura) que no se pudieron reproducir; quedan para verificar.
 
-## Falsos Positivos Descartados
+| ID | Riesgo | Confianza | Canal | Referencia (`../[repo]/[archivo]:[línea]`) | Qué falta para verificarlo |
+|---|---|---|---|---|---|
+| RISK-01 | [...] | Alta / Media / Baja | UI / API | [...] | [...] |
 
-<!--
-Hallazgos que parecían bugs pero se descartaron tras verificación.
-Documentarlos evita reportarlos de nuevo en futuros bug hunts.
--->
+## Falsos positivos descartados
 
-| ID | Descripción | Razón de descarte |
-|----|-------------|-------------------|
-| FP-BH-001 | | |
+Se documentan para no volver a reportarlos.
 
----
+| ID | Descripción | Motivo del descarte |
+|---|---|---|
+| FP-01 | [...] | [regla del L2 / comportamiento esperado / Fuera de alcance de un ticket] |
 
-## Búsquedas Realizadas
+## Búsquedas en código (solo lectura)
 
-<!--
-Documentar todos los greps ejecutados para auditoría.
-Incluir cuándo dieron 0 resultados (eso también es evidencia).
--->
+| Término | Repo | Comando | Resultado |
+|---|---|---|---|
+| [...] | [...] | `grep -rn "[...]" ../[repo]/ --include="*.[ext]"` | [n] coincidencias / 0 |
 
-| Término buscado | Repo | Comando | Resultado |
-|----------------|------|---------|-----------|
-| | | `grep -rn "..." ../[repo]/ --include="*.[ext]"` | [N] hits / 0 hits |
+## Seguimiento
 
----
-
-## Notas
-
-<!--
-Edge cases conocidos del L2 que se consultaron, contexto extra, etc.
--->
-
-- Protocolo de evidencia del `bug-reporter/create` aplicado (reglas 11-14)
-- Vectores de ataque backend: lista NO cerrada, se descubrieron vectores adicionales según el código
-- Edge Cases Conocidos del L2 consultados para evitar falsos positivos
+- Hallazgos que escaparon a las suites del release → propuesta de TC para la regresión (fila nueva en la hoja "Iond Testing Plan" o en el E2E maestro).
+- Próxima sesión: [AAAA-MM-DD] · área propuesta: [...].

@@ -1,46 +1,51 @@
-# Knowledge Base — ionflow-qa-catalyst
+# Knowledge Base — iond-qa-catalyst
 
-## Regla Central
+## Regla central
 
 ```
 "LA IA LEE EL NIVEL CORRECTO ANTES DE REALIZAR CADA TAREA"
 ```
 
-## Los 3 Niveles de Conocimiento
+## Niveles y áreas
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  L1-project/   →  ¿Cómo funciona el proyecto?              │
-│                    Business rules, API architecture,         │
-│                    Test priorities, Stack overview            │
-│                    ⟹ Se lee SIEMPRE                          │
-├─────────────────────────────────────────────────────────────┤
-│  L2-modules/   →  ¿Cómo funciona este módulo?              │
-│                    Rutas, endpoints, componentes, DB schema, │
-│                    Test data, Edge cases conocidos            │
-│                    ⟹ Se lee según el módulo del ticket       │
-├─────────────────────────────────────────────────────────────┤
-│  L3-tickets/   →  ¿Qué estoy testeando ahora?              │
-│                    AC, decisiones, plan de testing,           │
-│                    Evidencia, bugs, veredicto                 │
-│                    ⟹ Se crea/lee por cada ticket activo      │
-└─────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────┐
+│  L1-project/    ¿Cómo funciona el proyecto y el proceso?          │
+│                 Fuente canónica del SDLC, reglas de negocio,      │
+│                 arquitectura, prioridades, mapa de subcategorías  │
+│                 ⟹ Se lee SIEMPRE (la sección que aplica)          │
+├───────────────────────────────────────────────────────────────────┤
+│  L2-modules/    ¿Cómo funciona este módulo?                       │
+│                 Rutas, endpoints, schema, reglas, specs E2E,      │
+│                 impacto cruzado, edge cases                       │
+│                 ⟹ Según la Iond Subcategory del ticket            │
+├───────────────────────────────────────────────────────────────────┤
+│  L3-tickets/    ¿Qué estoy validando ahora?                       │
+│                 Matriz de Requerimientos, Matriz de Pruebas,      │
+│                 evidencia, reporte, comentarios                   │
+│                 ⟹ Uno por ticket activo                           │
+├───────────────────────────────────────────────────────────────────┤
+│  test-suites/   Smoke maestro, E2E maestro, cobertura y           │
+│                 hoja de ruta de automatización                    │
+│  releases/      Artefactos de cada release (<producto>/<versión>) │
+│  dashboards/    Auditorías del SDLC y métricas semanales          │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
-## Cuándo Leer Cada Nivel
+## Cuándo leer cada nivel
 
-| Tipo de tarea | L1 | L2 | L3 |
-|---|---|---|---|
-| Priorización de proyecto | ✅ | ❌ | ❌ |
-| Test docs de un módulo | ✅ | ✅ | ❌ |
-| Testing de un ticket | ✅ | ✅ | ✅ |
-| Regresión global | ✅ | ✅ (todos) | ❌ |
-| Automation de un ticket | ✅ | ✅ | ✅ |
+| Tarea | L1 | L2 | L3 | test-suites | releases |
+|---|---|---|---|---|---|
+| Matriz de Requerimientos / prototype review | ✅ | ✅ | ✅ | — | — |
+| `mock testing` de un ticket | ✅ | ✅ | ✅ | — | — |
+| Release (smoke, sanity, regresión, E2E) | ✅ | ✅ (módulos impactados) | ✅ (matrices de los tickets) | ✅ | ✅ |
+| Automatización | ✅ | ✅ | ✅ (si viene de un ticket) | ✅ | — |
+| Auditoría y métricas (SM) | ✅ | — | — | ✅ (cobertura) | ✅ |
 
-## Reglas del Knowledge Base
+## Reglas
 
-1. **L1 es estable** — Se actualiza solo cuando cambia la arquitectura del proyecto
-2. **L2 es progresivo** — Se construye por módulo y se retroalimenta después de cada release
-3. **L3 es efímero** — Se crea al iniciar una sesión de testing y se cierra con el veredicto
-4. **Nunca inventar contexto** — Si no hay L2 de un módulo, construirlo primero con el skill `knowledge/update-module`
-5. **Los repos fuente son la verdad** — El L2 se construye leyendo `../flow_binaries`, `../gateway-ion`, `../webcomponents-flow`, `../gateway` y `../bot-test`
+1. **L1 es estable:** la fuente canónica cambia solo con una decisión del equipo; el resto, con cambios de arquitectura o de criticidad.
+2. **L2 es progresivo:** se construye por módulo y se actualiza después de cada release desplegado (`skills/knowledge/update-module.md`).
+3. **L3 es por ticket:** se crea en el primer contacto de QA y queda como registro histórico.
+4. **Nunca inventar contexto:** si falta el L2 de un módulo, se construye primero leyendo los repos (solo lectura).
+5. **Los repositorios fuente son la verdad** para el código; **ClickUp** lo es para el estado del trabajo.

@@ -1,129 +1,61 @@
-# Regression Brief — [VERSIÓN]
+# Brief del release — [producto] v[X.Y.Z]
 
-> Template generado por `skills/release/brief`
-> Fecha: [fecha]
-> Versión: v[X.Y.Z]
-> Entorno: [URL]
+> **Plantilla del QA Catalyst** — resumen de una página para stakeholders y líderes (fuente canónica §7).
+> **Se guarda en:** `knowledge/releases/[producto]/v[X.Y.Z]/brief.md` · **Skill:** `skills/release/brief.md`. Se regenera al cerrar cada suite y no reemplaza a los comentarios C-23 a C-31 de la tarea de Release.
+> Lenguaje no técnico: sin IDs de PR ni detalles de código, y sin nombres de personas (solo roles).
 
----
+**Estado de la tarea:** `[dev preparation / unit test & ci / smoke / sanity / regression / ready for release]` · **Actualizado:** [AAAA-MM-DD hh:mm] · **Go/No-Go:** viernes [AAAA-MM-DD] 10:00
 
-## Descripción General del Release
+## Alcance
 
-<!--
-Sintetizar desde ticket-synthesis.md:
-- Qué cambia, por qué, cuál es el impacto
-- Distribución: N features, N bugs, N mejoras
-- Distribución scope: N core, N ux-ui
--->
+[2–3 líneas: qué cambia en esta versión y para quién]
 
-[Descripción]
+| Dato | Valor |
+|---|---|
+| Tickets incluidos | [N] — New Feature [n] · Improvement [n] · Bug [n] · Refactor [n] · Task [n] |
+| Módulos | [Boards (n) · Billing (n) · PDF Templates (n) · ...] |
+| Diferidos | [n] — [motivo en lenguaje simple] · Ninguno |
 
-**Estadísticas:** [N] features · [N] bugs · [N] mejoras · [N] internos
-**Scope:** [N] core · [N] UX/UI
+## Riesgo
 
----
+**[Alto / Medio / Bajo]** — [motivo]. Dependencias con otros productos: [orden de despliegue StageMind → IonMind → iond] · Ninguna.
 
-## Entorno de Prueba
+## Avance por suite
 
-| Campo | Valor |
-|-------|-------|
-| URL Staging | [URL] |
-| Branch | `DEVELOPMENT` |
-| Tipo de prueba | Regresión + Smoke |
-| Credenciales | Company User / Admin Ionflow |
+| Paso | Suite | Estado | Resultado | Nota |
+|---|---|---|---|---|
+| 1 | Smoke maestro (preprod) | ⬜ Pendiente / 🔄 En curso / ✅ / ❌ | [n/n] | Gate del release |
+| 2 | Sanity (REQ críticos de cada ticket) | | [n/n] | |
+| 3 | Regression capa 1 (por riesgo) | | Flujos críticos [n/n] | |
+| 4 | E2E maestro capa 2 | | Automatizado [n/n] · rotación G[n] [n/n] | |
+| 5 | Go/No-Go | | GO / CONDITIONAL GO / NO-GO | Quórum PO + LQA + RM |
+| 6 | Smoke en producción | | [n/n] | ≤ 2 h tras el despliegue |
 
----
+## Hallazgos
 
-## Resumen de la Regression Matrix
+| Severidad | Abiertos | Tratamiento |
+|---|---|---|
+| `urgent` | [n] | Corrección en la versión (fix-forward) o retiro del cambio |
+| `high` | [n] | Requiere aceptación del riesgo por el PO |
+| `normal` / `low` | [n] | Mejoras programadas en Improvements |
 
-| Métrica | Valor |
-|---------|-------|
-| Total de TCs | [N] |
-| Regresión Directa | [N] |
-| Regresión Indirecta | [N] |
-| Baseline | [N] |
-| Prioridad 🔴 | [N] |
-| Prioridad 🟠 | [N] |
-| Prioridad 🟡 | [N] |
+## Decisión y despliegue
 
-### Distribución por Módulo
+**Decisión:** [pendiente / GO / CONDITIONAL GO / NO-GO] · **Ventana:** [AAAA-MM-DD hh:mm] con DevOps · **Release notes:** [interna] · [cliente]
 
-| Módulo | TCs | Prioridad máxima |
-|--------|-----|-----------------|
-| [módulo] | [N] | 🔴/🟠/🟡 |
+## Pendientes y bloqueos
 
----
+| Pendiente | Responsable (rol) | Fecha |
+|---|---|---|
+| [...] | RM / LD / LQA / QA / PO / SM | [AAAA-MM-DD] |
 
-## Resumen del Smoke Matrix
+## Texto corto para el canal del equipo (≤ 10 líneas)
 
-<!--
-Solo si existe smoke-matrix.md. Si no, omitir esta sección.
--->
-
-| Métrica | Valor |
-|---------|-------|
-| Total de TCs | [N] |
-| Flujos críticos cubiertos | [N]/9 |
-| Tiempo estimado | ~[N] min |
-
----
-
-## Instrucciones para Testers
-
-### Cómo reportar resultados
-
-| Estado | Significado | Acción |
-|--------|-------------|--------|
-| ✅ PASSED | Funciona como se espera | Marcar en la matriz |
-| ❌ FAILED | No funciona | Reportar bug con evidencia (screenshot + pasos) |
-| ⏭️ SKIPPED | No se puede probar | Indicar razón en observaciones |
-| ⚠️ BLOCKED | Dependencia bloqueante | Indicar qué bloquea |
-
-### Formato de reporte de bug
-
+```text
+📦 [producto] v[X.Y.Z] — [estado]
+Alcance: [N] cambios ([n] nuevas funcionalidades, [n] correcciones, [n] mejoras)
+Riesgo: [Alto/Medio/Bajo] — [motivo breve]
+Smoke [✅/❌/⬜] · Sanity [✅/❌/⬜] · Regresión [✅/❌/⬜] · E2E [✅/❌/⬜]
+Hallazgos abiertos: [n] ([n] high)
+Go/No-Go: viernes [fecha] 10:00 · Ventana: [fecha hora]
 ```
-**TC-ID**: [ID del caso]
-**Resultado**: ❌ FAILED
-**Pasos realizados**: [breadcrumb del TC]
-**Resultado obtenido**: [qué pasó]
-**Resultado esperado**: [qué debería pasar]
-**Evidencia**: [screenshot/video]
-**Entorno**: [URL + browser]
-```
-
-### Dónde registrar resultados
-
-- Directamente en `regression-matrix.csv` — columna "Estado"
-- Si es bug → crear ticket en ClickUp con tag `qa-regression-v[X.Y.Z]`
-
----
-
-## Mapping de Tickets a Filas de la Matriz
-
-<!--
-Tabla que permite trazar qué filas de la matriz cubren qué ticket.
--->
-
-| Ticket | Descripción | Fila(s) de la Matriz |
-|--------|-------------|---------------------|
-| IONF-XXX | [descripción] | [IDs de TCs] |
-
----
-
-## Criterios de Calidad — Go/No-Go
-
-| Resultado | Condición | Decisión |
-|-----------|----------|----------|
-| 🟢 GO | Todos los TCs 🔴 PASSED + ≤5% FAILED en total | Proceder con deploy |
-| 🟡 CONDITIONAL GO | 1-2 FAILED en 🟠, con workaround documentado | Proceder con precaución |
-| 🔴 NO-GO | Cualquier FAILED en 🔴 sin workaround | **PARAR** — Resolver antes de deploy |
-
----
-
-## Notas
-
-<!--
-Decisiones, excepciones, riesgos aceptados.
--->
-
-[Notas o dejar vacío]

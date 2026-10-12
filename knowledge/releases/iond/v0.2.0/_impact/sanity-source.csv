@@ -1,0 +1,177 @@
+ticket_id|crit_id|criterio|resultado|precondicion|fuente
+86e35wv7f|AC-1|Suscribirse a un canal privado de Reverb con el Bearer ws-token, sin cookies|/broadcasting/auth responde 200; llegan los eventos en tiempo real (notificaciones, historial)|Usuario tenant con token válido|Gherkin Esc.1 + Req 1
+86e35wv7f|AC-2|Mint del token WS: POST /api/1.0/ws-token con cookie Keycloak|Token con scope user:broadcast (TTL ≤ 1 día); sin sesión o con Bearer → rechazo|Sesión Keycloak activa|Formulario QA + CR 2026-09-29
+86e35wv7f|AC-3|Usar el ws-token contra una ruta de la API distinta de broadcasting/auth|403 reason ws_token_scope; los tokens normales y las cookies siguen funcionando|ws_token del storage, llamada directa|RejectWebsocketToken
+86e35wv7f|AC-4|Suscribirse al canal privado de otro usuario o compañía|Autorización denegada; no llegan eventos ajenos|Dos usuarios/compañías|"Test ""canal ajeno"""
+86e35wv7f|AC-5|Token inválido o expirado al autorizar un canal|401 → renueva y reintenta una vez; 403 sin reintento; la UI sigue operativa|Forzar expiración o borrar ws_token|Gherkin Esc.2 + Req 3
+86e35wv7f|AC-6|Logout directo y logout por Keycloak con socket activo|Socket desconectado, canales liberados, ws_token borrado; al volver a loguear se reconecta|Usuario con socket activo|Req 4
+86e35882c|AC-1|Sidebar con OVERVIEW, AUTOMATE, RESOURCES y MARKETPLACE en orden, sin Templates|Elementos según la tabla del requerimiento en cada sección|Usuario con todos los permisos|Gherkin Jerarquía + Req 1
+86e35882c|AC-2|Execution History conserva listado, filtros y acceso a resultados/errores|Historial y detalle cargan; filtros funcionan (dentro de Dashboard)|Board con ejecuciones previas|Req 2
+86e35882c|AC-3|Botón Library en la cabecera de Boards, a la izquierda de Create Board|Abre /boards/library; la instalación funciona; Boards conserva crear/editar/ejecutar|Permiso de Boards y biblioteca|Req 3
+86e35882c|AC-4|Credentials con un usuario que tiene AI Keys pero no Connections|Solo ve AI Keys; Connections bloqueada también por URL directa|Rol con AI Keys y sin Connections|Req 4
+86e35882c|AC-5|Abrir Billing en el menú de usuario y Accounting en Marketplace|Billing: plan, suscripción y consumo IOND; Accounting: suscripciones/facturas de clientes|Compañía con plan IOND y clientes|Req 5/6
+86e35882c|AC-6|Abrir por URL directa las rutas nuevas y las retiradas, con y sin permisos|Rutas nuevas cargan; retiradas dan 404 (desvío aceptado o no por el PO); sin permiso se bloquea|Usuarios con y sin permisos|Req 7
+86e1y463z|AC-1|Compra con checkout embebido Connect y tarjeta de prueba|Direct charge al seller con application fee correcto; marketplace_invoice con app_id, price_id, account_id|Seller Connect ACTIVE, plan publicado|L3 AC-1 / TC-014, TC-015
+86e1y463z|AC-2|Crear o editar un precio en Plans Studio (write-through a Stripe)|Precio en BD y en Stripe; el anterior queda SUPERSEDED; si Stripe falla se revierte la BD|Plan existente, Connect activo|L3 AC-2 / TC-004, TC-005
+86e1y463z|AC-3|Pago exitoso por webhook Connect y automatización post-pago|Invoice y subscription creadas; seller notificado vía webhook_url; la GRAPP se instala tras pagar|Eventos Connect, webhook_url configurado|L3 AC-3/AC-9 / TC-029, TC-032
+86e1y463z|AC-6|API M2M: App A lee o cancela una línea vendida por App B|404; sin scope 403; sin Account-Id 400; moneda mezclada 422 legible|Dos apps, mismo buyer|L3 AC-6/AC-8
+86e1y463z|AC-4|Usuario sin permiso o de solo lectura en Stores/Pricing/Plans Studio|Acciones bloqueadas con tooltip; sin modal de edición ni requests 403|Rol de solo lectura|L3 AC-4 / TC-007
+86e1y463z|REG-007|Billing de la plataforma (plan IOND de la compañía) tras el marketplace|Plan y suscripción de plataforma sin cambios|Compañía con suscripción IOND|L3 REG-007
+86e1y463z|BUG-12-1|Borrar un tier con ventas (bug bloqueante de la iteración 2)|No da 500; Stripe y BD quedan consistentes|Tier con ventas registradas|L3 qa-report-iter2 (revalidación)
+86e1y46c7|AC-1|Renovación, fallo y cancelación de una suscripción marketplace por webhooks Connect|Ledger marketplace_invoices actualizado por evento; entitlement correcto; seller notificado|Suscripción activa en la cuenta conectada|Gherkin de la subtarea
+86e1y46c7|AC-2|Compra con un seller sin charges_enabled, o compra directa M2M con monto libre|Rechazo antes de cobrar (422); M2M solo acepta precios de catálogo|Seller RESTRICTED; token DevApp|L3 TC-019
+86e1y46d0|AC-1|El seller crea Store → Pricing → Plan → Precio en Plans Studio y guarda|Los cambios persisten tras refrescar y quedan disponibles para compra|Company con permisos de marketplace|L3 TC-001–003, TC-009
+86e1y46d0|AC-2|<gt-pricing-table> en modo público y autenticado|Público: CTA al return_url; autenticado: Embedded Checkout emite purchase-completed|Embed con public-key / intent JWT|L3 AC-5 / TC-022, TC-023
+86e1mdnbq|AC-1|Ejecución dev o live finalizada, y nodo Request con binario|storage_sync_jobs en pending (dev/live/file), creado solo tras cerrar el SQLite|STORAGE_SYNC_ENABLED=true|L3 AC-1/AC-3
+86e1mdnbq|AC-2|El cron de sincronización procesa los jobs pendientes|pending → uploading → done; archivo en R2 con remote_key igual a la estructura storage/|Credenciales R2 válidas|L3 AC-2/AC-5
+86e1mdnbq|AC-3|Limpieza local después de subir|El archivo local se borra solo después de done → cleaned|Jobs en done|L3 AC-5
+86e1mdnbq|AC-4|R2 no disponible temporalmente|Reintenta hasta 5 veces, luego failed; el archivo local se conserva|Credenciales R2 inválidas|L3 TC-008, TC-013
+86e1mdnbq|AC-5|Flujos dev/live y Execution History con el sync activo|Ejecuciones completan sin errores; historial y detalle visibles|Flows existentes|L3 AC-4
+86e1mdnbq|AC-6|Ejecuciones de dos compañías que se sincronizan|Rutas R2 separadas por compañía, sin mezcla|Dos companies con flows|L3 TC-010
+86e1fawg0|REQ-R2|Flow Pilot captura tokens prompt/completion por turno|usage_metadata del turno con prompt, completion, total_tokens y cost|Modelo configurado en Flow Pilot|Tabla R2
+86e1fawg0|REQ-R3|Acumulado por sesión en Postgres|Suma incremental exacta; total_cost ≤ 4 decimales; ligado a sesión/usuario/company|Varias preguntas en la misma sesión|Tabla R3
+86e1fawg0|AC-1|Pregunta compleja que usa herramientas (varias iteraciones)|Tokens y costos de todas las iteraciones agregados en un solo turno|Prompt que dispare herramientas|QA Instructions
+86e1fawg0|AC-2|Retomar un chat antiguo y borrar un chat desde la UI|El acumulado continúa; el borrado es soft delete y el consumo persiste|Sesión previa con consumo|Lifecycle
+86e1fawg0|AC-3|Respuesta del chat de Flow Pilot con el registro de tokens activo|Sin demora perceptible; llega el evento Done|Sesión de Flow Pilot|QA Instructions
+86e20nmqx|AC-1|Analyze de una URL no cacheada en Create Connector|exists=false; modal con costo; no arranca análisis hasta confirmar|URL nunca analizada|"Gherkin ""no cacheada"""
+86e20nmqx|AC-2|Confirmar con Execute en el modal|Se dispara /analyze; la plataforma queda en caché; cobro solo en la ejecución inicial|URL no cacheada|"Gherkin ""Confirmar"""
+86e20nmqx|AC-3|Cancelar o cerrar el modal|No hay análisis profundo ni cobro|Modal visible|"Gherkin ""Cancelar"""
+86e20nmqx|AC-4|Analyze de una URL ya cacheada|exists=true; autocompleta sin modal ni cobro|URL previamente analizada|"Gherkin ""cacheada"""
+86e20nmqx|AC-5|Dos usuarios piden la misma URL no cacheada a la vez|Un solo scraping y un solo cobro|Dos compañías, misma URL nueva|DoD
+86e20nmqx|AC-6|Llamar /analyze directo (sin el modal) con una URL ya cacheada|No cobra ni vuelve a escrapear|URL cacheada; llamada directa a la API|"Gherkin ""Bypass"""
+86e22fzw2|AC-1|Flow con Timer de 60 s: salir del canvas y volver|Sin animación residual; el estado visual refleja la ejecución real|Board con nodo Timer|Descripción del bug
+86e22fzw2|AC-2|Salir del canvas durante la ejecución|La ejecución sigue en background, completa y queda en Execution History|Timer 60 s en Development|QA Instructions 2
+86e22fzw2|AC-3|Pulsar Stop después de que el flow terminó|El estado se mantiene completed|Flow finalizado|QA Instructions 5
+86e2epqqc|AC-1|Pausar el flow durante el Timer y luego pulsar Stop|Se detiene de inmediato, estado Stopped, sin ejecutar nodos posteriores|Flow con Timer y nodos posteriores|Descripción del bug
+86e21f52d|AC-1|Recorrer la app (login, sidebar, títulos, favicon, i18n EN/ES)|Marca visible iond; Boards/Nodes/Grapps sin renombrar|Usuario tenant, ambos idiomas|Req 1/4
+86e21f52d|AC-2|Login Keycloak y flujos core (crear/ejecutar board) tras el rebranding|Sin errores; realm/client y header técnico operativos|Usuario existente|Req 9
+86e21f52d|AC-3|Abrir landing.iond.ai y docs.iond.ai, y una URL legacy de alpha.ionflow.io|TLS válido y marca iond; la legacy redirige 301 preservando path y query|—|Req 10
+86e21f52d|AC-4|Emails transaccionales (invitación, conexiones inactivas, consumo)|Marca y logo iond; soporte hello@iond.ai; CTAs al host vigente|SMTP configurado, buzón de prueba|Req 11
+86e21f52d|AC-5|OAuth callbacks, CORS y webhooks entrantes de integraciones existentes|Sin regresiones con los dominios nuevos; consumidores legacy funcionan|Conector OAuth y webhook configurados|Req 9
+86e2buw79|AC-1|Abrir alpha.ionflow.io/<ruta>?<query>|301 a landing.iond.ai equivalente, sin loops ni pérdida de parámetros; TLS válido|—|Gherkin de la subtarea
+86e2buw7v|AC-1|Guía de usuario en EN y ES|"Ambas usan iond; cero ""ionflow"" renderizado; enlaces e imágenes válidos"|Guía publicada|Gherkin de la subtarea
+86e2buw8e|AC-1|Product switcher, favicon, logos light/dark y export JSON|"El item ""iond"" enlaza a la app correcta; archivo *-iond.json"|gateway-ion y webcomponents desplegados|QA Instructions
+86e2buw8e|AC-2|Login y navegación tras el cambio de logos y del product switcher|Sin regresión en login ni navegación|Usuario tenant|QA Instructions
+86e2buw8v|AC-1|Integración existente que usa una URL o identificador legacy|Sigue funcionando por alias, redirect o transición documentada|Integración creada antes del rebranding|Gherkin 2 de la subtarea
+86e2buw9e|AC-1|Invitar a un miembro y usar el CTA del email|La URL resuelve en el host vigente, completa Keycloak y asocia a la compañía|Rol admin, email de prueba|Gherkin Invitación
+86e2buw9e|AC-2|Revisar los emails enviados (subject, logo, footer)|iond en subject y logo; soporte hello@iond.ai; razón social según decisión del PO|Disparar los emails|Gherkin Email iond
+86e2buw9u|AC-1|Identificadores conservados (header técnico, clave de idioma en localStorage, bucket de logs, realm)|Requests con el header aceptadas; idioma guardado se conserva; sync R2 funciona|Usuario con preferencias previas|Matriz de compatibilidad
+86e2buw9u|AC-2|Middleware con el alias verify.ionflow|Las requests con el alias legacy siguen aceptadas|Integración con el alias legacy|Matriz de compatibilidad
+86e2czvzh|AC-1|Landing en desktop y mobile, CTAs y páginas legales EN/ES|Layout correcto; Sign Up → app.iond.ai; Contact → hello@iond.ai|—|Criterios de la subtarea
+86e2mc23t|AC-1|Renderizar <gt-service-list> sin atributos en Available Marketplace|Muestra filtros y búsqueda como antes (retrocompatible)|Admin Gateway > Customer > Available Marketplace|Ajuste post-QA 2026-10-09 (revalidación)
+86e2mc23t|AC-2|Usar los atributos hide-filters y/o hide-search|Cada atributo oculta solo su elemento; espaciado correcto|Página con el embed|Ajuste post-QA 2026-10-09
+86e2mc23t|AC-3|Elegir una app del marketplace después del cambio|Abre el flujo de instalación/configuración sin errores|Customer con apps disponibles|Descripción
+86e2fazfh|AC-1|Paso Import Nodes después de analizar la URL|Columnas Selección/Método/Ruta/Descripción/Estado/Acciones; acciones URL fuente y ver nodo|Conector con documentación analizada|Requerimientos + Gherkin
+86e2fazfh|AC-2|Buscar por ruta/método/descripción y filtrar por método o tipo|Filtra la colección completa; paginación coherente; sin nueva extracción|Endpoints en más de una página|Gherkin buscar y paginar
+86e2fazfh|AC-3|Seleccionar en varias páginas, buscar/filtrar/limpiar e importar|La selección persiste; Import Selection importa exactamente lo seleccionado|Conector con endpoints|Gherkin selección
+86e2fazfh|AC-4|Intentar seleccionar más de 5 endpoints para minar|"Selección bloqueada con aviso ""maximum of 5 nodes"""|Conector con más de 5 endpoints|Veredicto 2026-08-18
+86e2fazfh|AC-5|Endpoint con descripción larga y endpoint histórico sin descripción|"Truncado con ""+"" y modal; sin descripción → ""Descripción no disponible"""|Endpoints con y sin description|Gherkin vista previa
+86e2ft73m|AC-1|Discovery sobre documentación con varios endpoints|Cada endpoint trae method, path, description (inglés) y source_url, sin inventar|URL nueva|Gherkin de la subtarea
+86e2ft7a8|AC-1|Guardar un App Connector con descriptions y volver a abrirlo|Devuelve las mismas descripciones, identidad y selección|Conector creado vía IonMind|Gherkin Reabrir (revalidación: sin evidencia)
+86e2ft7a8|AC-2|Procesar o editar un conector con payload legacy sin description|Sin errores; description null o ausente|Conector antiguo|Gherkin Payload histórico
+86e2fpp9y|AC-1|Usuario tenant intenta abrir Admin > Companies o llamar GET /1.0/companies|403 o redirección; no lista compañías ni usuarios ajenos|Usuario con rol tenant autenticado|"Gherkin ""Acceso no autorizado"""
+86e2fpp9y|AC-2|Admin busca compañía por nombre, subdominio o ID|"Resultados correctos y paginados; placeholder ""Search by name, subdomain or ID"""|Admin; varias compañías, una con varios usuarios|Alcance funcional 1-2 + QA Req 1
+86e2fpp9y|AC-3|"Salir de la sesión de soporte con ""Leave company"" o ""Cerrar sesión"" dentro del soporte"|Vuelve a Admin > Companies sin pasar por SSO; la sesión admin original sigue intacta|Sesión de soporte activa|"Gherkin ""Finalización"" + QA Req 8"
+86e2fpp9y|AC-4|Iniciar soporte sin VPN o en un entorno sin VPN_ALLOWED_CIDRS|"Se bloquea (fail-closed): overlay ""VPN required"", 403 vpn_required, no se abre sesión"|VPN desconectada o CIDRs vacíos|QA Req 10
+86e2fpp9y|AC-5|Cerrar la sesión de soporte en una pestaña teniendo otra abierta|La otra pestaña deja de navegar vistas tenant y muestra aviso|Dos pestañas con sesión de soporte|Corrección 2026-08-20
+86e2fpp9y|AC-6|Usuario tenant navega por URL directa a rutas exclusivas de admin|El guard de rol lo redirige; no ve vistas de admin|Usuario tenant autenticado|Corrección 2026-08-20
+86e2nazxp|AC-1|Clic en Play de un nodo del canvas|Play se deshabilita al instante con spinner; los Play de los demás nodos quedan bloqueados|Board con 2 o más nodos|REQ-1 + Gherkin 1
+86e2nazxp|AC-2|Clics rápidos repetidos en Play, o el mismo flow en dos pestañas|Una sola ejecución; sin registros colgados en running/pending; aviso de ejecución en curso|Board en Company > Boards|REQ-2 + Gherkin 1 + QA Req 2
+86e2nazxp|AC-3|Toda ejecución termina en un estado final|completed, warning o error (stopped al detener o cerrar la pestaña); nunca running/pending indefinido|Varias ejecuciones Dev y Live|REQ-3
+86e2nazxp|AC-4|Ejecutar en Dev y en Live un flow con nodo mal configurado|El historial registra error/warning en ambos modos, nunca completed|Flow con nodo sin configurar (HTTP o Form)|REQ-4 + Gherkin 2
+86e2nazxp|AC-5|Revisar el mensaje de error en el modal y en el log de esa ejecución|"Muestra la causa raíz, igual en Dev y Live, nunca ""Invalid Node"""|Ejecución fallida de AC-4|REQ-4 + QA Req 3-4
+86e2nazxp|AC-6|Detener el flow o refrescar la pestaña durante una ejecución Dev|Queda en estado stopped con la causa registrada; no sigue corriendo en segundo plano|Flow Dev de larga duración|Instrucción QA 4
+86e1pzyug|AC-B01|Admin asigna otro plan en Companies > Subscription|feature_consumptions se resincroniza; subscription_renewals event=admin_assigned; botón deshabilitado durante la operación|Admin; compañía con plan free|L3 IONF-1056 TC-100/113
+86e1pzyug|AC-B07|Ejecutar con execution_time agotado desde editor, live, webhook y scheduler|"403 inmediato, estado quota_exhausted, email ""contact us""; schedules y webhooks no se borran"|consumed >= available en execution_time|L3 TC-030/031/032/106
+86e1pzyug|AC-STREAM|Flow largo consume execution_time durante la ejecución|consumed crece en cada flush; al agotarse corta con quota_exhausted; sin doble conteo|CONSUMPTION_FLUSH_SECONDS=5; saldo bajo|approval.md (OBS-17)
+86e1pzyug|AC-PDF|8 flows con nodo PDF disparados en concurrencia por scheduler|Nunca se supera la cuota diaria de pdf_impressions (consumed ≤ available)|Cuota pdf_impressions baja (p. ej. 10)|approval.md (OBS-R01)
+86e1pzyug|AC-B09/B10|Usar Flow Pilot y endpoints de IonMind con ai_credits agotado|"SSE ""reached your AI credits limit""; IonMind 403 ""Feature quota exceeded""; no llama al proveedor"|ai_credits consumed >= available|L3 TC-110/111
+86e1pzyug|AC-20/21|Registrar consumo con reset_at vencido (reset perezoso)|consumed arranca en la cantidad nueva; reset_at avanza desde el ancla anterior|Ventana con reset_at pasado y consumed > 0|L3 TC-024/025/026
+86e1pzz9g|AC-51/52|Admin asigna plan IONPDF standalone a una compañía sin IONFLOW|Se provisionan pdf_templates/pdf_impressions y un execution_time menor que el de IONFLOW|Compañía sin plan IONFLOW|L3 TC-070
+86e1pzz9g|AC-54|Generar un documento desde un template IONPDF|Consumo registrado en feature_consumption_logs (ledger unificado)|Plan con IONPDF y cuota disponible|L3 TC-072
+86e1pzz9f|AC-B11/B12|Tenant abre /billing/plans y /billing/subscription|Solo lectura: precios locales y barras de uso; sin Buy/Upgrade/Cancel/Overage|Usuario con permiso read-billing|L3 TC-104/105
+86e1pzz9f|AC-B14|Revisar el catálogo de productos sembrado|Cada plan con producto provider='local' y data.prices; sin stripe_id visible|Admin > Billing > Products|L3 TC-112/109
+86e1pzz9e|AC-33/35/38|Consumir hasta 80 %, 100 % y bloqueo de execution_time|"Un email por umbral y ciclo con ""contact us"", sin mencionar overage; sin duplicados en concurrencia"|Ventana mensual; inbox del contacto|L3 TC-040/041/042/045
+86e1pzz9e|AC-17|Agotar la ventana diaria de pdf_impressions con saldo mensual disponible|El nodo PDF se bloquea (blocked=true en la fila daily)|Ventanas daily y monthly configuradas|L3 TC-021
+86e1pzz9c|AC-56/57|Ejecutar un flow con nodo Timer o subflujo waitForResponse|Guarda active_seconds, idle_seconds ≥ espera y units_consumed; columna Execution Time visible|Flow con Timer de 3 s|L3 TC-080/081/082
+86e1pzz9c|AC-59|Consultar runtime de un flow recién creado|Estado neutro; no muestra 0 s ni una estimación inventada|Flow sin ejecuciones|Gherkin + TC-084
+86e1pzz9h|AC-16/18/19|Evaluar el guard con varias ventanas y límites especiales|daily+monthly simultáneas; available=-1 nunca bloquea; available=0 bloquea aunque consumed=0|Filas feature_consumptions preparadas|L3 TC-020/022/023
+86e1pzz9h|AC-IDEM|Reintento o cierre final de una ejecución ya contabilizada|No se duplica el consumo (solo se suma el remanente no persistido)|Ejecución con flush intermedio|"Gherkin ""Reintento no duplica"""
+86e1pzz9j|AC-B15|Verificar que no queda integración Stripe en ningún flujo de billing|Sin checkout/portal/webhooks ni llamadas al SDK de Stripe; ningún cargo externo|Entorno desplegado|L3 TC-107 + approval.md
+86e1wfgam|AC-1/2|Emitir token client_credentials en /api/2.0/app|200 con JWT RS256; secret malo 401, scope desconocido 422, grant no soportado 400|Client id/secret de app|L3 AC-1/AC-2
+86e1wfgam|AC-5/6|Llamar endpoints sin token, con token revocado/expirado o sin scope|"401 ""Invalid token"" uniforme; 403 nombrando el scope; sin detalles internos"|Token revocado y token read-only|L3 AC-5/6
+86e1wfgam|AC-4/14/15|Operar accounts con Account-Id desde apps de la misma y de otra compañía|Sin header 400; misma compañía comparte customers; remote_id repetido 409; otra compañía 404 uniforme|2 apps compañía A, 1 app compañía B|L3 AC-4/14/15
+86e1wfgam|AC-9/10|Ejecutar una action del connector con 0, 1 o varias conexiones|1 conexión implícita; varias sin Connection-Id 409 con candidatas; respuesta raw del proveedor|Customer con conexiones Shipedge|L3 AC-9/10
+86e1wfgam|AC-11/12|Pedir el spec y ejecutar el render de un PDF template vía API|200 con {filename, public_url} y PDF válido en R2; plantilla ajena 404; sin schema_id 400|Seeder DevAppPdfTemplateSeeder|L3 AC-11/12
+86e1wfgam|AC-18/19|Listar y ejecutar flows de la app; regresión del board|"Flow activo ejecuta; INACTIVE 409 ""flow is not active""; los flows del board se comportan igual"|Flows ACTIVE e INACTIVE|L3 AC-18/19
+86e1wfgt2|AC-7/8|Consultar el catálogo y el detalle del connector namespaced|app.shipedge = shipedge; tenant.shipedge 404; no vinculado 404; token read-only ejecutando 403|App con connector Shipedge vinculado|L3 AC-7/8/10
+86e1wfguh|AC-13|Crear, diseñar y guardar una plantilla en Marketplace > PDF List|El listado refresca sin duplicados, filtrado por account; error visible si el motor cae|Vista de customer/account|L3 AC-13
+86e1wfgxk|AC-1|Ejecutar o gestionar un mapper vía API; enviar un mapper inválido|Respuesta según contrato; el inválido se rechaza con error claro 4xx|App autorizada; mapper existente|Gherkin de la subtarea (sin TC en la matriz L3)
+86e2mt70g|AC-1|"Abrir el modal ""Select AI Model"" en Create Connector"|Básico/Estándar/Premium, Estándar por defecto; tiers sin modelo deshabilitados|Cache miss; GET /ionmind/tiers disponible|REQ-1
+86e2mt70g|AC-2|Seleccionar tier y confirmar la extracción|Un solo job; tier enviado a /ionmind/analyze y /extract y persistido en el borrador|URL de documentación nueva|Gherkin 1
+86e2mt70g|AC-3|Comparar el costo del modal de primera extracción entre los tres tiers|El costo cambia según el tier; nunca un valor fijo|URL no cacheada; cada tier configurado|Rechazo OBS-01
+86e2mt70g|AC-4|Usar un App Connector ya existente en caché|Se reutiliza; sin nueva extracción ni cargo de primera extracción|Conector previamente extraído|Gherkin 2
+86e2mt70g|AC-5|Doble clic en Analyze/Confirm|Un solo job y un solo cargo|Modal con tier válido|REQ-7
+86e2mt70g|AC-6|Cancelar, o backend responde 422 (tier sin modelo, inválido o ausente)|Sin job parcial ni cargo; error claro; la selección se conserva|Tier premium sin modelo en BD|Gherkin 3
+86e31pbz9|AC-1|"Admin en VPN: Companies > [Company] > Support > ""Start a support session"""|Redirige al dashboard tenant de esa compañía sin elegir usuario|Admin conectado a VPN|L3 TC-001/006
+86e31pbz9|AC-2|Operar durante la sesión de soporte|"Banner ""Support session"" + compañía + ""Leave company""; ve boards, conexiones y data stores"|Sesión de soporte activa|L3 TC-002/003
+86e31pbz9|AC-3|Leave company desde el banner o el menú de usuario|Vuelve al panel admin; el banner desaparece; sin volver a iniciar sesión|Sesión de soporte activa|L3 TC-004/007
+86e31pbz9|AC-4|Navegar a /admin/* durante la sesión de soporte|Redirige al dashboard tenant; las rutas admin quedan inaccesibles|Sesión de soporte activa|L3 TC-005
+86e31pbz9|AC-5|Requests tenant del admin con la VPN desconectada|403 vpn_required en PHP y Go; overlay VPN|Admin; VPN desconectada|L3 TC-015/017
+86e31pbz9|AC-6|Usuario no-admin intenta Support/admin o la API de otra compañía|Acceso denegado; GET /tenants/{B}/flows da 401; el bypass es solo para admin|Usuario miembro solo de compañía A|L3 TC-016/CR-002
+86e2xnjyz|AC-1|Ejecutar cualquier flow|"El log muestra ""[FlowDB] close flow=<id> opens=1 hits=N"": una sola conexión por ejecución"|Acceso a los logs del pod|"Gherkin ""Reutilización"""
+86e2xnjyz|AC-2|Terminar el flow por éxito, stop o error|Cierra exactamente una vez; FDs vuelven a la línea base; sin conexiones huérfanas|Flows con error forzado|"Gherkin ""Liberación de recursos"""
+86e2xnjyz|AC-3|Disparar 3 o más flows simultáneos|Cada uno con su conexión (opens=1); sin contaminación de nodes/outputs/queues; HTTP 200|Webhook con payloads distintos|"Gherkin ""Concurrencia"""
+86e2xnjyz|AC-4|Disparar flows por webhook con payloads de 1 a 5000 órdenes|Mismo contrato (HTTP 200, mismo body); esquema SQLite sin cambios|Flow webhook existente|"Gherkin ""Compatibilidad"""
+86e2xnjyz|AC-5|Medir el flow de ~5000 órdenes contra el baseline|Mejora documentada (≈ 52,9 s → 36,9 s); la meta de 3-5 s no se cumple (decisión del PO)|Flow de referencia, varias corridas|"Gherkin ""Rendimiento"""
+86e2xnjyz|AC-6|Descargar la execution DB de un flow Dev|Archivo completo y legible|Ejecución Dev finalizada|Instrucción QA 5
+86e2ak75f|AC-2|Seleccionar una ejecución terminada en Execution History, la lista de boards o el toggle del editor|Canvas de solo lectura con nodos verde/rojo/gris; URL compartible|Ejecución reciente (< 7 días); permiso read-execution|Gherkin 2
+86e2ak75f|AC-2-IO|Hacer clic en un nodo del replay|El panel muestra el Input y Output JSON exactos y los logs del nodo|Ejecución con nodos exitosos y fallidos|Gherkin 2
+86e2ak75f|AC-9|Ejecutar el board, modificarlo y abrir el replay anterior|Muestra el board tal como se ejecutó, no la versión actual|Board editado después de ejecutar|L3 AC-9
+86e2ak75f|AC-3/4|Abrir por URL una ejecución expirada (> 7 días), sin snapshot o en curso|Cabecera con estado/duración/origen y aviso expired/missing/running; nunca un 500|Ejecuciones antiguas, legacy y running|L3 AC-3/4
+86e2ak75f|AC-8|Ejecutar desde el editor, por webhook, por schedule y por subflujo|Dev·Manual, Live·Webhook, Live·Schedule; subflujo según la decisión vigente del PO (OBS-01)|Migración mode/trigger_type aplicada|L3 AC-8
+86e2ak75f|AC-NEG|?run= con una ejecución de otro board o compañía; usuario sin read-execution|404 con mensaje comprensible; sin permiso no ve el toggle ni la ruta|Dos boards; usuario sin permiso|NEG-001
+86e1fknjv|AC-1|Crawler sin logo válido con LOGO_DEV_ENABLED=true|"Obtiene el logo de Logo.dev, lo sube a R2 y source=""logo.dev"""|Dominio sin logo crawleable|"Gherkin ""Fallback"""
+86e1fknjv|AC-2|Ejecutar el discovery con LOGO_DEV_ENABLED=false|No llama a Logo.dev; usa el pipeline IA Vision|Variable de entorno en false (solo QA de IonMind)|QA Instructions Caso B
+86e1fknjv|AC-3|Ver el logo en Create Connector según el source|Logos provided by Logo.dev solo si source=logo.dev|Logos con source logo.dev y crawler|"Gherkin ""Atribución condicional"""
+86e1fknjv|AC-4|"Usar el botón ""Get logo from Logo.dev"" y confirmar el modal"|"Reemplaza el logo en R2; source=logo.dev; toast ""Logo updated via Logo.dev"""|Conector con logo de otro origen|"Gherkin ""Actualización manual"""
+86e1fknjv|AC-5|Consumir un payload con campo source y un payload legado sin source|Campos previos (img, url_r2) intactos; Create Connector no falla|Jobs nuevos y legados|"Gherkin ""Compatibilidad"""
+86e1fkxz7|AC-1|POST /api/v1/logo/force-update/{job_id} en IonMind|200 con url_r2 nueva; logos actualizado con source logo.dev|job_id finalizado; dominio existe en Logo.dev|QA Instructions de la subtarea
+86e1fkxz7|AC-2|Alternar LOGO_DEV_AS_PRIMARY entre true y false|true: Logo.dev primero; false: IA primero y Logo.dev como fallback|LOGO_DEV_ENABLED=true|QA Instructions Casos A/C
+86e1fky0g|AC-1|Mostrar u ocultar el botón Logo.dev según el origen del logo|Oculto si source=logo.dev; reaparece al borrar el logo; modal antes de sobrescribir|Create Connector con logo IonMind|QA Instructions de la subtarea
+86e1qzefc|AC-1|Proxy POST /api/1.0/tenants/{t}/ionmind/analyze/{jobId}/logo/force-update|Éxito 200; dominio inexistente: 400 con el mensaje de IonMind; caída: 502|IonMind arriba y abajo|QA Instructions de la subtarea
+86e1qzefc|AC-SEC|Llamar al proxy force-update con un jobId de otro tenant|403/404: no se actualiza el logo de otro tenant (verificación de pertenencia del jobId)|Dos tenants con jobs propios|Riesgo detectado en la revisión (no probado)
+86e25dyyz|AC-1|Configurar un App Connector creado: el usuario elige Details, Base, Webhooks, Nodes o Connections|Aterriza en Details con tabs visibles; ?tab=nodes abre Nodes; Back to List regresa|Conector publicado con nodos, webhooks y conexiones|QA report / ac-consolidated
+86e25dyyz|AC-9|Navegar entre secciones y guardar metadata (label, descripción, versión, logo)|Nodos, webhooks, conexiones y auth intactos; sigue Published, sin volver a draft|Conector publicado; editar Details y guardar|QA report / ac-consolidated
+86e19dtkw|AC-1|Schedule mensual de un Grapp con el timezone de la company/account|Ejecuta a la hora local configurada, sin desfase de +4 h|Company con timezone America/La_Paz; schedule mensual|QA report
+86e19dtkw|AC-2|Timezone inválido o vacío en la company/account|Fallback a UTC con warning en el log; los demás schedules corren|Timezone nulo o inválido en BD (sin UI)|QA report
+86e29hc1r|AC-1|Request desde un origen externo a un Custom Webhook público|Sin error CORS; el flow se dispara|Custom Webhook activo; dominio externo|Descripción
+86e22fzve|AC-1|Ejecución exitosa disparada por el Scheduler (flows de company y de account)|Execution History registra completed, no error; sin error al cliente|Board con Scheduler cada 1 min|Descripción del bug
+86e22fzve|AC-2|Fallo real en ContinueNode o PushNode|Ejecución fatal con un único error; no continúa tras el fallo|Forzar fallo de PushNode/ContinueNode|QA report
+86e22fzq7|AC-1|Reautorizar una conexión (API Key u OAuth)|Actualiza la conexión existente; mismo número de conexiones; un solo toast|Conexión API Key activa de una app global|Descripción del bug
+86e22fzq7|AC-3|Ejecutar los flows que usan la conexión reautorizada|El nodo de app ejecuta sin error de autenticación|Flow activo que referencia la conexión|QA report
+86e1r2c6z|AC-1|Registrar una compañía desde /create-company|Toast de éxito; Dashboard; el usuario es owner con Settings, Accounts y Teams|Usuario nuevo de Keycloak sin compañía|ac-consolidated
+86e1r2c6z|AC-13|Datos de compañía, contacto, dirección y timezone tras el registro|Settings muestra todo; timezone en companies.timezone|Registro con America/New_York, postal 10001|ac-consolidated
+86e1r4bu7|AC-4|Instalar un template|Board editable en la company; PDFs clonados con IDs remapeados; template original intacto|Template activo con PDFs y apps globales|L3 rejection/approval
+86e1r4bu7|AC-10|Instalar un template con 2 o más apps globales|El wizard pide conexión propia por app; sin credenciales del original|Template con Gmail y Shopify|L3 rejection/approval
+86e2jwrvc|AC-1|ID de los nodos en canvas, preview, chat de IA e Import Flow|"Labels ""1"", ""2"", ""3"" sin el prefijo ""$"""|Board con varios tipos de nodo|Descripción
+86e2jwrvc|AC-2|Mapper, IA, merge de import y ejecución|"Se conserva ""$N"" interno; mapper inserta ""$1.output.campo""; ejecución correcta"|Board con nodos conectados|Descripción
+86e2e8gde|AC-1|Artefacto UPS Track Alert v2|OAuth, alta de suscripción, webhook Tracking Event y Track API; máx. 100 trackings y 14 días|Fuentes oficiales UPS|QA report
+86e2e8gde|AC-3|Artefacto FedEx Supply Chain|Create/Get/Update Webhook, eventos de orden, firma HMAC-SHA256 e idempotencia|Sandbox FedEx SC|QA report
+86e22fzqu|AC-4|Inputs de imagen del nodo PDF Template|PNG URL, JPEG data URI y base64 OK; GIF/WebP/SVG o URL inaccesible fallan con mensaje, nunca HTTP 500|Template con elemento imagen|QA report
+86e22fzqu|AC-1|PDF con texto árabe (solo, mixto, dígitos, tablas, bold)|Árabe RTL legible y dígitos en orden; templates latinos sin cambios|Template con campos árabes (caso de la subtarea 86e1xu7xp)|QA report
+86e1kp55k|AC-1|Automap with AI en el formulario del nodo PDF Template|Campos poblados con {{$N.field}}; Accept/Discard funcionan|Flow con 3 o más nodos ejecutados antes|QA report
+86e1kp55k|AC-2|Nodo PDF Template tras una rama Gateway|El formulario carga de inmediato; la ejecución genera el PDF|Flow Gateway → PDF Template|QA report
+86e223kvf|AC-2|Tablas y listados de las primeras vistas|Patrón visual de PDF Templates; sin overflow|Boards, Executions, Connectors|L3 matriz
+86e223kvf|AC-5|Renombrar, cambiar estado o clonar un board desde la primera vista|No sobrescribe nodos ni posiciones; editor sin cambios|Board con nodos y posiciones guardadas|L3 matriz
+86e2g4ev0|AC-2|Reprocesar o reimportar el mismo artefacto o endpoint de IonMind|No crea un endpoint adicional; los importados quedan Complete y deshabilitados|Conector con endpoints importados (USPS, Locus)|QA report (revalidación: guard retirado en el CR)
+86e2g4ev0|AC-4|Operaciones con la misma ruta y distinto método, versión o tipo|Siguen separadas; cada una aparece una sola vez en FlowToolBar|Conector con la misma ruta y distinto método|QA report
+86e2p459r|AC-3|IonMind responde 200 con data.status=failed|Spinner detenido, toast de error; sin loop ni importación|URL de documentación inválida|QA report (revalidación: REQ 5 diferido)
+86e2p459r|AC-2|Recargar la página durante Discovery o Mining|Restaura el draft y consulta el job existente, sin POST duplicados|Draft con job pendiente|QA report
+86e2j43eg|AC-1|Conectores de Telegram, WhatsApp, Instagram y Messenger|Cuatro conectores independientes, sin duplicados, con source_url oficial|Fuentes oficiales|QA report (revalidación: WhatsApp duplicado en la evidencia)
+86e2j43eg|AC-2|Inventario de endpoints de cada plataforma|Todo endpoint documentado clasificado; auth sin secretos reales|Índice oficial por plataforma|QA report
+86e2t9962|AC-1|Minado de un endpoint en Create Connector > Import Nodes|Pasa de Mining a Complete/Error sin recargar|Webhooks/websocket activos|QA report
+86e2t9962|AC-2|Discovery (análisis de URL) al terminar|El resultado aparece sin recarga manual|URL de documentación válida|QA report
+86e25j0rn|AC-1|Fallo terminal de Discovery|ionmind.discovery.failed al Gateway tras persistir; email y Mattermost sin secretos|URL inaccesible; 2 o más intentos fallidos|QA report
+86e25j0rn|AC-5|Polling, caché o reintentos del mismo job fallido|Un correo y un mensaje por job en 10 min; un fallo de envío no altera el job|Job fallido; GET repetido|QA report
+86e22q3pc|T-02|Buscar un PDF Template por nombre en el buscador global de Accounts|Aparece en los resultados y abre el template|Company con PDF Templates|Descripción del bug (sin fila en el E2E maestro)
